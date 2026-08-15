@@ -9,8 +9,6 @@ The skin is based on the 4-deck variant of
 [Pioneered](https://github.com/timewasternl/Pioneered) /
 [Pioneered-Plus](https://github.com/bencejuhaasz/Pioneered-Plus) (GPL-3.0).
 
-![](docs/screenshot.png)
-
 ## Screen modes
 
 All four decks loaded and on air:
