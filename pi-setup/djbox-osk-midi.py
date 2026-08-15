@@ -64,6 +64,17 @@ def main():
                     elif byte != 0x7F and level == 0x7F:
                         hide()
                     level = byte
+                elif d1 == 0x25 and byte == 0x7F:
+                    # Mixxx version badge pressed: toggle Preferences. No
+                    # ControlObject exists for the dialog, so type the
+                    # shortcut -- Ctrl+P to open, Escape to close if the
+                    # window is already up.
+                    syslog.syslog("prefs")
+                    subprocess.Popen(["bash", "-c",
+                        "if xdotool search --name '^Preferences$' >/dev/null 2>&1; "
+                        "then xdotool search --name '^Preferences$' "
+                        "windowactivate --sync key Escape; "
+                        "else xdotool key ctrl+p; fi"])
                 state = 1  # running status: next pair reuses 0xB0
             # state == 0: inside a foreign message, swallow data bytes
 

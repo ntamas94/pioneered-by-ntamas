@@ -15,8 +15,11 @@ set -euo pipefail
 
 OUT_DIR=${1:-/media/dj/Music}
 WORK_DIR=${2:-$OUT_DIR}   # scratch for the raw .img (FAT32 targets cap files at 4 GiB)
+PROFILE=${3:-full}        # full | 2deck -- baked into /etc/djbox-profile
 STAMP=$(date +%Y%m%d)
-IMG="$WORK_DIR/pioneered-djbox-$STAMP.img"
+SUFFIX=""
+[ "$PROFILE" = "2deck" ] && SUFFIX="-2deck"
+IMG="$WORK_DIR/pioneered-djbox$SUFFIX-$STAMP.img"
 SIZE_GB=10
 
 [ "$(id -u)" = 0 ] || { echo "run as root" >&2; exit 1; }
@@ -85,6 +88,7 @@ mkdir -p /mnt/newroot/proc /mnt/newroot/sys /mnt/newroot/dev \
 chmod 1777 /mnt/newroot/tmp /mnt/newroot/var/tmp
 chown 1000:1000 /mnt/newroot/home/dj/Music /mnt/newroot/home/dj/.cache
 : > /mnt/newroot/etc/machine-id
+echo "$PROFILE" > /mnt/newroot/etc/djbox-profile
 if [ -f /mnt/newroot/usr/lib/systemd/system/regenerate_ssh_host_keys.service ]; then
     ln -sf /usr/lib/systemd/system/regenerate_ssh_host_keys.service \
        /mnt/newroot/etc/systemd/system/multi-user.target.wants/regenerate_ssh_host_keys.service

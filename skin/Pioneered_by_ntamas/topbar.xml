@@ -9,6 +9,38 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
+          <WidgetGroup>
+            <ObjectName>MixxxVersionStack</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>110f,100f</Size>
+            <Children>
+              <PushButton>
+                <ObjectName>MixxxVersionHit</ObjectName>
+                <Size>110f,100f</Size>
+                <NumberStates>1</NumberStates>
+                <State><Number>0</Number><Text></Text></State>
+                <Connection>
+                  <ConfigKey>[Pioneered],prefs_btn</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+              </PushButton>
+              <WidgetGroup>
+                <ObjectName>MixxxVersionBox</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>max,me</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>MixxxVersionName</ObjectName>
+                    <Text>Mixxx</Text>
+                  </Label>
+                  <Label>
+                    <ObjectName>MixxxVersionNum</ObjectName>
+                    <Text>2.5.6</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
           <Template src="skin:tab.xml">
             <SetVariable name="tab_name">Waveform</SetVariable>
             <SetVariable name="config_key">overview</SetVariable>
@@ -44,6 +76,11 @@
             <Connection>
               <ConfigKey>[Pioneered],disp24</ConfigKey>
             </Connection>
+            <Connection>
+              <ConfigKey>[Pioneered],profile2</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
           </PushButton>
           <PushButton>
             <ObjectName>DeckModeBtn4</ObjectName>
@@ -56,6 +93,11 @@
             </Connection>
             <Connection>
               <ConfigKey>[Pioneered],disp4</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Pioneered],profile2</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
             </Connection>
           </PushButton>
             </Children>
@@ -116,38 +158,77 @@
             <SizePolicy>max,me</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>TopStatusLoadRow</ObjectName>
+                <ObjectName>TopStatusColumns</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>max,max</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Label>
-                    <ObjectName>TopStatusLoadLabel</ObjectName>
-                    <Text>LOAD</Text>
-                  </Label>
-                  <Number>
-                    <ObjectName>TopStatusLoad</ObjectName>
-                    <TooltipId>audio_latency_usage</TooltipId>
-                    <Connection>
-                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
-                    </Connection>
-                  </Number>
-                  <Label>
-                    <ObjectName>TopStatusCpuLabel</ObjectName>
-                    <Text>CPU</Text>
-                  </Label>
-                  <Number>
-                    <ObjectName>TopStatusCpu</ObjectName>
-                    <NumberOfDigits>0</NumberOfDigits>
-                    <Connection>
-                      <ConfigKey>[Pioneered],cpu</ConfigKey>
-                    </Connection>
-                  </Number>
+                  <WidgetGroup>
+                    <ObjectName>TopStatusStats</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>max,me</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>TopStatusLoadRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Children>
+                          <Label>
+                            <ObjectName>TopStatusLoadLabel</ObjectName>
+                            <Text>LOAD</Text>
+                          </Label>
+                          <Number>
+                            <ObjectName>TopStatusLoad</ObjectName>
+                            <TooltipId>audio_latency_usage</TooltipId>
+                            <Connection>
+                              <ConfigKey>[App],audio_latency_usage</ConfigKey>
+                            </Connection>
+                          </Number>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>TopStatusCpuRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Children>
+                          <Label>
+                            <ObjectName>TopStatusCpuLabel</ObjectName>
+                            <Text>CPU</Text>
+                          </Label>
+                          <Number>
+                            <ObjectName>TopStatusCpu</ObjectName>
+                            <NumberOfDigits>0</NumberOfDigits>
+                            <Connection>
+                              <ConfigKey>[Pioneered],cpu</ConfigKey>
+                            </Connection>
+                          </Number>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>TopStatusTempRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Children>
+                          <Number>
+                            <ObjectName>TopStatusTemp</ObjectName>
+                            <NumberOfDigits>0</NumberOfDigits>
+                            <Connection>
+                              <ConfigKey>[Pioneered],temp</ConfigKey>
+                            </Connection>
+                          </Number>
+                          <Label>
+                            <ObjectName>TopStatusTempUnit</ObjectName>
+                            <Text>&#176;C</Text>
+                          </Label>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <Time>
+                    <ObjectName>TopStatusClock</ObjectName>
+                    <TooltipId>time</TooltipId>
+                  </Time>
                 </Children>
               </WidgetGroup>
-              <Time>
-                <ObjectName>TopStatusClock</ObjectName>
-                <TooltipId>time</TooltipId>
-              </Time>
             </Children>
           </WidgetGroup>
 

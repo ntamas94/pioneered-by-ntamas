@@ -114,6 +114,24 @@
           <normal/>
         </options>
       </control>
+      <control>
+        <group>[Pioneered]</group>
+        <key>TimeClamp.profileIn</key>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Pioneered]</group>
+        <key>TimeClamp.tempIn</key>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
     </controls>
     <!-- The on-screen keyboard state is broadcast by a script heartbeat
          (midi.sendShortMsg 0xB0 0x20), not by output mappings: the output

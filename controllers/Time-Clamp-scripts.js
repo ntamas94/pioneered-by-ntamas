@@ -52,7 +52,23 @@ TimeClamp.init = function () {
         TimeClamp.modeConnections.push(TimeClamp.oskReqConnection);
     }
     engine.beginTimer(1000, TimeClamp.oskBeat);
+    TimeClamp.prefsConnection = engine.makeConnection(
+        "[Pioneered]", "prefs_btn", TimeClamp.prefsPress);
+    if (TimeClamp.prefsConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.prefsConnection);
+    }
     TimeClamp.applyMode("mode4");
+};
+
+// The Mixxx version badge acts as a Preferences button: the press is
+// broadcast as 0xB0 0x25 and the djbox-osk-midi daemon types Ctrl+P into
+// the app (there is no ControlObject for the preferences dialog).
+TimeClamp.prefsPress = function (value) {
+    if (value !== 1) {
+        return;
+    }
+    midi.sendShortMsg(0xB0, 0x25, 0x7F);
+    midi.sendShortMsg(0xB0, 0x25, 0x00);
 };
 
 // On-screen keyboard. The KBD button is a plain push on [Pioneered],osk:
@@ -91,6 +107,10 @@ TimeClamp.oskBurst = function () {
 
 TimeClamp.cpuIn = function (channel, control, value) {
     engine.setValue("[Pioneered]", "cpu", value);
+};
+
+TimeClamp.tempIn = function (channel, control, value) {
+    engine.setValue("[Pioneered]", "temp", value);
 };
 
 // View radio. Waveform rows and deck cards are independent:
@@ -171,7 +191,12 @@ TimeClamp.watchMode = function (mode) {
         if (value !== 1) {
             return;
         }
-        if (mode === TimeClamp.currentMode && mode !== "mode4") {
+        if (TimeClamp.profile2 && mode !== "mode2") {
+            // 2-deck controller profile: only the 2 DECK view exists.
+            return;
+        }
+        if (mode === TimeClamp.currentMode && mode !== "mode4"
+                && !TimeClamp.profile2) {
             // Second press on the active button: flip the deck pair.
             TimeClamp.pairB = !TimeClamp.pairB;
         } else {
@@ -183,6 +208,27 @@ TimeClamp.watchMode = function (mode) {
     if (connection) {
         TimeClamp.modeConnections.push(connection);
     }
+};
+
+// Deck profile, driven by the djbox-cpu-midi daemon (0xB0 0x23 level):
+// 0x7F while a known 2-channel controller (DDJ-FLX4, DDJ-400, ...) is
+// plugged in, 0x00 for 4-deck controllers or none. In the 2-deck profile
+// the UI collapses to the 2 DECK view: the 2/4 and 4 DECK buttons hide
+// (skin binds their visibility to [Pioneered],profile2), the browse pane
+// drops the deck 3/4 card row, and pair flipping is disabled.
+TimeClamp.profile2 = 0;
+
+TimeClamp.profileIn = function (channel, control, value) {
+    var want = value >= 64 ? 1 : 0;
+    if (want === TimeClamp.profile2) {
+        return;    // heartbeat, no change
+    }
+    TimeClamp.profile2 = want;
+    engine.setValue("[Pioneered]", "profile2", want);
+    engine.setValue("[Pioneered]", "show_cardbot", want ? 0 : 1);
+    TimeClamp.currentMode = want ? "mode2" : "mode4";
+    TimeClamp.pairB = false;
+    TimeClamp.applyMode(TimeClamp.currentMode);
 };
 
 // CONTINUE mode with beatmatching: while AutoDJ runs, decks 1-2 get sync
