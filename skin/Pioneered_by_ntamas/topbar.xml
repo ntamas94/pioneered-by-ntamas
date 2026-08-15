@@ -13,23 +13,14 @@
             <SetVariable name="tab_name">Waveform</SetVariable>
             <SetVariable name="config_key">overview</SetVariable>
           </Template>
-          <Template src="skin:tab.xml">
-            <SetVariable name="tab_name">Browse</SetVariable>
-            <SetVariable name="config_key">library</SetVariable>
-          </Template>
-          <PushButton>
-            <ObjectName>SingleContinueBtn</ObjectName>
-            <Size>110f,30f</Size>
-            <NumberStates>2</NumberStates>
-            <State><Number>0</Number><Text>SINGLE</Text></State>
-            <State><Number>1</Number><Text>CONTINUE</Text></State>
-            <Connection>
-              <ConfigKey>[AutoDJ],enabled</ConfigKey>
-            </Connection>
-          </PushButton>
+          <WidgetGroup>
+            <ObjectName>DeckModeGroup</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
           <PushButton>
             <ObjectName>DeckModeBtn2</ObjectName>
-            <Size>80f,30f</Size>
+            <Size>132f,76f</Size>
             <NumberStates>1</NumberStates>
             <State><Number>0</Number>
 <Text>2 DECK</Text></State>
@@ -43,7 +34,7 @@
           </PushButton>
           <PushButton>
             <ObjectName>DeckModeBtn24</ObjectName>
-            <Size>90f,30f</Size>
+            <Size>152f,76f</Size>
             <NumberStates>1</NumberStates>
             <State><Number>0</Number><Text>2/4 DECK</Text></State>
             <Connection>
@@ -56,7 +47,7 @@
           </PushButton>
           <PushButton>
             <ObjectName>DeckModeBtn4</ObjectName>
-            <Size>80f,30f</Size>
+            <Size>132f,76f</Size>
             <NumberStates>1</NumberStates>
             <State><Number>0</Number><Text>4 DECK</Text></State>
             <Connection>
@@ -67,6 +58,58 @@
               <ConfigKey>[Pioneered],disp4</ConfigKey>
             </Connection>
           </PushButton>
+            </Children>
+          </WidgetGroup>
+          <Template src="skin:tab.xml">
+            <SetVariable name="tab_name">Browse</SetVariable>
+            <SetVariable name="config_key">library</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <ObjectName>SingleContinueGroup</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>240f,80f</Size>
+            <Children>
+              <PushButton>
+                <ObjectName>SingleContinueHit</ObjectName>
+                <Size>240f,80f</Size>
+                <NumberStates>2</NumberStates>
+                <State><Number>0</Number><Text></Text></State>
+                <State><Number>1</Number><Text></Text></State>
+                <Connection>
+                  <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+              <WidgetGroup>
+                <ObjectName>SingleContinueLabels</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>240f,80f</Size>
+                <Children>
+                  <Label>
+                    <ObjectName>ScSingle</ObjectName>
+                    <Text>SINGLE</Text>
+                    <Connection>
+                      <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                      <Transform><IsEqual>0</IsEqual></Transform>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                  <Label>
+                    <ObjectName>ScSep</ObjectName>
+                    <Text>|</Text>
+                  </Label>
+                  <Label>
+                    <ObjectName>ScContinue</ObjectName>
+                    <Text>CONTINUE</Text>
+                    <Connection>
+                      <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                      <Transform><IsEqual>1</IsEqual></Transform>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
           <WidgetGroup>
             <ObjectName>TopStatus</ObjectName>
             <Layout>vertical</Layout>

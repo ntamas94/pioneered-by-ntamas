@@ -119,7 +119,7 @@
             <Children>
 <WidgetGroup>
                 <ObjectName>DeckTrackTimeTitle</ObjectName>
-                <Size>200me,19f</Size>
+                <Size>200me,22f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Label>
@@ -343,7 +343,7 @@
               <WidgetGroup>
                 <ObjectName>DeckHeaderBpmTitleRow</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>0me,14f</Size>
+                <Size>0me,18f</Size>
                 <Children>
                   <Label>
                     <ObjectName>DeckHeaderBpmTitle</ObjectName>
@@ -384,7 +384,7 @@
               <WidgetGroup>
                 <ObjectName>DeckTempoRow</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>0me,30f</Size>
+                <Size>0me,24f</Size>
                 <Children>
                   <Label>
                     <ObjectName>DeckQuantizeLabel</ObjectName>

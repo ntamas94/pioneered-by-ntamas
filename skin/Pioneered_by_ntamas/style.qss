@@ -530,22 +530,11 @@ WLabel {
 #DeckTitle { color: #cfe4ff; font-weight: bold; }
 #DeckTitleNote { color: #2d85cd; }
 
-#TabButtonWaveform, #TabButtonBrowse, #TabButtonSampler {
-  background-color: #0d1a2e;
-  border: 1px solid #1f4c85;
-  color: #8fb4e0;
-  font-weight: bold;
-  padding: 4px 10px;
-  margin: 0 1px;
-}
+
 
 #TabButtonWaveform[value="1"],
 #TabButtonBrowse[value="1"],
-#TabButtonSampler[value="1"] {
-  background-color: #12518f;
-  color: #ffffff;
-  border: 1px solid #2d85cd;
-}
+
 
 #BeatFX_Header, #BeatFX_Title {
   background-color: #0d2444;
@@ -989,8 +978,8 @@ WLabel {
 
 /* Only the upper lobe of the overview is visible; the rest is clipped. */
 #DeckOverviewContainer {
-  max-height: 107px;
-  min-height: 107px;
+  max-height: 116px;
+  min-height: 116px;
 }
 
 /* ---- step 22: header time on Browse ---- */
@@ -1084,10 +1073,7 @@ WLabel {
 /* ---- step 27: double top bar ---- */
 
 /* Double-height tab bar. */
-#TabButtonWaveform, #TabButtonBrowse, #TabButtonSampler {
-  font-size: 20px;
-  padding: 8px 10px;
-}
+
 
 #TopStatusLoadLabel, #TopStatusLoad { font-size: 14px; }
 #TopStatusClock { font-size: 20px; }
@@ -1126,28 +1112,6 @@ WLabel {
 }
 
 /* ---- step 30: CPU and deck view selector ---- */
-
-/* Deck view selector, XZ style. */
-#DeckModeBtn2, #DeckModeBtn24, #DeckModeBtn4 {
-  background-color: #0d1a2e;
-  border: 1px solid #1f4c85;
-  color: #8fb4e0;
-  font-size: 13px;
-  font-weight: bold;
-  margin: 0 2px;
-  min-height: 30px;
-  max-height: 30px;
-  padding: 0 10px;
-  qproperty-alignment: 'AlignCenter';
-}
-
-#DeckModeBtn2[value="1"],
-#DeckModeBtn24[value="1"],
-#DeckModeBtn4[value="1"] {
-  border: 1px solid #f2d13c;
-  background-color: #1f4c85;
-  color: #ffffff;
-}
 
 /* CPU next to LOAD. */
 #TopStatusCpuLabel {
@@ -1207,23 +1171,8 @@ WLabel {
 }
 
 /* SINGLE/CONTINUE follows the tab button look. */
-#SingleContinueBtn {
-  background-color: #0d1a2e;
-  border: 1px solid #1f4c85;
-  color: #8fb4e0;
-  font-size: 13px;
-  font-weight: bold;
-  margin: 0 12px 0 2px;
-  min-height: 30px;
-  max-height: 30px;
-  padding: 0 10px;
-  qproperty-alignment: 'AlignCenter';
-}
-#SingleContinueBtn[value="1"] {
-  border: 1px solid #f2d13c;
-  background-color: #1f4c85;
-  color: #ffffff;
-}
+
+
 
 /* ---- step 33: card drop hover ---- */
 
@@ -1235,3 +1184,309 @@ WLabel {
 
 /* ---- band alignment fix ---- */
 #DeckHeader { qproperty-layoutAlignment: 'AlignLeft | AlignVCenter'; } /* band */
+
+/* ---- step 34: marquee colour ---- */
+#DeckTitle { qproperty-scrollColor: #ffffff; }
+
+/* ---- step 40: flat topbar, AZ look ---- */
+#TabButtonWaveform, #TabButtonBrowse,
+#TabButtonWaveform[value="0"], #TabButtonBrowse[value="0"],
+
+
+
+
+
+
+
+
+
+
+/* final mode-button override: descendant selectors, name-proof */
+#DeckModeGroup WPushButton,
+#DeckModeGroup WPushButton[value="0"],
+
+
+
+
+/* ---- SINGLE/CONTINUE: tab-sized rectangle ---- */
+
+
+
+
+
+
+/* ==== canonical topbar styling (descendant selectors) ==== */
+#TabControls WPushButton,
+#TabControls WPushButton[value="0"],
+#TabControls WPushButton[value="1"] {
+  background-color: transparent;
+  border: 0;
+  color: #4f6b85;
+  font-family: "DejaVu Sans";
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  padding: 0 20px;
+}
+#TabControls WPushButton[value="1"] { color: #ffffff; }
+
+#DeckModeGroup WPushButton,
+#DeckModeGroup WPushButton[value="0"],
+#DeckModeGroup WPushButton[value="1"] {
+  border-right: 1px solid #4f6b85;
+  color: #4f6b85;
+  font-family: "DejaVu Sans Mono";
+  font-size: 26px;
+  padding: 0 14px;
+  letter-spacing: 0px;
+  min-height: 76px;
+  max-height: 76px;
+}
+#DeckModeGroup WPushButton[value="1"] { color: #ffffff; }
+
+#DeckModeGroup {
+  background-color: transparent;
+  border: 0;
+  margin: 0 10px;
+  min-height: 80px;
+  max-height: 80px;
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
+#SingleContinueGroup WPushButton,
+#SingleContinueGroup WPushButton[value="0"],
+#SingleContinueGroup WPushButton[value="1"] {
+  background-color: transparent;
+  border: 0;
+  color: transparent;
+  padding: 0;
+}
+
+#ScSingle, #ScSep, #ScContinue {
+  background-color: transparent;
+  color: #4f6b85;
+  font-family: "DejaVu Sans Mono";
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 6px;
+  qproperty-alignment: 'AlignCenter';
+}
+#ScSingle[highlight="1"], #ScContinue[highlight="1"] { color: #ffffff; }
+#SingleContinueLabels { qproperty-layoutAlignment: 'AlignCenter'; }
+
+/* ---- step 36: bench round 2 ---- */
+
+/* Bench values 2026-08-15 (round 3). */
+#DeckHeaderBpmValue { font-size: 36px; }
+#DeckHeaderBpmTitle { font-size: 10px; }
+
+#DeckOnAirLabel {
+  font-size: 20px;
+  padding: 2px 8px;
+}
+
+#TrackNoCol { padding: 18px 0 0 4px; }
+
+#DeckTrackTimeTitle { margin-top: 14px; }
+
+/* Time number sits right under the label, top-aligned. */
+#DeckTrackTimeWrapper {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#DeckNumBadgeNum { font-size: 20px; }
+
+/* Q panel: bigger digits, rows pulled together (Qt has no negative margin,
+   so the -8/-6 offsets become less padding and shorter rows). */
+#DeckQuantizeLabel { font-size: 29px; }
+#BPMRangePlusMinus, #RateDisplay { font-size: 29px; }
+#DeckTempoPercent, #BPMPercent { font-size: 30px; }
+#DeckTempoPanel { padding: 0 6px 4px 6px; }
+
+/* Bench font choices. */
+#DeckTitle { font-family: "DejaVu Sans"; }
+#DeckTrackTime, #DeckTrackTimeMini { font-family: "DejaVu Sans"; }
+#DeckHeaderBpmValue { font-family: "Nimbus Sans Narrow"; }
+#DeckNumBadgeNum, #DeckNumBadgeWord { font-family: "DejaVu Sans"; }
+#DeckOnAirLabel { font-family: "Nimbus Sans Narrow"; }
+#DeckQuantizeLabel, #BPMRangePlusMinus, #RateDisplay,
+#DeckTempoPercent, #BPMPercent { font-family: "URW Gothic"; }
+
+
+/* ---- step 37: title row height + AZ-style mode group ---- */
+#DeckTrackTimeTitle { min-height: 22px; }
+
+
+
+
+
+
+#DeckModeBtn2[value="1"],
+#DeckModeBtn24[value="1"],
+
+
+
+/* tab font: bench pick */
+
+
+/* ---- step 38: AZ sidebar boxes ---- */
+#WaveformInfo { background-color: #0c0e11; }
+
+#WaveformInfo_Header,
+#WaveformInfo_Key_Container,
+#WaveformInfo_Jump_Container {
+  background-color: #17191d;
+  border: 1px solid #2c2f34;
+  margin: 1px 2px 1px 1px;
+}
+
+#WaveformInfoSource {
+  color: #ffffff;
+  font-family: "DejaVu Sans";
+  font-size: 15px;
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+#WaveformInfoCaption {
+  color: #9aa4ad;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0px;
+  max-width: 52px;
+  padding-left: 5px;
+}
+
+#WaveformInfo_Key {
+  color: #ffffff;
+  font-family: "DejaVu Sans";
+  font-size: 17px;
+  font-weight: bold;
+}
+
+#WaveformInfoJump {
+  background-color: transparent;
+  color: #ffffff;
+  font-family: "DejaVu Sans";
+  font-size: 17px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignLeft | AlignVCenter';
+}
+
+#SidebarEject { color: #cfd6dc; }
+
+/* ---- step 38b: sidebar sized like the bench mock ---- */
+#WaveformInfoSource { font-size: 17px; }
+#WaveformInfo_Key, #WaveformInfoJump { font-size: 20px; }
+#WaveformInfoCaption { font-size: 10px; }
+#WaveformOnAirColumn1, #WaveformOnAirColumn2,
+#WaveformOnAirColumn3, #WaveformOnAirColumn4 { min-width: 46px; max-width: 46px; }
+#WaveformDeckNum1, #WaveformDeckNum2, #WaveformDeckNum3, #WaveformDeckNum4 { font-size: 30px; }
+#WaveformOnAirLabel { font-size: 10px; }
+
+/* ---- step 39: AZ Beat FX panel ---- */
+#FxBpm {
+  background-color: transparent;
+  color: #ffffff;
+  font-family: "Nimbus Sans Narrow";
+  font-size: 30px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignLeft | AlignVCenter';
+  padding-left: 6px;
+}
+
+#FxBpmChip {
+  background-color: #17191d;
+  border: 1px solid #2c2f34;
+  color: #cfd6dc;
+  font-size: 8px;
+  font-weight: bold;
+  margin: 8px 0 8px 4px;
+  padding: 1px 4px;
+}
+
+/* Selected chain name reads like the AZ's big effect name. */
+WEffectChainPresetSelector {
+  color: #ffffff;
+  font-family: "DejaVu Sans";
+  font-size: 19px;
+  font-weight: bold;
+}
+
+#Param, #Param #text {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#EffectToggle { font-size: 13px; font-weight: bold; }
+
+#FxBpm { min-width: 96px; }
+
+/* ---- step 39b: Beat FX panel, AZ look ---- */
+#BeatFX_Title {
+  color: #9aa4ad;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#FxBpmRow { qproperty-layoutAlignment: 'AlignCenter'; }
+
+#FxBpm {
+  font-size: 32px;
+  min-width: 100px;
+  qproperty-alignment: 'AlignRight | AlignVCenter';
+  padding: 0;
+}
+
+/* Big centred effect name. */
+WEffectChainPresetSelector {
+  font-size: 22px;
+  padding: 2px 6px;
+}
+
+/* White box, like the AZ beat-length display. */
+#EffectToggle {
+  background-color: #e8e8e8;
+  border: 1px solid #ffffff;
+  color: #222222;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 6px 28px;
+  min-height: 26px;
+}
+#EffectToggle[value="1"] {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+#Param #text {
+  color: #cfd6dc;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+#Param {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+#XPadTitle {
+  color: #9aa4ad;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#XPadValue { max-height: 0px; }
+#XPadLpf { qproperty-alignment: 'AlignLeft | AlignVCenter'; padding-left: 4px; }
+#XPadMid { qproperty-alignment: 'AlignCenter'; }
+#XPadHpf { qproperty-alignment: 'AlignRight | AlignVCenter'; padding-right: 4px; }
+
+#FxLenPct { color: #cfd6dc; font-size: 12px; font-weight: bold; qproperty-alignment: 'AlignLeft | AlignBottom'; }
+#Param Number, #Param WNumber { qproperty-alignment: 'AlignRight | AlignVCenter'; }
+

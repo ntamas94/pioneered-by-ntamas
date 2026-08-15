@@ -16,7 +16,7 @@
           <WidgetGroup>
             <ObjectName>WaveformInfo_Header</ObjectName>
             <Layout>horizontal</Layout>
-            <Size>0me,30max</Size>
+            <Size>0me,36f</Size>
             <Children>
               <Label>
                 <ObjectName>WaveformInfoSource</ObjectName>
@@ -42,7 +42,7 @@
               <WidgetGroup>
                 <ObjectName>WaveformInfo_Key_Container</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>0me,30f</Size>
+                <Size>0me,34f</Size>
                 <Children>
                   <Label>
                     <ObjectName>WaveformInfoCaption</ObjectName>
@@ -55,6 +55,24 @@
                       <ConfigKey>[Channel<Variable name="channel"/>],visual_key</ConfigKey>
                     </Connection>
                   </Key>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>WaveformInfo_Jump_Container</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>0me,34f</Size>
+                <Children>
+                  <Label>
+                    <ObjectName>WaveformInfoCaption</ObjectName>
+                    <Text>BEAT&#10;JUMP</Text>
+                  </Label>
+                  <Number>
+                    <ObjectName>WaveformInfoJump</ObjectName>
+                    <NumberOfDigits>0</NumberOfDigits>
+                    <Connection>
+                      <ConfigKey>[Channel<Variable name="channel"/>],beatjump_size</ConfigKey>
+                    </Connection>
+                  </Number>
                 </Children>
               </WidgetGroup>
               <WidgetGroup>

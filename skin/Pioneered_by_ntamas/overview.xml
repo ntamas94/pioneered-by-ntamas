@@ -87,7 +87,7 @@
       <WidgetGroup>
         <ObjectName>Decks</ObjectName>
         <Layout>vertical</Layout>
-        <Size>0me,280max</Size>
+        <Size>0me,320max</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>DeckRowTop</ObjectName>
@@ -96,7 +96,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
             <Layout>horizontal</Layout>
-            <Size>0me,140max</Size>
+            <Size>0me,160max</Size>
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channel">1</SetVariable>
@@ -113,7 +113,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
             <Layout>horizontal</Layout>
-            <Size>0me,140max</Size>
+            <Size>0me,160max</Size>
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channel">3</SetVariable>

@@ -1,5 +1,27 @@
 <Template>
   <WidgetGroup>
+    <ObjectName>FxBpmRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>0me,42f</Size>
+    <Children>
+      <Number>
+        <ObjectName>FxBpm</ObjectName>
+        <NumberOfDigits>1</NumberOfDigits>
+        <Connection>
+          <ConfigKey>[InternalClock],bpm</ConfigKey>
+        </Connection>
+      </Number>
+      <Label>
+        <ObjectName>FxBpmChip</ObjectName>
+        <Text>AUTO&#10;BPM</Text>
+      </Label>
+      <Label>
+        <ObjectName>FxBpmFill</ObjectName>
+        <Size>0me,0me</Size>
+      </Label>
+    </Children>
+  </WidgetGroup>
+  <WidgetGroup>
     <Layout>vertical</Layout>
      <Children>
                   <EffectChainPresetSelector>
@@ -19,7 +41,8 @@
           <Text>Off</Text>
         </State>
         <State>
-          <Number>1</Number>
+          <Number>
+                  <NumberOfDigits>0</NumberOfDigits>1</Number>
           <Text>Active</Text>
         </State>
         <Connection>
@@ -31,7 +54,7 @@
           <ConnectValueToWidget>false</ConnectValueToWidget>
         </Connection>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="rack"/>_EffectUnit<Variable name="unit"/>_Effect<Variable name="effect"/>],meta</ConfigKey>
+          <ConfigKey>[Pioneered],fxlen</ConfigKey>
           <ConnectValueToWidget>false</ConnectValueToWidget>
         </Connection>
 </PushButton>
@@ -42,7 +65,7 @@
                 <Children>
                   <Label>
                     <ObjectName>text</ObjectName>
-                    <Text>PARAM:</Text>
+                    <Text>LENGTH </Text>
                   </Label>
                   <Number>
      		   <TooltipId>parameter1</TooltipId>
@@ -50,6 +73,10 @@
     		        <ConfigKey>[EffectRack1_EffectUnit1_Effect2],parameter1</ConfigKey>
    		     </Connection>
    		 </Number>
+                <Label>
+                  <ObjectName>FxLenPct</ObjectName>
+                  <Text>%</Text>
+                </Label>
                 </Children>
               </WidgetGroup>
 <WidgetGroup>

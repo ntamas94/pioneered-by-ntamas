@@ -27,6 +27,17 @@ TimeClamp.init = function () {
     ["mode2", "mode24", "mode4"].forEach(TimeClamp.watchMode);
     TimeClamp.zoomConnection = engine.makeConnection(
         "[Pioneered]", "zoomcycle", TimeClamp.zoomCycle);
+    TimeClamp.autoDjConnection = engine.makeConnection(
+        "[AutoDJ]", "enabled", TimeClamp.autoDjSync);
+    TimeClamp.fxLenConnection = engine.makeConnection(
+        "[EffectRack1_EffectUnit1_Effect1]", "meta", TimeClamp.fxLen);
+    if (TimeClamp.fxLenConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.fxLenConnection);
+        TimeClamp.fxLen(engine.getValue("[EffectRack1_EffectUnit1_Effect1]", "meta"));
+    }
+    if (TimeClamp.autoDjConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.autoDjConnection);
+    }
     if (TimeClamp.zoomConnection) {
         TimeClamp.modeConnections.push(TimeClamp.zoomConnection);
     }
@@ -127,6 +138,21 @@ TimeClamp.watchMode = function (mode) {
     if (connection) {
         TimeClamp.modeConnections.push(connection);
     }
+};
+
+// CONTINUE mode with beatmatching: while AutoDJ runs, decks 1-2 get sync
+// lock and quantize, so transitions land on the beat.
+TimeClamp.autoDjSync = function (value) {
+    for (var d = 1; d <= 2; d++) {
+        engine.setValue("[Channel" + d + "]", "sync_enabled", value ? 1 : 0);
+        engine.setValue("[Channel" + d + "]", "quantize", value ? 1 : 0);
+    }
+};
+
+// LENGTH as a percentage: mirror the Beat FX meta knob (0..1) into a
+// display control scaled to 0..100 for the skin.
+TimeClamp.fxLen = function (value) {
+    engine.setValue("[Pioneered]", "fxlen", Math.round(value * 100));
 };
 
 TimeClamp.shutdown = function () {
