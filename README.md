@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" alt="Pioneered by ntamas" width="480"></p>
+
 # Pioneered by ntamas
 
 ![Views](https://komarev.com/ghpvc/?username=ntamas94&label=views)
