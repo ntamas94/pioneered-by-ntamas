@@ -1897,8 +1897,8 @@ QSS_20 = """
 
 /* Only the upper lobe of the overview is visible; the rest is clipped. */
 #DeckOverviewContainer {
-  max-height: 94px;
-  min-height: 94px;
+  max-height: 107px;
+  min-height: 107px;
 }
 """
 
@@ -2309,7 +2309,7 @@ QSS_28 = """
   max-height: 55px;
 }
 #DeckHeaderBpmTitle { font-size: 10px; }
-#DeckHeaderBpmValue { font-size: 36px; }
+#DeckHeaderBpmValue { font-size: 31px; }
 
 #DeckTempoPanel {
   margin: 0;
@@ -2827,6 +2827,66 @@ def step_az_details() -> int:
 
     swap_qss("step 32: AZ details", QSS_32)
     return 0 if check_xml("deck.xml", "waveform.xml", "topbar.xml") else 1
+
+
+# ---------------------------------------------------------------- step 33
+
+# The whole deck card becomes a track drop target: retag the root group to
+# TrackWidgetGroup (built into Mixxx 2.5: whole-area drop, drag-out, context
+# menu). The dropHover property comes from our patched build and lights the
+# card a drag is hovering over.
+QSS_33 = """
+
+/* Card lights up while a track drag hovers over it. */
+#Deck[dropHover="true"] {
+  border: 2px solid #f2d13c;
+}
+"""
+
+
+def step_card_drop() -> int:
+    path = SKIN / "deck.xml"
+    text = path.read_text(encoding="utf-8")
+
+    if "<TrackWidgetGroup>" in text:
+        print("  deck.xml: card already a drop target")
+    else:
+        marker = "<ObjectName>Deck</ObjectName>"
+        open_at = text.rindex("<WidgetGroup>", 0, text.index(marker))
+        text = text[:open_at] + "<TrackWidgetGroup>" + text[open_at + len("<WidgetGroup>"):]
+        idx = text.index(marker) + len(marker)
+        text = text[:idx] + NL + '    <Group>[Channel<Variable name="channel"/>]</Group>' + text[idx:]
+        close_at = text.rindex("</WidgetGroup>")
+        text = text[:close_at] + "</TrackWidgetGroup>" + text[close_at + len("</WidgetGroup>"):]
+        path.write_text(text, encoding="utf-8")
+        print("  deck.xml: whole card accepts track drops")
+
+    swap_qss("step 33: card drop hover", QSS_33)
+    return 0 if check_xml("deck.xml") else 1
+
+
+# ---------------------------------------------------------------- step 34
+
+# Long titles bounce instead of pushing the card apart. Needs the patched
+# build: WLabel understands <Elide>scroll</Elide> there.
+def step_marquee_title() -> int:
+    path = SKIN / "deck.xml"
+    text = path.read_text(encoding="utf-8")
+    marker = "<ObjectName>DeckTitle</ObjectName>"
+    idx = text.index(marker)
+    end = text.index("</TrackProperty>", idx)
+    block = text[idx:end]
+    if "<Elide>scroll</Elide>" in block:
+        print("  deck.xml: title already scrolls")
+        return 0
+    new_block = block.replace("<Elide>right</Elide>", "<Elide>scroll</Elide>", 1)
+    if new_block == block:
+        print("  ! title elide tag not matched")
+        return 1
+    text = text[:idx] + new_block + text[end:]
+    path.write_text(text, encoding="utf-8")
+    print("  deck.xml: long titles scroll")
+    return 0 if check_xml("deck.xml") else 1
 
 
 # ---------------------------------------------------------------- main

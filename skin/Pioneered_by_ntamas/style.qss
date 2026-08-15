@@ -989,8 +989,8 @@ WLabel {
 
 /* Only the upper lobe of the overview is visible; the rest is clipped. */
 #DeckOverviewContainer {
-  max-height: 94px;
-  min-height: 94px;
+  max-height: 107px;
+  min-height: 107px;
 }
 
 /* ---- step 22: header time on Browse ---- */
@@ -1106,7 +1106,7 @@ WLabel {
   max-height: 55px;
 }
 #DeckHeaderBpmTitle { font-size: 10px; }
-#DeckHeaderBpmValue { font-size: 36px; }
+#DeckHeaderBpmValue { font-size: 31px; }
 
 #DeckTempoPanel {
   margin: 0;
@@ -1223,5 +1223,12 @@ WLabel {
   border: 1px solid #f2d13c;
   background-color: #1f4c85;
   color: #ffffff;
+}
+
+/* ---- step 33: card drop hover ---- */
+
+/* Card lights up while a track drag hovers over it. */
+#Deck[dropHover="true"] {
+  border: 2px solid #f2d13c;
 }
 

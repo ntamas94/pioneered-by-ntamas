@@ -60,4 +60,18 @@ színeivel), `WaveformOverviewType 0`, `TimeFormat 1`, `PositionDisplay 1`.
 - A Qt a `min-width`-et a tartalomra érti, a padding/border rájön — fix
   szélesség helyett az oszlop méretez.
 
+## Patchelt Mixxx (idő-vonalzó + drop hover + marquee cím)
+
+A Release-hez csatolt `.deb` (arm64, Debian Trixie / Raspberry Pi OS) három
+kiegészítést tartalmaz a gyári 2.5.0-hoz képest:
+
+- perc-vonalzó a kártya hullámformája alatt (`-4:00 -3:00 …`)
+- `dropHover` property a `TrackWidgetGroup`-on — a kártya kiemelhető, amíg
+  track-et húznak fölé
+- `<Elide>scroll</Elide>` a WLabel-ben: a hosszú cím ide-oda úszik, és nem
+  tolja szét a kártyát
+
+Telepítés: `sudo dpkg -i mixxx-data_*.deb mixxx_*.deb`. Újraépítés:
+`pi-setup/build-mixxx-ruler.sh`.
+
 GPL-3.0, a bázis skin licencét örökli.

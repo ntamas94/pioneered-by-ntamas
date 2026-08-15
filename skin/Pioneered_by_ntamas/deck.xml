@@ -1,6 +1,7 @@
 <Template>
-  <WidgetGroup>
+  <TrackWidgetGroup>
     <ObjectName>Deck</ObjectName>
+    <Group>[Channel<Variable name="channel"/>]</Group>
     <Layout>horizontal</Layout>
     <Children>
     <WidgetGroup>
@@ -39,7 +40,7 @@
             <SizePolicy>me,25f</SizePolicy>
             <Property>title</Property>
             <Channel><Variable name="channel"/></Channel>
-            <Elide>right</Elide>
+            <Elide>scroll</Elide>
           </TrackProperty>
           <WidgetGroup>
             <ObjectName>DeckOnAir</ObjectName>
@@ -449,5 +450,5 @@
       </Children>
     </WidgetGroup>
 </Children>
-  </WidgetGroup>
+  </TrackWidgetGroup>
 </Template>
