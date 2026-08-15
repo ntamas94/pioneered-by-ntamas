@@ -56,6 +56,10 @@
 	  QLabel {
 	    image: url(skin:/images/pioneered_logo.png);
 	    margin-bottom: 12px;
+	    min-width: 1074px;
+	    max-width: 1074px;
+	    min-height: 192px;
+	    max-height: 192px;
 	  }
 
 		QProgressBar {
