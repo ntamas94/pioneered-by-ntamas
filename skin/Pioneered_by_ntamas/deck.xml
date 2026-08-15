@@ -13,6 +13,7 @@
       <WidgetGroup>
         <ObjectName>DeckHeader</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>DeckNumBadge<Variable name="channel"/></ObjectName>

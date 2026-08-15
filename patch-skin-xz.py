@@ -2880,6 +2880,9 @@ def step_marquee_title() -> int:
         print("  deck.xml: title already scrolls")
         return 0
     new_block = block.replace("<Elide>right</Elide>", "<Elide>scroll</Elide>", 1)
+    # Ignored width: the layout never asks the label how wide the text is, so
+    # a long title cannot push the card apart even without the marquee build.
+    new_block = new_block.replace("<SizePolicy>me,25f</SizePolicy>", "<SizePolicy>i,25f</SizePolicy>", 1)
     if new_block == block:
         print("  ! title elide tag not matched")
         return 1
@@ -2887,6 +2890,28 @@ def step_marquee_title() -> int:
     path.write_text(text, encoding="utf-8")
     print("  deck.xml: long titles scroll")
     return 0 if check_xml("deck.xml") else 1
+
+
+# ---------------------------------------------------------------- step 35
+
+# No sampler on the box: drop the third tab.
+SAMPLER_TAB = """          <Template src="skin:tab.xml">
+            <SetVariable name="tab_name">Sampler</SetVariable>
+            <SetVariable name="config_key">samplers</SetVariable>
+          </Template>
+"""
+
+
+def step_no_sampler_tab() -> int:
+    path = SKIN / "topbar.xml"
+    text = path.read_text(encoding="utf-8")
+    if SAMPLER_TAB in text:
+        text = text.replace(SAMPLER_TAB, "", 1)
+        path.write_text(text, encoding="utf-8")
+        print("  topbar.xml: sampler tab removed")
+    else:
+        print("  topbar.xml: sampler tab already gone")
+    return 0 if check_xml("topbar.xml") else 1
 
 
 # ---------------------------------------------------------------- main

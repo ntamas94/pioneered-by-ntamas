@@ -1232,3 +1232,6 @@ WLabel {
   border: 2px solid #f2d13c;
 }
 
+
+/* ---- band alignment fix ---- */
+#DeckHeader { qproperty-layoutAlignment: 'AlignLeft | AlignVCenter'; } /* band */
