@@ -58,24 +58,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-                    <WidgetGroup>
-            <ObjectName>HeaderTime</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
-            <Children>
-              <NumberPos>
-                <ObjectName>HeaderTimeValue</ObjectName>
-                <TooltipId>track_time</TooltipId>
-                <NumberOfDigits>6</NumberOfDigits>
-                <Channel><Variable name="channel"/></Channel>
-              </NumberPos>
-            </Children>
-            <Connection>
-              <ConfigKey>[Tab],overview</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+                    
           
         </Children>
       </WidgetGroup>
@@ -200,13 +183,12 @@
           
     <WidgetGroup>
             <ObjectName>DeckOverviewContainer</ObjectName>
-            <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
-            <Size>0me,0me</Size>
+            <Size>0me,<Variable name="ovh"/>f</Size>
             <Children>
               <Overview>
                 <ObjectName>DeckOverview</ObjectName>
-                <Size>0me,188f</Size>
+                <Size>0me,<Variable name="ovwf"/>f</Size>
                 <Channel><Variable name="channel"/></Channel>
                 <BgColor>#000</BgColor>
                 <SignalColor>#1d6fe0</SignalColor>
@@ -321,11 +303,7 @@
           
                   
         </Children>
-        <Connection>
-          <ConfigKey>[Tab],overview</ConfigKey>
-          <!-- Only show info in overview -->
-          <BindProperty>visible</BindProperty>
-        </Connection>
+
       </WidgetGroup>
       
           </Children>

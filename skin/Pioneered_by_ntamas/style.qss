@@ -977,10 +977,7 @@ WLabel {
 /* ---- step 20: one-sided overview ---- */
 
 /* Only the upper lobe of the overview is visible; the rest is clipped. */
-#DeckOverviewContainer {
-  max-height: 116px;
-  min-height: 116px;
-}
+/* overview height comes from deck.xml (ovh template variable) */
 
 /* ---- step 22: header time on Browse ---- */
 

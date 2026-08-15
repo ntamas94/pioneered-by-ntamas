@@ -84,47 +84,98 @@
           </WidgetGroup>
         </Children>
       </WidgetGroup>
-      <WidgetGroup>
+            <WidgetGroup>
         <ObjectName>Decks</ObjectName>
         <Layout>vertical</Layout>
-        <Size>0me,320max</Size>
+        <SizePolicy>me,max</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>DeckRowTop</ObjectName>
-            <Connection>
-              <ConfigKey>[Pioneered],show_cardtop</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
             <Layout>horizontal</Layout>
             <Size>0me,160max</Size>
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channel">1</SetVariable>
+                <SetVariable name="ovh">116</SetVariable>
+                <SetVariable name="ovwf">188</SetVariable>
               </Template>
               <Template src="skin:deck.xml">
                 <SetVariable name="channel">2</SetVariable>
+                <SetVariable name="ovh">116</SetVariable>
+                <SetVariable name="ovwf">188</SetVariable>
               </Template>
             </Children>
+            <Connection>
+              <ConfigKey>[Pioneered],card_smalltop</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <ObjectName>DeckRowBottom</ObjectName>
-            <Connection>
-              <ConfigKey>[Pioneered],show_cardbot</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
             <Layout>horizontal</Layout>
             <Size>0me,160max</Size>
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channel">3</SetVariable>
+                <SetVariable name="ovh">116</SetVariable>
+                <SetVariable name="ovwf">188</SetVariable>
               </Template>
               <Template src="skin:deck.xml">
                 <SetVariable name="channel">4</SetVariable>
+                <SetVariable name="ovh">116</SetVariable>
+                <SetVariable name="ovwf">188</SetVariable>
               </Template>
             </Children>
+            <Connection>
+              <ConfigKey>[Pioneered],card_smallbot</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>DeckRowTopBig</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>0me,180max</Size>
+            <Children>
+              <Template src="skin:deck.xml">
+                <SetVariable name="channel">1</SetVariable>
+                <SetVariable name="ovh">140</SetVariable>
+                <SetVariable name="ovwf">236</SetVariable>
+              </Template>
+              <Template src="skin:deck.xml">
+                <SetVariable name="channel">2</SetVariable>
+                <SetVariable name="ovh">140</SetVariable>
+                <SetVariable name="ovwf">236</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Pioneered],card_bigtop</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>DeckRowBottomBig</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>0me,180max</Size>
+            <Children>
+              <Template src="skin:deck.xml">
+                <SetVariable name="channel">3</SetVariable>
+                <SetVariable name="ovh">140</SetVariable>
+                <SetVariable name="ovwf">236</SetVariable>
+              </Template>
+              <Template src="skin:deck.xml">
+                <SetVariable name="channel">4</SetVariable>
+                <SetVariable name="ovh">140</SetVariable>
+                <SetVariable name="ovwf">236</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Pioneered],card_bigbot</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
         </Children>
       </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

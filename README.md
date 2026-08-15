@@ -1,5 +1,7 @@
 # Pioneered by ntamas
 
+![Views](https://komarev.com/ghpvc/?username=ntamas94&label=views)
+
 Mixxx 2.5 skin and Raspberry Pi 4 DJ-box toolkit that recreates the Pioneer
 XDJ-XZ / XDJ-AZ WAVEFORM screen — built for the DDJ-1000 controller.
 
@@ -8,6 +10,26 @@ The skin is based on the 4-deck variant of
 [Pioneered-Plus](https://github.com/bencejuhaasz/Pioneered-Plus) (GPL-3.0).
 
 ![](docs/screenshot.png)
+
+## Screen modes
+
+All four decks loaded and on air:
+
+| 4 DECK | 2/4 DECK |
+|---|---|
+| ![](docs/mode-4deck.png) | ![](docs/mode-24deck.png) |
+
+| 2 DECK | BROWSE |
+|---|---|
+| ![](docs/mode-2deck.png) | ![](docs/mode-browse.png) |
+
+- **2 DECK** — two full-height scrolling waveforms (each ~35% of the screen)
+  plus one row of large deck cards, flush with the bottom edge
+- **2/4 DECK** — two waveforms, all four deck cards
+- **4 DECK** — four waveforms, four cards
+- **BROWSE** — library table (plugged-in USB drives appear under
+  *Computer → Removable Devices* and as a Quick Link) with the same deck
+  cards, overview waveform and minute ruler included
 
 ## Features
 
@@ -33,7 +55,7 @@ The skin is based on the 4-deck variant of
 |---|---|
 | `skin/Pioneered_by_ntamas/` | the finished skin — copy into `~/.mixxx/skins/` |
 | `patch-skin-xz.py` | idempotent builder: produces the skin from the `Pioneered_4_deck` base, step by step |
-| `controllers/Time-Clamp.midi.xml` + `-scripts.js` | mapping attached to a VirMIDI port: two-state time, view-selector radio, cyclic zoom, CPU input — loads without any hardware controller |
+| `controllers/Time-Clamp.midi.xml` + `-scripts.js` | mapping attached to a VirMIDI port: two-state time, view-selector radio, cyclic zoom, CPU input, plus play (CC `0x11-0x14`) and LoadSelectedTrack (CC `0x15-0x18`) bindings for decks 1-4 so the box can be driven headless via `amidi` — loads without any hardware controller |
 | `controllers/pioneer-ddj1000.midi.xml` + JS | custom 4-deck DDJ-1000 mapping (351 controls, 56 outputs), generated from the official AlphaTheta MIDI list |
 | `controllers/gen_mapping.py` | the DDJ-1000 XML generator |
 | `pi-setup/` | Pi 4 provisioning: headless boot, audit, CPU→MIDI daemon, conky overlay, patched Mixxx source build |

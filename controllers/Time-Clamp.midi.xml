@@ -6,9 +6,11 @@
     <description>Binds no keys. Watches [Controls],ShowDurationRemaining and
     drops the third display mode, so clicking the track time alternates between
     elapsed and remaining only. Attach to a VirMIDI port so it loads without any
-    real controller present.</description>
+    real controller present. Also accepts CPU% on 0xB0/0x10, play toggles on
+    0x11-0x14 and LoadSelectedTrack on 0x15-0x18 for decks 1-4 (used by
+    automation/screenshot tooling).</description>
   </info>
-  <controller id="VirMIDI 3-0">
+  <controller id="VirMIDI 5-0">
     <scriptfiles>
       <file filename="Time-Clamp-scripts.js" functionprefix="TimeClamp"/>
     </scriptfiles>
@@ -20,6 +22,78 @@
         <midino>0x10</midino>
         <options>
           <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>play</key>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>play</key>
+        <status>0xB0</status>
+        <midino>0x14</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0xB0</status>
+        <midino>0x18</midino>
+        <options>
+          <normal/>
         </options>
       </control>
     </controls>

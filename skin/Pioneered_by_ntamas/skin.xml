@@ -23,6 +23,10 @@
 			<attribute config_key="[Pioneered],show_cardbot">1</attribute>
 			<attribute config_key="[Pioneered],zoomcycle">0</attribute>
 			<attribute config_key="[Pioneered],fxlen">0</attribute>
+			<attribute config_key="[Pioneered],card_smalltop">1</attribute>
+			<attribute config_key="[Pioneered],card_smallbot">1</attribute>
+			<attribute config_key="[Pioneered],card_bigtop">0</attribute>
+			<attribute config_key="[Pioneered],card_bigbot">0</attribute>
 			<attribute config_key="[Master],num_samplers">16</attribute>
 			<attribute persist="true" config_key="[Master],maximize_library">0</attribute>
 			<attribute persist="true" config_key="[Master],skin_settings">0</attribute>
