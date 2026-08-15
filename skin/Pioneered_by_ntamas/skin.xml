@@ -27,6 +27,12 @@
 			<attribute config_key="[Pioneered],card_smallbot">1</attribute>
 			<attribute config_key="[Pioneered],card_bigtop">0</attribute>
 			<attribute config_key="[Pioneered],card_bigbot">0</attribute>
+			<attribute persist="true" config_key="[Pioneered],timemode1">1</attribute>
+			<attribute persist="true" config_key="[Pioneered],timemode2">1</attribute>
+			<attribute persist="true" config_key="[Pioneered],timemode3">1</attribute>
+			<attribute persist="true" config_key="[Pioneered],timemode4">1</attribute>
+			<attribute config_key="[Pioneered],osk">0</attribute>
+			<attribute config_key="[Pioneered],osk_req">0</attribute>
 			<attribute config_key="[Master],num_samplers">16</attribute>
 			<attribute persist="true" config_key="[Master],maximize_library">0</attribute>
 			<attribute persist="true" config_key="[Master],skin_settings">0</attribute>

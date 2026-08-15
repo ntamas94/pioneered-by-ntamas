@@ -41,7 +41,42 @@ TimeClamp.init = function () {
     if (TimeClamp.zoomConnection) {
         TimeClamp.modeConnections.push(TimeClamp.zoomConnection);
     }
+    TimeClamp.oskConnection = engine.makeConnection(
+        "[Pioneered]", "osk", TimeClamp.oskPress);
+    if (TimeClamp.oskConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.oskConnection);
+    }
+    TimeClamp.oskReqConnection = engine.makeConnection(
+        "[Pioneered]", "osk_req", TimeClamp.oskReq);
+    if (TimeClamp.oskReqConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.oskReqConnection);
+    }
+    engine.beginTimer(1000, TimeClamp.oskBeat);
     TimeClamp.applyMode("mode4");
+};
+
+// On-screen keyboard. The KBD button is a plain push on [Pioneered],osk:
+// each press flips the desired state. The patched WSearchLineEdit sets
+// [Pioneered],osk_req while the search box has focus (Android-style
+// auto-show). A once-a-second heartbeat broadcasts the desired state as
+// 0xB0 0x20 0x7F/0x00; the djbox-osk-midi daemon shows or hides the
+// overlay when the level changes. Level + heartbeat instead of edges makes
+// the chain self-healing against dropped or late MIDI events.
+TimeClamp.oskState = 0;
+
+TimeClamp.oskPress = function (value) {
+    if (value !== 1) {
+        return;
+    }
+    TimeClamp.oskState = TimeClamp.oskState ? 0 : 1;
+};
+
+TimeClamp.oskReq = function (value) {
+    TimeClamp.oskState = value ? 1 : 0;
+};
+
+TimeClamp.oskBeat = function () {
+    midi.sendShortMsg(0xB0, 0x20, TimeClamp.oskState ? 0x7F : 0x00);
 };
 
 TimeClamp.cpuIn = function (channel, control, value) {
@@ -65,11 +100,12 @@ TimeClamp.applyMode = function (mode) {
     } else {
         rows = [1, 1, 0, 0];
     }
+    // cards: [smalltop, smallbot, bigtop, bigbot]
     var cards;
     if (mode === "mode2") {
-        cards = TimeClamp.pairB ? [0, 1] : [1, 0];
+        cards = TimeClamp.pairB ? [0, 0, 0, 1] : [0, 0, 1, 0];
     } else {
-        cards = [1, 1];
+        cards = [1, 1, 0, 0];
     }
     // disp* drive the button lights; mode* are momentary triggers.
     ["mode2", "mode24", "mode4"].forEach(function (m) {
@@ -88,18 +124,17 @@ TimeClamp.applyMode = function (mode) {
         }
     });
     // Same hide-first rule for the card rows.
-    if (!cards[0]) {
-        engine.setValue("[Pioneered]", "show_cardtop", 0);
-    }
-    if (!cards[1]) {
-        engine.setValue("[Pioneered]", "show_cardbot", 0);
-    }
-    if (cards[0]) {
-        engine.setValue("[Pioneered]", "show_cardtop", 1);
-    }
-    if (cards[1]) {
-        engine.setValue("[Pioneered]", "show_cardbot", 1);
-    }
+    var cardKeys = ["card_smalltop", "card_smallbot", "card_bigtop", "card_bigbot"];
+    cardKeys.forEach(function (k, i) {
+        if (!cards[i]) {
+            engine.setValue("[Pioneered]", k, 0);
+        }
+    });
+    cardKeys.forEach(function (k, i) {
+        if (cards[i]) {
+            engine.setValue("[Pioneered]", k, 1);
+        }
+    });
 };
 
 // ZOOM cycles inwards and wraps, the Pioneer way: each press zooms in one

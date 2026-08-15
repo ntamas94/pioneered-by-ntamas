@@ -1,13 +1,22 @@
 #!/bin/bash
 # Sends overall CPU usage (0-100) once a second as MIDI CC 0x10 on the first
 # VirMIDI port. The Time-Clamp mapping picks it up and the skin displays it.
+#
+# The device is opened ONCE and kept open: reopening it every second (the old
+# amidi -S approach) cycles the ALSA rawmidi substream, which can drop or
+# garble concurrent traffic on the port -- the djbox-osk-midi daemon reads
+# Mixxx's output from the same device node.
 set -u
 
-PORT=""
-until [ -n "$PORT" ]; do
-    PORT=$(amidi -l 2>/dev/null | awk '/VirMIDI \[hw:.*,0,0\]|Virtual Raw MIDI/ {print $2; exit}')
-    [ -n "$PORT" ] || sleep 2
+DEV=""
+until [ -n "$DEV" ]; do
+    for d in /dev/snd/midiC*D0; do
+        [ -e "$d" ] && DEV="$d" && break
+    done
+    [ -n "$DEV" ] || sleep 2
 done
+
+exec 3>"$DEV"
 
 prev_idle=0
 prev_total=0
@@ -20,8 +29,8 @@ while true; do
     if [ "$diff_total" -gt 0 ] && [ "$prev_total" -gt 0 ]; then
         usage=$(( (100 * (diff_total - diff_idle) + diff_total / 2) / diff_total ))
         [ "$usage" -gt 100 ] && usage=100
-        printf -v hex '%02X' "$usage"
-        amidi -p "$PORT" -S "B0 10 $hex" 2>/dev/null
+        printf -v hex '%02x' "$usage"
+        printf "\xB0\x10\x${hex}" >&3
     fi
     prev_idle=$idle_all
     prev_total=$total

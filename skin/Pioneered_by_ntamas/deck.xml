@@ -109,7 +109,7 @@
                     <ObjectName>TimeLabelRemain</ObjectName>
                     <Text>REMAIN</Text>
                     <Connection>
-                      <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                      <ConfigKey>[Pioneered],timemode<Variable name="channel"/></ConfigKey>
                       <Transform><IsEqual>1</IsEqual></Transform>
                       <BindProperty>highlight</BindProperty>
                     </Connection>
@@ -122,7 +122,7 @@
                     <ObjectName>TimeLabelTime</ObjectName>
                     <Text>TIME</Text>
                     <Connection>
-                      <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                      <ConfigKey>[Pioneered],timemode<Variable name="channel"/></ConfigKey>
                       <Transform><IsEqual>0</IsEqual></Transform>
                       <BindProperty>highlight</BindProperty>
                     </Connection>
@@ -148,13 +148,7 @@
                         <TooltipId>track_time</TooltipId>
                         <NumberOfDigits>6</NumberOfDigits>
                         <Channel><Variable name="channel"/></Channel>
-                        <Connection>
-                          <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
-                          <Transform>
-                            <IsEqual>2</IsEqual>
-                          </Transform>
-                          <BindProperty>highlight</BindProperty>
-                        </Connection>
+                        <ModeConfigKey>[Pioneered],timemode<Variable name="channel"/></ModeConfigKey>
                       </NumberPos>
                       <NumberPos>
                         <ObjectName>DeckTrackTime</ObjectName>
@@ -162,13 +156,7 @@
                         <TooltipId>track_time</TooltipId>
                         <NumberOfDigits>6</NumberOfDigits>
                         <Channel><Variable name="channel"/></Channel>
-                        <Connection>
-                          <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
-                          <Transform>
-                            <IsEqual>2</IsEqual>
-                          </Transform>
-                          <BindProperty>highlight</BindProperty>
-                        </Connection>
+                        <ModeConfigKey>[Pioneered],timemode<Variable name="channel"/></ModeConfigKey>
                       </NumberPos>
                     </Children>
                   </SizeAwareStack>

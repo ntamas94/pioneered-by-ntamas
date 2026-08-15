@@ -96,7 +96,29 @@
           <normal/>
         </options>
       </control>
+      <control>
+        <group>[Pioneered]</group>
+        <key>osk</key>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Pioneered]</group>
+        <key>osk_btn</key>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
     </controls>
+    <!-- The on-screen keyboard state is broadcast by a script heartbeat
+         (midi.sendShortMsg 0xB0 0x20), not by output mappings: the output
+         path delivers an event only when the next one is queued, so a
+         once-a-second level broadcast is the robust choice. -->
     <outputs/>
   </controller>
 </MixxxControllerPreset>

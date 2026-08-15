@@ -1,0 +1,425 @@
+--- a/src/widget/woverview.h	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/woverview.h	2026-08-15 09:03:38.932446824 +0200
+@@ -101,6 +101,7 @@
+     void drawMarks(QPainter* pPainter, const float offset, const float gain);
+     void drawPickupPosition(QPainter* pPainter);
+     void drawTimeRuler(QPainter* pPainter);
++    void drawMinuteRuler(QPainter* pPainter, float offset, float gain);
+     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
+     void drawPassthroughOverlay(QPainter* pPainter);
+     void paintText(const QString& text, QPainter* pPainter);
+--- a/src/widget/woverview.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/woverview.cpp	2026-08-15 14:28:59.049820204 +0200
+@@ -652,6 +652,7 @@
+ 
+             drawRangeMarks(&painter, offset, gain);
+             drawMarks(&painter, offset, gain);
++            drawMinuteRuler(&painter, offset, gain);
+             drawPickupPosition(&painter);
+             drawTimeRuler(&painter);
+             drawMarkLabels(&painter, offset, gain);
+@@ -1094,6 +1095,47 @@
+     pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos + 2, breadth() - 1);
+ }
+ 
++
++void WOverview::drawMinuteRuler(QPainter* pPainter, float offset, float gain) {
++    // XDJ-style minute scale: ticks and -M:00 labels measured from the end of
++    // the track, drawn along the bottom edge.
++    double trackSamples = getTrackSamples();
++    double rate = m_trackSampleRateControl.get() * mixxx::kEngineChannelCount;
++    if (trackSamples <= 0 || rate <= 0) {
++        return;
++    }
++    double durationSeconds = trackSamples / rate;
++
++    PainterScope painterScope(pPainter);
++    QFont font = pPainter->font();
++    font.setPixelSize(static_cast<int>(18 * m_scaleFactor));
++    font.setBold(true);
++    pPainter->setFont(font);
++
++    // Thin out the labels when the minutes get closer than ~45 px.
++    double minutePixels = gain * 60.0 * rate;
++    int step = 1;
++    while (step * minutePixels < 45.0 * m_scaleFactor && step < 16) {
++        step *= 2;
++    }
++
++    // The Pioneered skin clips the widget to its upper half for the one-sided
++    // XZ look, so the ruler lives in a band just below the centre line, on a
++    // background-filled strip that masks the mirrored lower lobe.
++    int mid = height() / 2;
++    int band = static_cast<int>(22 * m_scaleFactor);
++    pPainter->fillRect(QRectF(0, mid, width(), band), m_backgroundColor);
++    for (int minute = step; minute * 60.0 < durationSeconds; minute += step) {
++        double posSample = (durationSeconds - minute * 60.0) * rate;
++        float x = offset + static_cast<float>(gain * posSample);
++        pPainter->setPen(QPen(QColor(255, 255, 255, 200), m_scaleFactor));
++        pPainter->drawLine(QPointF(x, mid), QPointF(x, mid + band));
++        QString label = QStringLiteral("-%1:00").arg(minute);
++        pPainter->setPen(QPen(QColor(255, 255, 255, 230), m_scaleFactor));
++        pPainter->drawText(QPointF(x + 3 * m_scaleFactor, mid + band - 3 * m_scaleFactor), label);
++    }
++}
++
+ void WOverview::drawTimeRuler(QPainter* pPainter) {
+     QFont markerFont = pPainter->font();
+     markerFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
+--- a/src/widget/wtrackwidgetgroup.h	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wtrackwidgetgroup.h	2026-08-15 11:44:12.808213057 +0200
+@@ -37,7 +37,9 @@
+ 
+   private:
+     void dragEnterEvent(QDragEnterEvent* event) override;
++    void dragLeaveEvent(QDragLeaveEvent* event) override;
+     void dropEvent(QDropEvent* event) override;
++    void setDropHover(bool hover);
+     void mousePressEvent(QMouseEvent* event) override;
+     void mouseMoveEvent(QMouseEvent* event) override;
+ 
+--- a/src/widget/wtrackwidgetgroup.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wtrackwidgetgroup.cpp	2026-08-15 12:08:37.817040608 +0200
+@@ -1,5 +1,7 @@
+ #include "widget/wtrackwidgetgroup.h"
+ 
++#include <QStyle>
++
+ #include <QStylePainter>
+ 
+ #include "control/controlobject.h"
+@@ -103,11 +105,33 @@
+     }
+ }
+ 
++void WTrackWidgetGroup::setDropHover(bool hover) {
++    // QSS has no drag-hover pseudo-state; expose one as a dynamic property so
++    // the skin can highlight the card a track is about to drop onto:
++    //   TrackWidgetGroup[dropHover="true"] { border: 2px solid #f2d13c; }
++    if (property("dropHover").toBool() == hover) {
++        return;
++    }
++    setProperty("dropHover", hover);
++    style()->unpolish(this);
++    style()->polish(this);
++    update();
++}
++
+ void WTrackWidgetGroup::dragEnterEvent(QDragEnterEvent* pEvent) {
+     DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
++    if (pEvent->isAccepted()) {
++        setDropHover(true);
++    }
++}
++
++void WTrackWidgetGroup::dragLeaveEvent(QDragLeaveEvent* pEvent) {
++    Q_UNUSED(pEvent);
++    setDropHover(false);
+ }
+ 
+ void WTrackWidgetGroup::dropEvent(QDropEvent* pEvent) {
++    setDropHover(false);
+     DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
+ }
+ 
+--- a/src/widget/wlabel.h	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wlabel.h	2026-08-15 12:34:18.213806452 +0200
+@@ -1,6 +1,8 @@
+ #pragma once
+ 
+ #include <QLabel>
++#include <QColor>
++#include <QTimer>
+ 
+ #include "widget/wbasewidget.h"
+ 
+@@ -9,6 +11,9 @@
+ 
+ class WLabel : public QLabel, public WBaseWidget {
+     Q_OBJECT
++    // Marquee text colour; stylesheet colours never reach palette(), so the
++    // skin sets this explicitly: qproperty-scrollColor: #ffffff;
++    Q_PROPERTY(QColor scrollColor MEMBER m_scrollColor)
+   public:
+     explicit WLabel(QWidget* pParent=nullptr);
+ 
+@@ -16,6 +21,7 @@
+ 
+     QString text() const;
+     void setText(const QString& text);
++    void paintEvent(QPaintEvent* event) override;
+ 
+     // The highlight property is used to restyle the widget with CSS.
+     // The declaration #MyLabel[highlight="1"] { } will define the style
+@@ -41,6 +47,13 @@
+   private:
+     QString m_longText;
+     Qt::TextElideMode m_elideMode;
++    // Marquee mode: bounce long text left-right instead of eliding.
++    bool m_scrollMode{false};
++    QTimer* m_pScrollTimer{nullptr};
++    double m_scrollPos{0.0};
++    QColor m_scrollColor{Qt::white};
++    int m_scrollDir{1};
++    int m_scrollHold{0};
+     double m_scaleFactor;
+     int m_highlight;
+     int m_widthHint;
+--- a/src/widget/wlabel.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wlabel.cpp	2026-08-15 12:34:18.215901236 +0200
+@@ -1,5 +1,7 @@
+ #include "widget/wlabel.h"
+ 
++#include <QPainter>
++
+ #include <QEvent>
+ #include <QFont>
+ 
+@@ -82,6 +84,37 @@
+             m_elideMode = Qt::ElideLeft;
+         } else if (elide == "none") {
+             m_elideMode = Qt::ElideNone;
++        } else if (elide == "scroll") {
++            // Marquee: bounce overflowing text instead of cutting it off.
++            m_scrollMode = true;
++            m_elideMode = Qt::ElideNone;
++            if (m_pScrollTimer == nullptr) {
++                m_pScrollTimer = new QTimer(this);
++                m_pScrollTimer->setInterval(40);
++                connect(m_pScrollTimer, &QTimer::timeout, this, [this] {
++                    if (m_scrollHold > 0) {
++                        m_scrollHold--;
++                        return;
++                    }
++                    QFontMetrics metrics(font());
++                    int overflow = metrics.size(0, m_longText).width() +
++                            2 * frameWidth() - width();
++                    if (overflow <= 0) {
++                        return;
++                    }
++                    m_scrollPos += m_scrollDir * 1.0;
++                    if (m_scrollPos >= overflow) {
++                        m_scrollPos = overflow;
++                        m_scrollDir = -1;
++                        m_scrollHold = 25; // ~1 s pause at each end
++                    } else if (m_scrollPos <= 0) {
++                        m_scrollPos = 0;
++                        m_scrollDir = 1;
++                        m_scrollHold = 25;
++                    }
++                    update();
++                });
++            }
+         } else {
+             qDebug() << "WLabel::setup(): Elide =" << elide <<
+                     "unknown, use right, middle, left or none.";
+@@ -95,6 +128,25 @@
+ 
+ void WLabel::setText(const QString& text) {
+     m_longText = text;
++    if (m_scrollMode) {
++        m_scrollPos = 0;
++        m_scrollDir = 1;
++        m_scrollHold = 25;
++        QFontMetrics metrics(font());
++        bool overflow = metrics.size(0, m_longText).width() +
++                2 * frameWidth() > width();
++        if (overflow) {
++            if (m_pScrollTimer != nullptr) {
++                m_pScrollTimer->start();
++            }
++        } else if (m_pScrollTimer != nullptr) {
++            m_pScrollTimer->stop();
++        }
++        // Keep QLabel's own text empty; paintEvent draws the marquee.
++        QLabel::setText(QString());
++        update();
++        return;
++    }
+     if (m_elideMode != Qt::ElideNone) {
+         QFontMetrics metrics(font());
+         // Measure the text for the optimum label width
+@@ -158,3 +210,30 @@
+     }
+     return size;
+ }
++
++void WLabel::paintEvent(QPaintEvent* pEvent) {
++    if (!m_scrollMode) {
++        QLabel::paintEvent(pEvent);
++        return;
++    }
++    QPainter painter(this);
++    // Follow the stylesheet color; the default pen is not guaranteed to.
++    painter.setPen(m_scrollColor);
++    QFontMetrics metrics(font());
++    int textWidth = metrics.size(0, m_longText).width();
++    QRect content = contentsRect();
++    int y = content.y() + (content.height() + metrics.ascent() - metrics.descent()) / 2;
++    int x = content.x();
++    if (textWidth <= content.width()) {
++        // Fits: honour the label alignment, no scrolling.
++        if (alignment() & Qt::AlignHCenter) {
++            x += (content.width() - textWidth) / 2;
++        } else if (alignment() & Qt::AlignRight) {
++            x += content.width() - textWidth;
++        }
++    } else {
++        x -= static_cast<int>(m_scrollPos);
++    }
++    painter.setClipRect(content);
++    painter.drawText(QPoint(x, y), m_longText);
++}
+--- a/src/widget/wwaveformviewer.h	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wwaveformviewer.h	2026-08-15 13:45:33.161478202 +0200
+@@ -1,3 +1,4 @@
++#include <QTimer>
+ #pragma once
+ 
+ #include "track/track_decl.h"
+@@ -48,6 +49,7 @@
+   protected:
+     void showEvent(QShowEvent* event) override;
+     void resizeEvent(QResizeEvent *event) override;
++    void applyPendingResize();
+     void wheelEvent(QWheelEvent *event) override;
+ 
+   private slots:
+@@ -65,6 +67,7 @@
+ 
+   private:
+     const QString m_group;
++    QTimer* m_pResizeTimer{nullptr};
+     UserSettingsPointer m_pConfig;
+     int m_zoomZoneWidth;
+     ControlProxy* m_pZoom;
+--- a/src/widget/wwaveformviewer.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wwaveformviewer.cpp	2026-08-15 13:42:34.635685492 +0200
+@@ -56,11 +56,24 @@
+ 
+ void WWaveformViewer::resizeEvent(QResizeEvent* event) {
+     Q_UNUSED(event);
++    // Stagger the GL framebuffer rebuilds: resizing several viewers in the
++    // same frame wedges the Pi v3d GPU (MMU faults, endless hang-resets).
++    // Each deck waits its own slot, so only one GL surface rebuilds at a time.
++    if (m_pResizeTimer == nullptr) {
++        m_pResizeTimer = new QTimer(this);
++        m_pResizeTimer->setSingleShot(true);
++        connect(m_pResizeTimer, &QTimer::timeout, this, &WWaveformViewer::applyPendingResize);
++    }
++    int deck = 1;
++    const QChar last = m_group.isEmpty() ? QChar('1') : m_group.at(m_group.size() - 2);
++    if (last.isDigit()) {
++        deck = last.digitValue();
++    }
++    m_pResizeTimer->start(80 + (deck - 1) * 160);
++}
++
++void WWaveformViewer::applyPendingResize() {
+     if (m_waveformWidget) {
+-        // Note m_waveformWidget is a WaveformWidgetAbstract,
+-        // so this calls the method of WaveformWidgetAbstract,
+-        // note of the derived waveform widgets which are also
+-        // a QWidget, though that will be called directly.
+         m_waveformWidget->resize(width(), height());
+     }
+ }
+--- a/src/widget/wnumberpos.h	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wnumberpos.h	2026-08-15 16:04:07.896806807 +0200
+@@ -12,6 +12,11 @@
+   public:
+     explicit WNumberPos(const QString& group, QWidget* parent = nullptr);
+ 
++    // Use a custom control for the display mode instead of the global
++    // [Controls],ShowDurationRemaining. The widget then toggles only
++    // between ELAPSED and REMAINING on click (two-state).
++    void setDisplayModeControl(const QString& group, const QString& key);
++
+   protected:
+     void mousePressEvent(QMouseEvent* pEvent) override;
+ 
+@@ -27,6 +32,7 @@
+     TrackTime::DisplayMode m_displayMode;
+     TrackTime::DisplayFormat m_displayFormat;
+ 
++    bool m_bTwoStateCustom = false;
+     double m_dOldTimeElapsed;
+     ControlProxy* m_pTimeElapsed;
+     ControlProxy* m_pTimeRemaining;
+--- a/src/widget/wnumberpos.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wnumberpos.cpp	2026-08-15 16:04:07.897899662 +0200
+@@ -30,9 +30,31 @@
+     slotSetTimeFormat(m_pTimeFormat->get());
+ }
+ 
++void WNumberPos::setDisplayModeControl(const QString& group, const QString& key) {
++    delete m_pShowTrackTimeRemaining;
++    m_pShowTrackTimeRemaining = new ControlProxy(
++            group, key, this, ControlFlag::NoAssertIfMissing);
++    m_pShowTrackTimeRemaining->connectValueChanged(
++            this, &WNumberPos::slotSetDisplayMode);
++    m_bTwoStateCustom = true;
++    slotSetDisplayMode(m_pShowTrackTimeRemaining->get());
++}
++
+ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
+     bool leftClick = pEvent->buttons() & Qt::LeftButton;
+ 
++    if (leftClick && m_bTwoStateCustom) {
++        // Per-deck two-state toggle: ELAPSED <-> REMAINING
++        if (m_displayMode == TrackTime::DisplayMode::REMAINING) {
++            m_displayMode = TrackTime::DisplayMode::ELAPSED;
++        } else {
++            m_displayMode = TrackTime::DisplayMode::REMAINING;
++        }
++        m_pShowTrackTimeRemaining->set(static_cast<double>(m_displayMode));
++        slotSetTimeElapsed(m_dOldTimeElapsed);
++        return;
++    }
++
+     if (leftClick) {
+         // Cycle through display modes
+         if (m_displayMode == TrackTime::DisplayMode::ELAPSED) {
+--- a/src/widget/wsearchlineedit.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/widget/wsearchlineedit.cpp	2026-08-15 16:57:17.532495731 +0200
+@@ -11,6 +11,7 @@
+ #include <QStringLiteral>
+ #include <QToolButton>
+ 
++#include "control/controlobject.h"
+ #include "moc_wsearchlineedit.cpp"
+ #include "preferences/configobject.h"
+ #include "skin/legacy/skincontext.h"
+@@ -457,6 +458,10 @@
+             << "focusInEvent";
+ #endif // ENABLE_TRACE_LOG
+     QComboBox::focusInEvent(event);
++    // Pioneered: ask the on-screen keyboard overlay to appear while the
++    // search box has focus (the osk daemon listens via the Time-Clamp
++    // mapping's heartbeat).
++    ControlObject::set(ConfigKey("[Pioneered]", "osk_req"), 1.0);
+     updateCompleter();
+     updateClearAndDropdownButton(currentText());
+ }
+@@ -468,6 +473,7 @@
+ #endif // ENABLE_TRACE_LOG
+     slotSaveSearch();
+     QComboBox::focusOutEvent(event);
++    ControlObject::set(ConfigKey("[Pioneered]", "osk_req"), 0.0);
+     if (m_debouncingTimer.isActive()) {
+         // Trigger a pending search before leaving the edit box.
+         // Otherwise the entered text might be ignored and get lost
+--- a/src/skin/legacy/legacyskinparser.cpp	2024-12-24 02:32:09.000000000 +0100
++++ b/src/skin/legacy/legacyskinparser.cpp	2026-08-15 16:04:07.898999313 +0200
+@@ -1258,6 +1258,11 @@
+ QWidget* LegacySkinParser::parseNumberPos(const QDomElement& node) {
+     QString group = lookupNodeGroup(node);
+     WNumberPos* p = new WNumberPos(group, m_pParent);
++    QString modeKey = m_pContext->selectString(node, "ModeConfigKey");
++    if (!modeKey.isEmpty()) {
++        ConfigKey modeConfigKey = ConfigKey::parseCommaSeparated(modeKey);
++        p->setDisplayModeControl(modeConfigKey.group, modeConfigKey.item);
++    }
+     setupLabelWidget(node, p);
+     return p;
+ }

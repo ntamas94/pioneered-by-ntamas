@@ -32,8 +32,13 @@ All four decks loaded and on air:
 ## Features
 
 - XZ-style deck cards: DECK badge in channel colour, REMAIN/TIME (two-state,
-  tap to toggle), one-sided blue/yellow/white overview waveform, BPM box with
+  tap to toggle — **independently per deck** with the patched build),
+  one-sided blue/yellow/white overview waveform, BPM box with
   MASTER chip, Q / range / tempo% panel, TRACK number with QUANTIZE lamp
+- On-screen keyboard for touch use: dark full-size layout (onboard, Droid
+  theme) drawn as an overlay over the deck-card strip — Mixxx itself is
+  never resized. Toggled with the KBD button next to the search box, and it
+  pops up Android-style whenever the search box gets focus (patched build)
 - `2 DECK | 2/4 DECK | 4 DECK` view selector — pressing the active button
   again flips between deck pairs (1-2 ↔ 3-4)
 - Waveform sidebar: USB1 + eject, KEY, ON AIR column with large deck number
@@ -56,7 +61,7 @@ All four decks loaded and on air:
 | `controllers/Time-Clamp.midi.xml` + `-scripts.js` | mapping attached to a VirMIDI port: two-state time, view-selector radio, cyclic zoom, CPU input, plus play (CC `0x11-0x14`) and LoadSelectedTrack (CC `0x15-0x18`) bindings for decks 1-4 so the box can be driven headless via `amidi` — loads without any hardware controller |
 | `controllers/pioneer-ddj1000.midi.xml` + JS | custom 4-deck DDJ-1000 mapping (351 controls, 56 outputs), generated from the official AlphaTheta MIDI list |
 | `controllers/gen_mapping.py` | the DDJ-1000 XML generator |
-| `pi-setup/` | Pi 4 provisioning: headless boot, audit, CPU→MIDI daemon, conky overlay, patched Mixxx source build |
+| `pi-setup/` | Pi 4 provisioning: headless boot, audit, CPU→MIDI daemon, on-screen keyboard daemon (`djbox-osk-*`), conky overlay, patched Mixxx source build, `pioneered-mixxx.patch` |
 
 ## Quick install on the Pi
 
@@ -75,16 +80,25 @@ Recommended `mixxx.cfg` values: `WaveformType 19` (all-shader Filtered, uses
 the skin colours), `WaveformOverviewType 0`, `TimeFormat 1`,
 `PositionDisplay 1`.
 
-## Patched Mixxx (minute ruler + drop hover + marquee titles)
+## Patched Mixxx
 
 The `.deb` packages attached to the Release (arm64, Debian Trixie /
-Raspberry Pi OS) add three things on top of stock 2.5.0:
+Raspberry Pi OS) add these on top of stock 2.5.0
+(`pi-setup/pioneered-mixxx.patch` is the full diff):
 
 - minute ruler under the card overview waveform (`-4:00 -3:00 …`)
 - `dropHover` property on `TrackWidgetGroup` — the skin highlights the card
   a track is about to be dropped onto
 - `<Elide>scroll</Elide>` in WLabel: long titles bounce left-right instead
   of stretching the layout
+- staggered waveform resize in `WWaveformViewer` — works around a v3d GPU
+  hang (endless "Resetting GPU for hang") when several GL waveforms resize
+  at once during 2↔4 deck switches
+- `<ModeConfigKey>` on `NumberPos` — the time display can follow a
+  per-deck control instead of the global `ShowDurationRemaining`, giving
+  each deck card its own two-state REMAIN/TIME toggle
+- search box focus drives `[Pioneered],osk_req` — the on-screen keyboard
+  appears while the search box has focus
 
 Install: `sudo dpkg -i mixxx-data_*.deb mixxx_*.deb`. Rebuild from source:
 `pi-setup/build-mixxx-ruler.sh`. The version string sorts above the distro

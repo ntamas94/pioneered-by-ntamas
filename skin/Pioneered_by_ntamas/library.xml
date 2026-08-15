@@ -20,6 +20,19 @@
               <PushButton>
                 <ObjectName>SidebarButton</ObjectName>
                 <Size>80p,40p</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>&#9000; KBD</Text>
+                </State>
+                <Connection>
+                  <ConfigKey>[Pioneered],osk</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+              </PushButton>
+              <PushButton>
+                <ObjectName>SidebarButton</ObjectName>
+                <Size>80p,40p</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>

@@ -1,0 +1,13 @@
+[Unit]
+Description=On-screen keyboard toggle driven by Mixxx via VirMIDI
+After=sound.target
+
+[Service]
+User=dj
+Environment=DISPLAY=:0
+ExecStart=/usr/local/bin/djbox-osk-midi.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
