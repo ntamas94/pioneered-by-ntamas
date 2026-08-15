@@ -9,6 +9,13 @@ The skin is based on the 4-deck variant of
 [Pioneered](https://github.com/timewasternl/Pioneered) /
 [Pioneered-Plus](https://github.com/bencejuhaasz/Pioneered-Plus) (GPL-3.0).
 
+**Fastest start:** grab the ready-to-boot SD-card image from the
+[latest release](https://github.com/ntamas94/pioneered-by-ntamas/releases)
+(1.2 GB `.img.xz`), flash it with Raspberry Pi Imager or balenaEtcher onto a
+16 GB+ card, add your WiFi to `network-config` on the boot partition (or use
+ethernet) and power up a Pi 4 — it boots straight into Mixxx. Login `dj` /
+`pioneered`, SSH enabled.
+
 ## Screen modes
 
 All four decks loaded and on air:

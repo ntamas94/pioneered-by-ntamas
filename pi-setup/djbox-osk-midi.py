@@ -17,6 +17,7 @@ import syslog
 import time
 
 SHOW = "/usr/local/bin/djbox-osk-show.sh"
+HIDE = "/usr/local/bin/djbox-osk-hide.sh"
 
 
 def find_dev():
@@ -34,8 +35,7 @@ def show():
 
 def hide():
     syslog.syslog("hide")
-    subprocess.call(["pkill", "-f", "[o]nboard"])
-    subprocess.call(["pkill", "-f", "[m]atchbox-keyboard"])
+    subprocess.Popen([HIDE])
 
 
 def main():

@@ -69,14 +69,24 @@ TimeClamp.oskPress = function (value) {
         return;
     }
     TimeClamp.oskState = TimeClamp.oskState ? 0 : 1;
+    TimeClamp.oskBurst();
 };
 
 TimeClamp.oskReq = function (value) {
     TimeClamp.oskState = value ? 1 : 0;
+    TimeClamp.oskBurst();
 };
 
 TimeClamp.oskBeat = function () {
     midi.sendShortMsg(0xB0, 0x20, TimeClamp.oskState ? 0x7F : 0x00);
+};
+
+// The MIDI output path holds back an event until the next one is queued, so
+// on a state CHANGE send the level twice: the second message flushes the
+// first out immediately instead of waiting for the next heartbeat.
+TimeClamp.oskBurst = function () {
+    TimeClamp.oskBeat();
+    TimeClamp.oskBeat();
 };
 
 TimeClamp.cpuIn = function (channel, control, value) {
