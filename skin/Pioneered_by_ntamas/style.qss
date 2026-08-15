@@ -1,0 +1,1227 @@
+/* Pioneer Colours:
+
+Play button: #6ee128
+Cue button: #eb870f
+Slip button: #d73535
+Tabs on top: #c3d541
+Headers: #32323c
+Title bg: #112f5c
+Blue: #2d85cd
+White: #e5e6ea
+
+*/
+
+/* DEBUG
+* {
+  border: 1px solid rgba(255,255,255,0.1);
+}
+/* END */
+
+#Mixxx {
+  background-color: black;
+}
+
+* {
+  font-family: 'Open Sans', sans-serif;
+}
+
+QMenuBar, QMenuBar::item, QMenu, QMenu::item {
+  background-color: black;
+  color: gray;
+}
+
+QMenuBar::item:pressed, QMenu::item:selected, QMenu::item:pressed {
+    background-color: rgba(255,255,255,0.2);
+}
+
+/************************************************************************/
+/*     Buttons                                                          */
+/************************************************************************/
+
+WPushButton {
+  color: #e5e6ea;
+  background-color: transparent;
+  border: 1px solid #32323c;
+  border-radius: 2px;
+  outline: none;
+}
+
+WPushButton:hover {
+  border: 1px solid #5F5F5F;
+}
+
+WPushButton[value="1"] {
+  color: #e5e6ea;
+  border: 1px solid #5F5F5F;
+  background-color: #32323c;
+}
+
+WPushButton[value="1"]:hover {
+  border: 1px solid #4B4B4B;
+  background-color: #30303a;
+}
+
+/************************************************************************/
+/*     Deck                                                             */
+/************************************************************************/
+
+
+#Deck {
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+#Deck[highlight="1"] {
+  border: 1px solid #e5e6ea;
+}
+
+#DeckBPMWrapper {
+  border: 2px solid #e5e6ea;
+  border-radius: 5px;
+  margin-bottom: 4px;
+  padding-right: 2px;
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#DeckBPM {
+  font-size: 20px;
+}
+
+#DeckBPMTitleWrapper {
+  padding: 0 2px;
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#DeckBPMTitle {
+  font-size: 8px;
+  font-weight: bold;
+}
+
+#TrackBPMRangeContainer {
+  padding: 5px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#DeckBPMRangePercent {
+  background-color: #222222;
+  padding: 0px;
+}
+
+#BPMRangePlusMinus, #RateDisplay {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#DeckHeader {
+  background-color: #112f5c;
+  padding: 2px;
+}
+
+#DeckOverview {
+  margin: 50% 0;
+}
+
+#DeckTitle, #DeckTitleNote {
+  font-size: 20px;
+}
+
+#DeckTitleNote {
+  margin: 0 2px;
+}
+
+#DeckChannelTitle, #DeckTrackTimeTitle, #DeckTempoTitle {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#DeckPlayingLeft, #DeckPlayingRight {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#DeckTrackTimeWrapper {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#DeckTrackTime {
+  font-size: 36px;
+}
+
+#DeckTrackTime[highlight="1"] {
+  color: transparent;
+}
+
+#DeckTrackTimeMini {
+  font-size: 20px;
+}
+
+#DeckTrackTimeMini[highlight="1"] {
+  color: transparent;
+}
+
+#DeckTrackNumberContainer {
+  margin: 0 4px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+/************************************************************************/
+/*     Effects                                                          */
+/************************************************************************/
+
+WEffectChainPresetSelector {
+  background-color: transparent;
+  color: #2d85cd;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px;
+  text-transform: uppercase;
+}
+
+#EffectToggle {
+  color: gray;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#EffectToggle[value="1"] {
+  color: #2d85cd;
+}
+
+#TrackNumberWrapper, #DeckChannelTitleWrapper {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
+#TrackNumberTitle {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+#TrackNumber {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/************************************************************************/
+/*     Library                                                          */
+/************************************************************************/
+
+#LibraryWrapper QScrollBar {
+  background-color: gray;
+}
+
+#LibraryWrapper QScrollBar::handle:horizontal {
+  border: 0;
+}
+
+#LibraryWrapper QScrollBar:horizontal {
+  height: 0;
+  width: 0;
+}
+
+#LibraryWrapper QScrollBar:vertical {
+  border: 0;
+  width: 4px;
+}
+
+#LibraryWrapper QScrollBar::add-page,
+#LibraryWrapper QScrollBar::sub-page {
+  background-color: black;
+}
+
+#LibraryWrapper QScrollBar::add-line,
+#LibraryWrapper QScrollBar::sub-line {
+  height: 0;
+  width: 0;
+}
+
+#LibraryWrapper WTrackTableViewHeader::section {
+  background-color: #32323c;
+  color: #e5e6ea;
+  font-weight: bold;
+  margin: 2px;
+  text-transform: uppercase;
+}
+
+#LibraryWrapper QTableView,
+#LibraryWrapper WLibraryTextBrowser {
+  background-color: black;
+  alternate-background-color: #32323c;
+  selection-background-color: #e5e6ea;
+  color: white;
+  selection-color: black;
+}
+
+#LibraryWrapper WLibrarySidebar {
+  background-color: #32323c;
+  selection-background-color: #e5e6ea;
+  border-left: 4px solid gray;
+  color: #e5e6ea;
+  font-weight: bold;
+  selection-color: black;
+  text-transform: uppercase;
+}
+
+#LibraryWrapper QPushButton,
+#LibraryWrapper QSpinBox,
+#LibraryWrapper QComboBox,
+#LibraryWrapper QComboBox QAbstractScrollArea {
+  background-color: #32323c;
+  color: #e5e6ea;
+}
+
+WLabel {
+  color: #e5e6ea;
+}
+
+/* Library Search */
+#SearchBox {
+  background-color: #112f5c;
+  border-radius: 0;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 4px;
+  text-transform: uppercase;
+}
+
+/************************************************************************/
+/*     BeatFX                                                           */
+/************************************************************************/
+
+#BeatFX_Container {
+  border: 2px solid #32323c;
+  margin-left: 10px;
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+}
+
+#BeatFX_Header {
+  background-color: #32323c;
+}
+
+#BeatFX_Title {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#SidebarContainer {
+  background-color: #112f5c;
+}
+
+#SidebarButton {
+  background-color: rgba(0,0,0,0.2);
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  color: lightgray;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 4px;
+}
+
+/************************************************************************/
+/*     Waveforms                                                        */
+/************************************************************************/
+
+#WaveformInfo {
+  margin-right: 10px;
+}
+
+#WaveformInfo_Header {
+  background-color: #32323c;
+  border-top-right-radius: 10px 25px;
+  padding-right: 2px;
+}
+
+#WaveformInfo_Header[highlight="1"] {
+  border: 2px solid #e5e6ea;
+}
+
+#WaveformInfo_Title,
+#WaveformInfo_Key,
+#WaveformInfo_Bars {
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#WaveformInfo_Data_Container,
+#WaveformInfo_Key_Container,
+#WaveformInfo_Bars_Container {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#WaveformInfo_Key_Icon {
+  background-color: #e5e6ea;
+  border-radius: 2px;
+  font-size: 14px;
+  margin: 4px;
+  padding: -6px -6px -3px -2px;
+}
+
+#WaveformInfo_KeylockButton {
+  image: url(skin:icons/keylock.svg) no-repeat center center;
+}
+
+#WaveformInfo_QuantizeButton {
+  image: url(skin:icons/quantize.svg) no-repeat center center;
+}
+
+/************************************************************************/
+/*     Tabs                                                             */
+/************************************************************************/
+
+#TabControls WPushButton {
+  background-color: black;
+  font-weight: bold;
+  margin: 10px 10%;
+  max-width: 250px;
+  text-transform: uppercase;
+}
+
+#TabControls WPushButton[value="0"] {
+  border: 2px solid gray;
+  color: gray;
+}
+
+#TabControls WPushButton[value="1"] {
+  border: 2px solid #c3d541;
+  color: #c3d541;
+}
+
+/************************************************************************/
+/*     Samplers                                                         */
+/************************************************************************/
+
+#Sampler {
+  background-color: #32323c;
+  border: 2px solid #d73535;
+  border-radius: 2px;
+  color: white;
+  font-size: 24px;
+  margin: 4px;
+  padding: 2px;
+}
+
+#Sampler[value="1"] {
+  background-color: #d73535;
+}
+
+#Sampler_Info {
+  color: white;
+  font-size: 10px;
+  margin: 4px;
+}
+
+#SamplersDeck1, #SamplersDeck2 {
+  margin: 0 4px;
+}
+
+/* ---- step 1-2: ON AIR and time ---- */
+
+#DeckOnAir {
+  background-color: #d32020;
+  border: 1px solid #ff5a5a;
+  border-radius: 2px;
+  margin: 2px 6px 2px 2px;
+  max-height: 16px;
+}
+
+#DeckOnAirLabel {
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 1px 6px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+/* Remaining time is the number a DJ reads most, so give it XZ weight — but
+   the widget sits in a SizeAwareStack, and a font wide enough to overflow the
+   column makes the stack render nothing at all. 30px fits six digits here. */
+#DeckTrackTime {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+#DeckTrackTimeMini {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* The skin hides one of the two stacked readouts by making it transparent.
+   Keep that behaviour, but never let it blank both. */
+#DeckTrackTimeWrapper {
+  min-width: 150px;
+}
+
+#DeckTrackTimeTitle {
+  color: #8fa4b8;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+/* ---- step 3-4: beat jump and X-PAD ---- */
+
+#DeckBeatJumpContainer {
+  margin: 0 10px 0 4px;
+  min-width: 60px;
+}
+
+#DeckBeatJumpTitle {
+  color: #8fa4b8;
+  font-size: 9px;
+  letter-spacing: 1px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#DeckBeatJumpValue {
+  background-color: #10141a;
+  border: 1px solid #2b3948;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+#XPadRow {
+  margin: 1px 4px;
+}
+
+#XPadStrip {
+  background-color: #0d1116;
+  border-top: 1px solid #2b3948;
+  margin-top: 4px;
+  padding: 2px;
+}
+
+#XPadTitle {
+  color: #8fa4b8;
+  font-size: 9px;
+  letter-spacing: 1px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+/* Warm at the low end, cool at the high end, mirroring the XZ strip. */
+#XPadLpf { color: #ffb340; font-size: 10px; font-weight: bold; qproperty-alignment: 'AlignLeft | AlignVCenter'; }
+#XPadMid { color: #ffffff; font-size: 10px; font-weight: bold; qproperty-alignment: 'AlignCenter'; }
+#XPadHpf { color: #4fc3f7; font-size: 10px; font-weight: bold; qproperty-alignment: 'AlignRight | AlignVCenter'; }
+
+#XPadValue {
+  color: #ffffff;
+  font-size: 12px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+/* ---- step 5: XZ colour scheme ---- */
+
+/* Deep navy ground instead of flat black, as on the XZ. */
+#Mixxx, WMainMenuBar, #Deck, #Decks {
+  background-color: #050b16;
+}
+
+#DeckHeader {
+  background-color: #0d2444;
+  border-bottom: 1px solid #1f4c85;
+  padding: 1px 4px;
+}
+
+#DeckTitle { color: #cfe4ff; font-weight: bold; }
+#DeckTitleNote { color: #2d85cd; }
+
+#TabButtonWaveform, #TabButtonBrowse, #TabButtonSampler {
+  background-color: #0d1a2e;
+  border: 1px solid #1f4c85;
+  color: #8fb4e0;
+  font-weight: bold;
+  padding: 4px 10px;
+  margin: 0 1px;
+}
+
+#TabButtonWaveform[value="1"],
+#TabButtonBrowse[value="1"],
+#TabButtonSampler[value="1"] {
+  background-color: #12518f;
+  color: #ffffff;
+  border: 1px solid #2d85cd;
+}
+
+#BeatFX_Header, #BeatFX_Title {
+  background-color: #0d2444;
+  color: #cfe4ff;
+}
+
+/* Tempo readouts in XZ amber so they separate from the blue chrome. */
+#DeckBPM, #RateDisplay1, #RateDisplay2, #RateDisplay3, #RateDisplay4 {
+  color: #f5a623;
+}
+
+/* ---- step 6: top bar status ---- */
+
+#TopStatus {
+  background-color: #0d1a2e;
+  border: 1px solid #1f4c85;
+  margin: 4px 6px;
+  padding: 2px 8px;
+}
+
+#TopStatusLoadLabel {
+  color: #8fb4e0;
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding-right: 4px;
+  qproperty-alignment: 'AlignVCenter';
+}
+
+#TopStatusLoad {
+  color: #f5a623;
+  font-size: 11px;
+  font-weight: bold;
+  padding-right: 10px;
+  qproperty-alignment: 'AlignVCenter';
+}
+
+#TopStatusClock {
+  color: #cfe4ff;
+  font-size: 13px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignVCenter';
+}
+
+/* ---- step 7: 2x2 deck grid ---- */
+
+#DeckRowTop {
+  border-bottom: 1px solid #1f4c85;
+}
+
+/* A visible seam between the two cards in each row, as on the XZ. */
+#DeckRowTop > #Deck, #DeckRowBottom > #Deck {
+  border-right: 1px solid #14304f;
+}
+
+/* ---- step 8: Q, MASTER, zoom and grid ---- */
+
+#DeckBadges {
+  margin: 0 4px;
+}
+
+/* Q and MASTER only render when their control is on, like ON AIR. */
+#DeckQuantize {
+  background-color: #12518f;
+  border: 1px solid #2d85cd;
+  border-radius: 2px;
+  margin-right: 3px;
+  max-height: 15px;
+}
+
+#DeckQuantizeLabel {
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 1px 5px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#DeckMaster {
+  background-color: #f5a623;
+  border: 1px solid #ffc766;
+  border-radius: 2px;
+  max-height: 15px;
+}
+
+#DeckMasterLabel {
+  color: #12202f;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 1px 5px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#ZoomGridRow {
+  margin: 4px 2px 2px 2px;
+}
+
+#ZoomButton, #GridButton {
+  background-color: #0d1a2e;
+  border: 1px solid #1f4c85;
+  color: #8fb4e0;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0 2px;
+  padding: 3px 0;
+}
+
+/* ---- step 9: header badge and BPM ---- */
+
+#DeckNumBadge {
+  background-color: #1f4c85;
+  border: 1px solid #2d85cd;
+  border-radius: 2px;
+  margin: 2px 6px 2px 2px;
+  max-height: 17px;
+}
+
+#DeckNumBadgeLabel {
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 1px 6px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#DeckHeaderBpm {
+  margin: 0 6px 0 10px;
+}
+
+#DeckHeaderBpmTitle {
+  color: #8fb4e0;
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding-right: 4px;
+  qproperty-alignment: 'AlignBottom | AlignRight';
+}
+
+#DeckHeaderBpmValue {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignVCenter | AlignRight';
+}
+
+/* Superseded by the header badge. */
+#DeckChannelTitle, #DeckChannelTitleContainer, #DeckChannelTitleWrapper {
+  max-width: 0px;
+  max-height: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+/* ---- step 11: time toggle and wide waveform ---- */
+
+/* The whole label is one toggle button; clicking it flips remain/elapsed. */
+#DeckTrackTimeTitle { qproperty-layoutAlignment: 'AlignLeft | AlignVCenter'; }
+
+#TimeModeToggle {
+  background-color: transparent;
+  border: 0;
+  color: #8fa4b8;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 0 2px;
+  qproperty-alignment: 'AlignLeft | AlignVCenter';
+}
+
+/* Let the waveform take the middle without shoving the tempo column off the
+   card: cap the time column, and let the overview simply fill what remains
+   rather than demand a fixed minimum that overflows a half-width deck. */
+#TrackTimeContainer { max-width: 210px; }
+#DeckOverviewContainer { margin: 0 4px; }
+
+/* ---- step 12: time flush left ---- */
+
+/* Time hugs the card edge like the XZ: no leading column, no left inset, and
+   a column only as wide as six digits so the waveform starts right after it.
+   Do not go below ~170px: DeckTrackTime carries MinimumSize 150 and the
+   SizeAwareStack renders nothing at all once neither child fits. */
+#TrackTimeContainer {
+  max-width: 152px;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+/* WPushButton is a QAbstractButton, which has no alignment property, so the
+   qproperty-alignment from step 11 is silently dropped and the label centres
+   itself in the button. text-align is the QPushButton way that works. */
+#TimeModeToggle {
+  text-align: left;
+  padding-left: 0;
+}
+
+#DeckInfo { padding-left: 0; }
+
+#DeckTrackTimeTitle,
+#DeckTrackTimeWrapper {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  margin-left: 0;
+  padding-left: 0;
+}
+
+/* ---- step 13: two-state time ---- */
+
+/* Invisible hit target sitting on top of the time. It takes the click that
+   would otherwise reach WNumberPos and its hard-coded three-way cycle. */
+#TimeModeCover {
+  background-color: transparent;
+  border: 0;
+  color: transparent;
+}
+
+/* ---- step 14: amber time ---- */
+
+/* REMAIN and TIME are separate labels so the active mode can light up. */
+#DeckTrackTimeTitle {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  margin: 0;
+  padding: 0;
+}
+
+#TimeLabelRemain,
+#TimeLabelSlash,
+#TimeLabelTime {
+  background-color: transparent;
+  color: #4f6b85;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0px;
+  padding: 0 1px 0 0;
+  qproperty-alignment: 'AlignLeft | AlignBottom';
+}
+
+#TimeLabelRemain[highlight="1"],
+#TimeLabelTime[highlight="1"] {
+  color: #ffffff;
+}
+
+#DeckTrackTime {
+  color: #ffffff;
+  font-size: 45px;
+}
+
+#DeckTrackTimeMini {
+  color: #ffffff;
+  font-size: 26px;
+}
+
+/* ---- step 16: BPM box and tempo panel ---- */
+
+/* BPM reads out of a white-outlined box, small BPM over big digits. */
+#DeckHeaderBpm {
+  background-color: #000000;
+  border: 2px solid #ffffff;
+  margin: 1px 2px;
+  min-width: 108px;
+  padding: 0 4px 2px 4px;
+}
+
+#DeckHeaderBpmTitle {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  qproperty-alignment: 'AlignLeft | AlignTop';
+}
+
+#DeckHeaderBpmValue {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignRight | AlignBottom';
+}
+
+/* Q, pitch range and rate percent share one panel under the BPM box. */
+#DeckTempoPanel {
+  background-color: #2b2f33;
+  margin: 0 2px;
+  padding: 2px 5px;
+}
+
+#DeckQuantizeLabel {
+  background-color: transparent;
+  border: 0;
+  color: #e08b2a;
+  font-size: 23px;
+  font-weight: bold;
+  padding: 0;
+  qproperty-alignment: 'AlignLeft | AlignVCenter';
+}
+
+#BPMRangePlusMinus, #RateDisplay {
+  background-color: transparent;
+  color: #6ee04a;
+  font-size: 23px;
+  font-weight: bold;
+}
+
+#DeckTempoPercent, #BPMPercent {
+  background-color: transparent;
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: bold;
+}
+
+#DeckMasterLabel {
+  color: #e08b2a;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* ---- step 17: waveform sidebar ---- */
+
+/* Waveform sidebar: source, KEY, BEAT JUMP, deck number in channel colour. */
+#WaveformInfo { background-color: #0a0f1a; }
+
+#WaveformInfoSource {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: bold;
+  padding-left: 3px;
+  qproperty-alignment: 'AlignLeft | AlignVCenter';
+}
+
+#WaveformInfoCaption {
+  color: #8fa4b8;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  max-width: 46px;
+  padding-left: 3px;
+  qproperty-alignment: 'AlignLeft | AlignVCenter';
+}
+
+#WaveformOnAirLabel {
+  background-color: #d32020;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 1px 3px;
+}
+
+#WaveformDeckNum1, #WaveformDeckNum2, #WaveformDeckNum3, #WaveformDeckNum4 {
+  color: #10222f;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 0 4px;
+  min-width: 22px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#WaveformDeckNum1 { background-color: #2d85cd; }
+#WaveformDeckNum2 { background-color: #d73535; color: #ffffff; }
+#WaveformDeckNum3 { background-color: #e9e9e9; }
+#WaveformDeckNum4 { background-color: #3fa93f; }
+
+/* Q always sits in the panel and lights when quantize is on. */
+#DeckQuantizeLabel { color: #4a5a68; }
+#DeckQuantizeLabel[highlight="1"] { color: #e08b2a; }
+
+/* ---- step 18: overview colours and equal block width ---- */
+
+/* BPM box and tempo panel are one block: same width, same margins. */
+#DeckHeaderBpm {
+  margin: 1px 3px 0 3px;
+  max-width: 126px;
+  min-width: 126px;
+}
+
+#DeckTempoPanel {
+  margin: 0 3px;
+  max-width: 126px;
+  min-width: 126px;
+  padding: 4px 11px;
+}
+
+/* Thin black gutter between the four cards, as on the XZ. */
+#Deck {
+  border-bottom: 2px solid #000000;
+  border-right: 2px solid #000000;
+}
+
+/* ---- step 15: channel-colour deck badge ---- */
+
+/* Filled channel-colour badge, DECK over the number, XZ style. */
+#DeckNumBadge1, #DeckNumBadge2, #DeckNumBadge3, #DeckNumBadge4 {
+  border: 0;
+  border-radius: 0;
+  margin: 0 6px 0 0;
+  min-width: 34px;
+  padding: 1px 0 2px 0;
+}
+
+#DeckNumBadge1 { background-color: #2d85cd; }
+#DeckNumBadge2 { background-color: #d73535; }
+#DeckNumBadge3 { background-color: #e9e9e9; }
+#DeckNumBadge4 { background-color: #3fa93f; }
+
+#DeckNumBadgeWord {
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#DeckNumBadgeNum {
+  font-size: 17px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#DeckNumBadge1 #DeckNumBadgeWord, #DeckNumBadge1 #DeckNumBadgeNum,
+#DeckNumBadge3 #DeckNumBadgeWord, #DeckNumBadge3 #DeckNumBadgeNum,
+#DeckNumBadge4 #DeckNumBadgeWord, #DeckNumBadge4 #DeckNumBadgeNum {
+  color: #10222f;
+}
+
+#DeckNumBadge2 #DeckNumBadgeWord, #DeckNumBadge2 #DeckNumBadgeNum {
+  color: #ffffff;
+}
+
+/* Title band: neutral grey, bold white track name. */
+#DeckHeader {
+  background-color: #35383c;
+  border-bottom: 0;
+  padding: 0;
+}
+
+#DeckTitle {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+#DeckTitleNote { color: #ffffff; }
+
+/* ---- step 20: one-sided overview ---- */
+
+/* Only the upper lobe of the overview is visible; the rest is clipped. */
+#DeckOverviewContainer {
+  max-height: 94px;
+  min-height: 94px;
+}
+
+/* ---- step 22: header time on Browse ---- */
+
+/* Compact time in the header, Browse and Sampler pages only. */
+#HeaderTimeValue {
+  background-color: transparent;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 0 8px;
+  qproperty-alignment: 'AlignRight | AlignVCenter';
+}
+
+/* ---- step 23: ON AIR column ---- */
+
+/* ON AIR column between the sidebar and the waveform, XZ style. */
+#WaveformOnAirColumn1, #WaveformOnAirColumn2,
+#WaveformOnAirColumn3, #WaveformOnAirColumn4 {
+  background-color: #14181d;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
+}
+
+#WaveformOnAirLabel {
+  background-color: #d32020;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: bold;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#WaveformDeckNum1, #WaveformDeckNum2, #WaveformDeckNum3, #WaveformDeckNum4 {
+  background-color: transparent;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#WaveformDeckNum1 { color: #2d85cd; }
+#WaveformDeckNum2 { color: #d73535; }
+#WaveformDeckNum3 { color: #e9e9e9; }
+#WaveformDeckNum4 { color: #3fa93f; }
+
+/* ---- step 24: XZ touches ---- */
+
+/* Orange X-PAD band. */
+#XPadRow { background-color: #e08b2a; }
+
+#XPadLpf, #XPadMid, #XPadHpf {
+  background-color: transparent;
+  color: #10222f;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* ---- step 26: flatter title band ---- */
+
+/* Flatter title band. */
+#DeckHeader { max-height: 40px; min-height: 40px; }
+
+#DeckTitle { font-size: 30px; }
+#DeckTitleNote { font-size: 30px; }
+
+#DeckNumBadge1, #DeckNumBadge2, #DeckNumBadge3, #DeckNumBadge4 {
+  min-width: 40px;
+  padding: 0 0 1px 0;
+}
+#DeckNumBadgeWord { font-size: 12px; }
+#DeckNumBadgeNum { font-size: 23px; }
+
+#DeckOnAirLabel { font-size: 8px; }
+
+#HeaderTimeValue { font-size: 18px; }
+
+#DeckHeaderBpm {
+  min-width: 96px;
+  max-width: 96px;
+  padding: 0 4px 1px 4px;
+}
+#DeckHeaderBpmTitle { font-size: 9px; }
+#DeckHeaderBpmValue { font-size: 18px; }
+
+/* The panel below keeps the same width as the shrunken BPM box. */
+#DeckTempoPanel {
+  min-width: 96px;
+  max-width: 96px;
+}
+
+/* ---- step 27: double top bar ---- */
+
+/* Double-height tab bar. */
+#TabButtonWaveform, #TabButtonBrowse, #TabButtonSampler {
+  font-size: 20px;
+  padding: 8px 10px;
+}
+
+#TopStatusLoadLabel, #TopStatusLoad { font-size: 14px; }
+#TopStatusClock { font-size: 20px; }
+
+/* ---- step 28: BPM right column ---- */
+
+/* BPM box and Q panel in their own right column, full card height. */
+#DeckRightCol {
+  background-color: #2b2f33;
+}
+
+#DeckHeaderBpm {
+  margin: 0;
+  padding: 0 4px 2px 4px;
+  min-height: 55px;
+  max-height: 55px;
+}
+#DeckHeaderBpmTitle { font-size: 10px; }
+#DeckHeaderBpmValue { font-size: 36px; }
+
+#DeckTempoPanel {
+  margin: 0;
+  min-width: 0;
+  max-width: 116px;
+}
+
+/* ---- step 29: stacked status ---- */
+
+/* LOAD over the clock, double size. */
+#TopStatus { qproperty-layoutAlignment: 'AlignRight | AlignVCenter'; }
+#TopStatusLoadLabel { font-size: 16px; }
+#TopStatusLoad { font-size: 22px; }
+#TopStatusClock {
+  font-size: 40px;
+  qproperty-alignment: 'AlignRight | AlignVCenter';
+}
+
+/* ---- step 30: CPU and deck view selector ---- */
+
+/* Deck view selector, XZ style. */
+#DeckModeBtn2, #DeckModeBtn24, #DeckModeBtn4 {
+  background-color: #0d1a2e;
+  border: 1px solid #1f4c85;
+  color: #8fb4e0;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 2px;
+  min-height: 30px;
+  max-height: 30px;
+  padding: 0 10px;
+  qproperty-alignment: 'AlignCenter';
+}
+
+#DeckModeBtn2[value="1"],
+#DeckModeBtn24[value="1"],
+#DeckModeBtn4[value="1"] {
+  border: 1px solid #f2d13c;
+  background-color: #1f4c85;
+  color: #ffffff;
+}
+
+/* CPU next to LOAD. */
+#TopStatusCpuLabel {
+  color: #8fa4b8;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0 2px 0 10px;
+}
+
+#TopStatusCpu {
+  color: #e08b2a;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* ---- step 32: AZ details ---- */
+
+/* TRACK number and QUANTIZE lamp, AZ style. */
+#TrackNoCol { padding: 2px 0 0 4px; }
+
+#TrackNoCaption {
+  color: #8fa4b8;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+#TrackNoValue {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#TrackNoQuantize {
+  color: #4a5a68;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+#TrackNoQuantize[highlight="1"] { color: #d73535; }
+
+/* MASTER chip on the BPM box. */
+#BpmMaster {
+  background-color: #e08b2a;
+  color: #10222f;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 1px 4px;
+}
+
+/* Sidebar eject. */
+#SidebarEject {
+  background-color: transparent;
+  border: 0;
+  color: #8fa4b8;
+  font-size: 14px;
+}
+
+/* SINGLE/CONTINUE follows the tab button look. */
+#SingleContinueBtn {
+  background-color: #0d1a2e;
+  border: 1px solid #1f4c85;
+  color: #8fb4e0;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 12px 0 2px;
+  min-height: 30px;
+  max-height: 30px;
+  padding: 0 10px;
+  qproperty-alignment: 'AlignCenter';
+}
+#SingleContinueBtn[value="1"] {
+  border: 1px solid #f2d13c;
+  background-color: #1f4c85;
+  color: #ffffff;
+}
+

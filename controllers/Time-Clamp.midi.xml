@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5">
+  <info>
+    <name>Mixxx Time Clamp</name>
+    <author>ntamas</author>
+    <description>Binds no keys. Watches [Controls],ShowDurationRemaining and
+    drops the third display mode, so clicking the track time alternates between
+    elapsed and remaining only. Attach to a VirMIDI port so it loads without any
+    real controller present.</description>
+  </info>
+  <controller id="VirMIDI 3-0">
+    <scriptfiles>
+      <file filename="Time-Clamp-scripts.js" functionprefix="TimeClamp"/>
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Pioneered]</group>
+        <key>TimeClamp.cpuIn</key>
+        <status>0xB0</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+    </controls>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>

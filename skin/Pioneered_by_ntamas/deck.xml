@@ -1,0 +1,453 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>Deck</ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+    <WidgetGroup>
+      <ObjectName>DeckMain</ObjectName>
+      <Layout>vertical</Layout>
+      <Size>0me,0me</Size>
+      <Children>
+
+      <WidgetGroup>
+        <ObjectName>DeckHeader</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>DeckNumBadge<Variable name="channel"/></ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>DeckNumBadgeWord</ObjectName>
+                <Text>DECK</Text>
+              </Label>
+              <Label>
+                <ObjectName>DeckNumBadgeNum</ObjectName>
+                <Text><Variable name="channel"/></Text>
+              </Label>
+            </Children>
+          </WidgetGroup>
+          <Label>
+            <ObjectName>DeckTitleNote</ObjectName>
+            <Text>&#9834;</Text>
+          </Label>
+          
+          <TrackProperty>
+            <ObjectName>DeckTitle</ObjectName>
+            <TooltipId>track_title</TooltipId>
+            <SizePolicy>me,25f</SizePolicy>
+            <Property>title</Property>
+            <Channel><Variable name="channel"/></Channel>
+            <Elide>right</Elide>
+          </TrackProperty>
+          <WidgetGroup>
+            <ObjectName>DeckOnAir</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>DeckOnAirLabel</ObjectName>
+                <Text>ON AIR</Text>
+              </Label>
+            </Children>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channel"/>],play_indicator</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+                    <WidgetGroup>
+            <ObjectName>HeaderTime</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <NumberPos>
+                <ObjectName>HeaderTimeValue</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <NumberOfDigits>6</NumberOfDigits>
+                <Channel><Variable name="channel"/></Channel>
+              </NumberPos>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tab],overview</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>DeckInfo</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+                    <WidgetGroup>
+            <ObjectName>TrackNoCol</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>64f,0me</Size>
+            <Children>
+              <Label>
+                <ObjectName>TrackNoCaption</ObjectName>
+                <Text>TRACK</Text>
+              </Label>
+              <TrackProperty>
+                <ObjectName>TrackNoValue</ObjectName>
+                <TooltipId>track_number</TooltipId>
+                <Property>track_number</Property>
+                <Channel><Variable name="channel"/></Channel>
+              </TrackProperty>
+              <Label>
+                <ObjectName>TrackNoQuantize</ObjectName>
+                <Text>QUANTIZE</Text>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channel"/>],quantize</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </Label>
+              <Label>
+                <ObjectName>TrackNoFill</ObjectName>
+                <Size>0me,0me</Size>
+              </Label>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>TrackTimeContainer</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>0me,0me</Size>
+            <Children>
+<WidgetGroup>
+                <ObjectName>DeckTrackTimeTitle</ObjectName>
+                <Size>200me,19f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Label>
+                    <ObjectName>TimeLabelRemain</ObjectName>
+                    <Text>REMAIN</Text>
+                    <Connection>
+                      <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                      <Transform><IsEqual>1</IsEqual></Transform>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                  <Label>
+                    <ObjectName>TimeLabelSlash</ObjectName>
+                    <Text>/</Text>
+                  </Label>
+                  <Label>
+                    <ObjectName>TimeLabelTime</ObjectName>
+                    <Text>TIME</Text>
+                    <Connection>
+                      <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                      <Transform><IsEqual>0</IsEqual></Transform>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                  <Label>
+                    <ObjectName>TimeLabelFill</ObjectName>
+                    <Size>0me,0me</Size>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>DeckTrackTimeWrapper</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>0me,0me</Size>
+                <Align>left</Align>
+                <Children>
+                  
+                  <SizeAwareStack>
+                    <Children>
+                      <NumberPos>
+                        <ObjectName>DeckTrackTimeMini</ObjectName>
+                        <MaximumSize>150,-1</MaximumSize>
+                        <TooltipId>track_time</TooltipId>
+                        <NumberOfDigits>6</NumberOfDigits>
+                        <Channel><Variable name="channel"/></Channel>
+                        <Connection>
+                          <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                          <Transform>
+                            <IsEqual>2</IsEqual>
+                          </Transform>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </NumberPos>
+                      <NumberPos>
+                        <ObjectName>DeckTrackTime</ObjectName>
+                        <MinimumSize>150,-1</MinimumSize>
+                        <TooltipId>track_time</TooltipId>
+                        <NumberOfDigits>6</NumberOfDigits>
+                        <Channel><Variable name="channel"/></Channel>
+                        <Connection>
+                          <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
+                          <Transform>
+                            <IsEqual>2</IsEqual>
+                          </Transform>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </NumberPos>
+                    </Children>
+                  </SizeAwareStack>
+                                  
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          
+              
+              
+          
+    <WidgetGroup>
+            <ObjectName>DeckOverviewContainer</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Size>0me,0me</Size>
+            <Children>
+              <Overview>
+                <ObjectName>DeckOverview</ObjectName>
+                <Size>0me,188f</Size>
+                <Channel><Variable name="channel"/></Channel>
+                <BgColor>#000</BgColor>
+                <SignalColor>#1d6fe0</SignalColor>
+                <SignalLowColor>#ffffff</SignalLowColor>
+                <SignalMidColor>#f2d13c</SignalMidColor>
+                <SignalHighColor>#1d6fe0</SignalHighColor>
+                <PlayedOverlayColor>#40ffffff</PlayedOverlayColor>
+             <Mark>
+              <Control>cue_point</Control>
+              <Text>CUE</Text>
+              <Color>#c85d21</Color>
+              <TextColor>#c85d21</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_1_position</Control>
+              <Text>A</Text>
+              <Color>#f44040</Color>
+              <TextColor>#f44040</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_2_position</Control>
+              <Text>B</Text>
+              <Color>#0ddcf2</Color>
+              <TextColor>#0ddcf2</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_3_position</Control>
+              <Text>C</Text>
+              <Color>#a5df13</Color>
+              <TextColor>#a5df13</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_4_position</Control>
+              <Text>D</Text>
+              <Color>#9d4cfd</Color>
+              <TextColor>#9d4cfd</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_5_position</Control>
+              <Text>E</Text>
+              <Color>#3fec2b</Color>
+              <TextColor>#3fec2b</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_6_position</Control>
+              <Text>F</Text>
+              <Color>#e6681c</Color>
+              <TextColor>#e6681c</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_7_position</Control>
+              <Text>G</Text>
+              <Color>#2749c8</Color>
+              <TextColor>#2749c8</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>hotcue_8_position</Control>
+              <Text>H</Text>
+              <Color>#c7b205</Color>
+              <TextColor>#c7b205</TextColor>
+              <Align>top</Align>
+            </Mark>
+            <Mark>
+              <Control>loop_start_position</Control>
+              <Text>LOOP IN</Text>
+              <Color>#6ee128</Color>
+              <TextColor>#6ee128</TextColor>
+              <Align>bottom</Align>
+            </Mark>
+            <Mark>
+              <Control>loop_end_position</Control>
+              <Text>LOOP OUT</Text>
+              <Color>#6ee128</Color>
+              <TextColor>#6ee128</TextColor>
+              <Align>bottom</Align>
+            </Mark>
+                <Mark>
+                  <Control>loop_start_position</Control>
+                  <Color>#6ee128</Color>
+                </Mark>
+                <Mark>
+                  <Control>loop_end_position</Control>
+                  <Color>#6ee128</Color>
+                </Mark>
+                <MarkRange>
+                  <StartControl>loop_start_position</StartControl>
+                  <EndControl>loop_end_position</EndControl>
+                  <EnabledControl>loop_enabled</EnabledControl>
+                  <Color>#6ee128</Color>
+                  <Opacity>0.8</Opacity>
+                  <DisabledColor>#acacac</DisabledColor>
+                  <DisabledOpacity>0.4</DisabledOpacity>
+                </MarkRange>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channel"/>],playposition</ConfigKey>
+                </Connection>
+              </Overview>
+            </Children>
+          </WidgetGroup>
+          
+          
+          
+          
+          
+                  
+        </Children>
+        <Connection>
+          <ConfigKey>[Tab],overview</ConfigKey>
+          <!-- Only show info in overview -->
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
+          </Children>
+    </WidgetGroup>
+    <WidgetGroup>
+      <ObjectName>DeckRightCol</ObjectName>
+      <Layout>vertical</Layout>
+      <Size>116f,0me</Size>
+      <Children>
+<WidgetGroup>
+            <ObjectName>DeckHeaderBpm</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckHeaderBpmTitleRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>0me,14f</Size>
+                <Children>
+                  <Label>
+                    <ObjectName>DeckHeaderBpmTitle</ObjectName>
+                    <Text>BPM</Text>
+                  </Label>
+                  <Label>
+                    <ObjectName>BpmFill</ObjectName>
+                    <Size>0me,0me</Size>
+                  </Label>
+                  <Label>
+                    <ObjectName>BpmMaster</ObjectName>
+                    <Text>MASTER</Text>
+                    <Connection>
+                      <ConfigKey>[Channel<Variable name="channel"/>],sync_master</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+              <NumberBpm>
+                <ObjectName>DeckHeaderBpmValue</ObjectName>
+                <TooltipId>visual_bpm</TooltipId>
+                <Channel><Variable name="channel"/></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <!-- Without an explicit Connection the widget renders 0.0:
+                     Channel alone does not bind it to a value. -->
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channel"/>],visual_bpm</ConfigKey>
+                </Connection>
+              </NumberBpm>
+            </Children>
+          </WidgetGroup>
+<WidgetGroup>
+            <ObjectName>DeckTempoPanel</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>112max,0me</Size>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckTempoRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>0me,30f</Size>
+                <Children>
+                  <Label>
+                    <ObjectName>DeckQuantizeLabel</ObjectName>
+                    <Text>Q</Text>
+                    <Connection>
+                      <ConfigKey>[Channel<Variable name="channel"/>],quantize</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                  <Label>
+                    <ObjectName>DeckTempoRowFill</ObjectName>
+                    <Size>0me,0me</Size>
+                  </Label>
+                  <Label>
+                    <ObjectName>BPMRangePlusMinus</ObjectName>
+                    <Text>&#177;</Text>
+                  </Label>
+                  <RateRange>
+                    <ObjectName>RateDisplay</ObjectName>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <Channel><Variable name="channel"/></Channel>
+                    <Display>range</Display>
+                  </RateRange>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>DeckTempoPercentRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>0me,32f</Size>
+                <Children>
+                  <Label>
+                    <ObjectName>DeckTempoPercentFill</ObjectName>
+                    <Size>0me,0me</Size>
+                  </Label>
+                  <NumberRate>
+                    <ObjectName>DeckTempoPercent</ObjectName>
+                    <TooltipId>rate_display</TooltipId>
+                    <Channel><Variable name="channel"/></Channel>
+                    <NumberOfDigits>2</NumberOfDigits>
+                  </NumberRate>
+                  <Label>
+                    <ObjectName>BPMPercent</ObjectName>
+                    <Text>%</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>DeckMaster</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>max,max</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>DeckMasterLabel</ObjectName>
+                    <Text>MASTER</Text>
+                  </Label>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channel"/>],sync_master</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+      </Children>
+    </WidgetGroup>
+</Children>
+  </WidgetGroup>
+</Template>

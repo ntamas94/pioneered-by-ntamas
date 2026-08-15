@@ -1,0 +1,119 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>Topbar</ObjectName>
+    <Layout>vertical</Layout>
+    <Size>0me,100f</Size>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>TabControls</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <Template src="skin:tab.xml">
+            <SetVariable name="tab_name">Waveform</SetVariable>
+            <SetVariable name="config_key">overview</SetVariable>
+          </Template>
+          <Template src="skin:tab.xml">
+            <SetVariable name="tab_name">Browse</SetVariable>
+            <SetVariable name="config_key">library</SetVariable>
+          </Template>
+          <Template src="skin:tab.xml">
+            <SetVariable name="tab_name">Sampler</SetVariable>
+            <SetVariable name="config_key">samplers</SetVariable>
+          </Template>
+          <PushButton>
+            <ObjectName>SingleContinueBtn</ObjectName>
+            <Size>110f,30f</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>SINGLE</Text></State>
+            <State><Number>1</Number><Text>CONTINUE</Text></State>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>DeckModeBtn2</ObjectName>
+            <Size>80f,30f</Size>
+            <NumberStates>1</NumberStates>
+            <State><Number>0</Number>
+<Text>2 DECK</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],mode2</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Pioneered],disp2</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>DeckModeBtn24</ObjectName>
+            <Size>90f,30f</Size>
+            <NumberStates>1</NumberStates>
+            <State><Number>0</Number><Text>2/4 DECK</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],mode24</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Pioneered],disp24</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>DeckModeBtn4</ObjectName>
+            <Size>80f,30f</Size>
+            <NumberStates>1</NumberStates>
+            <State><Number>0</Number><Text>4 DECK</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],mode4</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Pioneered],disp4</ConfigKey>
+            </Connection>
+          </PushButton>
+          <WidgetGroup>
+            <ObjectName>TopStatus</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>TopStatusLoadRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>max,max</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>TopStatusLoadLabel</ObjectName>
+                    <Text>LOAD</Text>
+                  </Label>
+                  <Number>
+                    <ObjectName>TopStatusLoad</ObjectName>
+                    <TooltipId>audio_latency_usage</TooltipId>
+                    <Connection>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
+                    </Connection>
+                  </Number>
+                  <Label>
+                    <ObjectName>TopStatusCpuLabel</ObjectName>
+                    <Text>CPU</Text>
+                  </Label>
+                  <Number>
+                    <ObjectName>TopStatusCpu</ObjectName>
+                    <NumberOfDigits>0</NumberOfDigits>
+                    <Connection>
+                      <ConfigKey>[Pioneered],cpu</ConfigKey>
+                    </Connection>
+                  </Number>
+                </Children>
+              </WidgetGroup>
+              <Time>
+                <ObjectName>TopStatusClock</ObjectName>
+                <TooltipId>time</TooltipId>
+              </Time>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
