@@ -64,6 +64,16 @@ def main():
                     elif byte != 0x7F and level == 0x7F:
                         hide()
                     level = byte
+                elif d1 == 0x26 and byte == 0x7F:
+                    # Audio output toggle: hdmi <-> jack (djbox-audio.sh
+                    # rewrites ~/.asoundrc and restarts Mixxx).
+                    try:
+                        cur = open("/home/dj/.djbox-audio").read().strip()
+                    except OSError:
+                        cur = "hdmi"
+                    nxt = "jack" if cur == "hdmi" else "hdmi"
+                    syslog.syslog("audio -> " + nxt)
+                    subprocess.Popen(["/usr/local/bin/djbox-audio.sh", nxt])
                 elif d1 == 0x25 and byte == 0x7F:
                     # Mixxx version badge pressed: toggle Preferences. No
                     # ControlObject exists for the dialog, so type the

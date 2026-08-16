@@ -179,10 +179,16 @@
                           <Number>
                             <ObjectName>TopStatusLoad</ObjectName>
                             <TooltipId>audio_latency_usage</TooltipId>
+                            <SizePolicy>max,max</SizePolicy>
+                            <NumberOfDigits>0</NumberOfDigits>
                             <Connection>
-                              <ConfigKey>[App],audio_latency_usage</ConfigKey>
+                              <ConfigKey>[Pioneered],load</ConfigKey>
                             </Connection>
                           </Number>
+                          <Label>
+                            <ObjectName>TopStatusLoadUnit</ObjectName>
+                            <Text>%</Text>
+                          </Label>
                         </Children>
                       </WidgetGroup>
                       <WidgetGroup>
@@ -201,6 +207,10 @@
                               <ConfigKey>[Pioneered],cpu</ConfigKey>
                             </Connection>
                           </Number>
+                          <Label>
+                            <ObjectName>TopStatusCpuUnit</ObjectName>
+                            <Text>%</Text>
+                          </Label>
                         </Children>
                       </WidgetGroup>
                       <WidgetGroup>

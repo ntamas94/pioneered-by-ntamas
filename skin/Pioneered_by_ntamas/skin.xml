@@ -35,6 +35,8 @@
 			<attribute config_key="[Pioneered],osk_req">0</attribute>
 			<attribute config_key="[Pioneered],profile2">0</attribute>
 			<attribute config_key="[Pioneered],temp">0</attribute>
+			<attribute config_key="[Pioneered],load">0</attribute>
+			<attribute config_key="[Pioneered],audio_btn">0</attribute>
 			<attribute config_key="[Pioneered],prefs_btn">0</attribute>
 			<attribute config_key="[Master],num_samplers">16</attribute>
 			<attribute persist="true" config_key="[Master],maximize_library">0</attribute>

@@ -29,6 +29,12 @@ TimeClamp.init = function () {
         "[Pioneered]", "zoomcycle", TimeClamp.zoomCycle);
     TimeClamp.autoDjConnection = engine.makeConnection(
         "[AutoDJ]", "enabled", TimeClamp.autoDjSync);
+    TimeClamp.loadConnection = engine.makeConnection(
+        "[App]", "audio_latency_usage", TimeClamp.loadPct);
+    if (TimeClamp.loadConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.loadConnection);
+        TimeClamp.loadPct(engine.getValue("[App]", "audio_latency_usage"));
+    }
     TimeClamp.fxLenConnection = engine.makeConnection(
         "[EffectRack1_EffectUnit1_Effect1]", "meta", TimeClamp.fxLen);
     if (TimeClamp.fxLenConnection) {
@@ -57,12 +63,27 @@ TimeClamp.init = function () {
     if (TimeClamp.prefsConnection) {
         TimeClamp.modeConnections.push(TimeClamp.prefsConnection);
     }
+    TimeClamp.audioConnection = engine.makeConnection(
+        "[Pioneered]", "audio_btn", TimeClamp.audioPress);
+    if (TimeClamp.audioConnection) {
+        TimeClamp.modeConnections.push(TimeClamp.audioConnection);
+    }
     TimeClamp.applyMode("mode4");
 };
 
 // The Mixxx version badge acts as a Preferences button: the press is
 // broadcast as 0xB0 0x25 and the djbox-osk-midi daemon types Ctrl+P into
 // the app (there is no ControlObject for the preferences dialog).
+// Audio output toggle button (HDMI <-> jack): 0xB0 0x26 to the daemon,
+// which runs djbox-audio.sh and restarts Mixxx.
+TimeClamp.audioPress = function (value) {
+    if (value !== 1) {
+        return;
+    }
+    midi.sendShortMsg(0xB0, 0x26, 0x7F);
+    midi.sendShortMsg(0xB0, 0x26, 0x00);
+};
+
 TimeClamp.prefsPress = function (value) {
     if (value !== 1) {
         return;
@@ -238,6 +259,12 @@ TimeClamp.autoDjSync = function (value) {
         engine.setValue("[Channel" + d + "]", "sync_enabled", value ? 1 : 0);
         engine.setValue("[Channel" + d + "]", "quantize", value ? 1 : 0);
     }
+};
+
+// Audio engine load as a percentage: [App],audio_latency_usage is a 0..1
+// ratio (buffer fill time / available time); the skin shows it as 0..100.
+TimeClamp.loadPct = function (value) {
+    engine.setValue("[Pioneered]", "load", Math.round(value * 100));
 };
 
 // LENGTH as a percentage: mirror the Beat FX meta knob (0..1) into a

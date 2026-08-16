@@ -1518,3 +1518,32 @@ WEffectChainPresetSelector {
   font-size: 16px;
   font-weight: bold;
 }
+
+#TopStatusCpuUnit {
+  color: #5f6c7f;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#TopStatusLoadUnit {
+  color: #5f6c7f;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* load % unit spacing: no trailing padding on the number */
+#TopStatusLoad { padding-right: 0px; }
+#TopStatusLoadUnit, #TopStatusCpuUnit { padding-left: 1px; }
+
+#TopStatusAudioBtn {
+  font-family: "DejaVu Sans";
+  font-size: 11px;
+  font-weight: bold;
+  color: #8a96a8;
+  background: transparent;
+  border: 1px solid #2a3a55;
+  border-radius: 3px;
+  margin-left: 8px;
+  padding: 0 4px;
+}
+#TopStatusAudioBtn:pressed { color: #ffffff; border-color: #f5a623; }
