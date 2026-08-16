@@ -1,0 +1,12 @@
+[Unit]
+Description=Re-apply the chosen master audio output (hdmi/jack/usb) to ~/.asoundrc
+After=sound.target
+Before=getty@tty1.service
+
+[Service]
+Type=oneshot
+User=dj
+ExecStart=/bin/bash -c '/usr/local/bin/djbox-audio.sh "$(cat /home/dj/.djbox-audio 2>/dev/null || echo hdmi)" --no-restart'
+
+[Install]
+WantedBy=multi-user.target

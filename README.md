@@ -65,7 +65,12 @@ All four decks loaded and on air:
 - Waveform sidebar: USB1 + eject, KEY, ON AIR column with large deck number
 - Pioneer-style cyclic ZOOM (zooms in, wraps back to widest) on all four
   decks at once
-- CPU readout in the top bar (systemd daemon → VirMIDI → mapping → skin)
+- Top status box: LOAD (audio engine %), CPU %, SoC °C, clock, and an
+  `OUT` button that flips the master output between HDMI and the 3.5 mm
+  jack (`pi-setup/djbox-audio.sh hdmi|jack|usb`). HDMI on the Pi only takes
+  IEC958-framed audio, so a raw `hw:` open fails in Mixxx — the script sets
+  up a named ALSA plug device (`hdmi_out`) that PortAudio lists and Mixxx
+  can pick; a USB sound card is picked up by `usb`
 - SINGLE/CONTINUE (AutoDJ), X-PAD strip, ZOOM/GRID, LOW/MID/HI kills
 - Minute ruler under the card waveform (`-4:00 -3:00 …`) — requires the
   patched Mixxx built by `pi-setup/build-mixxx-ruler.sh`

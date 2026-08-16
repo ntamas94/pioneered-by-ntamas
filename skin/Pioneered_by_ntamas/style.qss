@@ -1547,3 +1547,5 @@ WEffectChainPresetSelector {
   padding: 0 4px;
 }
 #TopStatusAudioBtn:pressed { color: #ffffff; border-color: #f5a623; }
+
+#TopStatusAudioBtn { margin-left: 6px; padding: 0 2px; min-width: 40px; }

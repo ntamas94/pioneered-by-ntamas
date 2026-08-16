@@ -229,6 +229,16 @@
                             <ObjectName>TopStatusTempUnit</ObjectName>
                             <Text>&#176;C</Text>
                           </Label>
+                          <PushButton>
+                            <ObjectName>TopStatusAudioBtn</ObjectName>
+                            <Size>44f,20f</Size>
+                            <NumberStates>1</NumberStates>
+                            <State><Number>0</Number><Text>OUT</Text></State>
+                            <Connection>
+                              <ConfigKey>[Pioneered],audio_btn</ConfigKey>
+                              <ConnectValueToWidget>false</ConnectValueToWidget>
+                            </Connection>
+                          </PushButton>
                         </Children>
                       </WidgetGroup>
                     </Children>
