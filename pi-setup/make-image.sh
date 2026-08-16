@@ -101,6 +101,10 @@ DISKID=$(blkid -s PTUUID -o value "$LOOP")
 sed -i "s|root=PARTUUID=[^ ]*|root=PARTUUID=${DISKID}-02|" \
     /mnt/newroot/boot/firmware/cmdline.txt
 sed -i 's/ usb-storage.quirks=[^ ]*//' /mnt/newroot/boot/firmware/cmdline.txt
+# Ship stock clocks: overclock only makes sense with active cooling, which a
+# downstream box may not have. Strip the OC block from the copied config.txt.
+sed -i '/^# Overclock/d; /^arm_freq=/d; /^over_voltage=/d' \
+    /mnt/newroot/boot/firmware/config.txt
 sed -i -E "s|^PARTUUID=[^ \t]+([ \t]+/boot/firmware[ \t])|PARTUUID=${DISKID}-01\1|; s|^PARTUUID=[^ \t]+([ \t]+/[ \t])|PARTUUID=${DISKID}-02\1|" \
     /mnt/newroot/etc/fstab
 touch /mnt/newroot/boot/firmware/meta-data
