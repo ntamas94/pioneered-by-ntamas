@@ -11,12 +11,24 @@ The skin is based on the 4-deck variant of
 [Pioneered](https://github.com/timewasternl/Pioneered) /
 [Pioneered-Plus](https://github.com/bencejuhaasz/Pioneered-Plus) (GPL-3.0).
 
-**Fastest start:** grab the ready-to-boot SD-card image from the
+**Fastest start:** grab a ready-to-boot SD-card image from the
 [latest release](https://github.com/ntamas94/pioneered-by-ntamas/releases)
-(1.2 GB `.img.xz`), flash it with Raspberry Pi Imager or balenaEtcher onto a
-16 GB+ card, add your WiFi to `network-config` on the boot partition (or use
-ethernet) and power up a Pi 4 — it boots straight into Mixxx. Login `dj` /
-`pioneered`, SSH enabled.
+(~1.1 GB `.img.xz`, Mixxx 2.5.6), flash it with Raspberry Pi Imager or
+balenaEtcher onto a 16 GB+ card, add your WiFi to `network-config` on the
+boot partition (or use ethernet) and power up — it boots straight into Mixxx.
+Login `dj` / `pioneered`, SSH enabled.
+
+Two flavours: **full** (4-deck UI with the `2 DECK / 2/4 DECK / 4 DECK`
+selector, auto deck-profile) and **2deck** (pinned to the 2 DECK view — for
+DDJ-FLX4 / DDJ-400 / DDJ-200 / SB3 / REV1 class controllers). The profile
+is one word in `/etc/djbox-profile` (`full`, `2deck`, `auto`), change it any
+time.
+
+Hardware: **Raspberry Pi 4, 2 GB RAM minimum, 4 GB recommended.** A Pi 3
+will boot it but 1 GB RAM and the VC4 GPU make it a poor DJ experience. The
+images ship stock clocks; with active cooling `arm_freq=2000` /
+`over_voltage=6` in `config.txt` is a free ~10% (the reference box runs 2 GHz
+at ~35 °C under load with a fan).
 
 ## Screen modes
 
