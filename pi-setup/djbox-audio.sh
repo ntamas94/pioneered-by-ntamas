@@ -47,9 +47,17 @@ open(p, 'w').write(s2)
 PYEOF
 }
 
+# Emits "<cardnum>|<PortAudio name>". PortAudio names ALSA hw devices as
+# "<card name>: <device name> (hw:N,0)", e.g. "DDJ-1000: USB Audio (hw:1,0)".
 usb_card() {
     aplay -l 2>/dev/null | grep '^card' | grep -viE 'vc4-hdmi|bcm2835' | head -1 \
-        | sed -E 's/^card ([0-9]+): ([^ ]+) \[([^]]+)\].*/\1|\3/'
+        | python3 -c '
+import re, sys
+line = sys.stdin.read()
+m = re.match(r"card (\d+): \S+ \[([^\]]+)\], device 0: [^\[]+\[([^\]]+)\]", line)
+if m:
+    print("%s|%s: %s (hw:%s,0)" % (m.group(1), m.group(2), m.group(3), m.group(1)))
+'
 }
 
 restart_mixxx() {
@@ -82,7 +90,8 @@ case "${1:-status}" in
         c=${info%%|*}; n=${info#*|}
         restart_mixxx "$@"
         write_rc
-        set_mixxx_device "hw:$c,0" "$n" "0"
+        # PortAudio index of a hw: device matches its ALSA card number here
+        set_mixxx_device "hw:$c,0" "$n" "$c"
         echo usb > "$STATE"
         echo "audio -> USB ($n, hw:$c,0)" ;;
     status)

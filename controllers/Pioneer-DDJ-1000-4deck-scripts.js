@@ -245,12 +245,18 @@ PioneerDDJ1000.relativeTicks = function (value) {
 
 // -- library --------------------------------------------------------------
 
+// The DDJ encoder reports a magnitude per message (0x01..0x1E depending on
+// how fast it is spun). Browse one row per detent regardless of speed; the
+// shifted knob pages by 5. (No timer coalescing: a one-shot engine timer
+// that gets re-armed while firing can wedge and the knob goes dead.)
 PioneerDDJ1000.browse = function (channel, control, value) {
-    engine.setValue("[Library]", "MoveVertical", PioneerDDJ1000.relativeTicks(value));
+    engine.setValue("[Library]", "MoveVertical",
+        PioneerDDJ1000.relativeTicks(value) > 0 ? 1 : -1);
 };
 
 PioneerDDJ1000.browseFast = function (channel, control, value) {
-    engine.setValue("[Library]", "MoveVertical", PioneerDDJ1000.relativeTicks(value) * 5);
+    engine.setValue("[Library]", "MoveVertical",
+        PioneerDDJ1000.relativeTicks(value) > 0 ? 5 : -5);
 };
 
 // -- pad lighting ---------------------------------------------------------

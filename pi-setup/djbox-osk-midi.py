@@ -21,10 +21,11 @@ HIDE = "/usr/local/bin/djbox-osk-hide.sh"
 
 
 def find_dev():
+    # VirMIDI is pinned to card 5; never glob -- a real controller (DDJ-1000
+    # shows up as card 1) would be opened instead and blocked from Mixxx.
     while True:
-        devs = sorted(glob.glob("/dev/snd/midiC*D0"))
-        if devs:
-            return devs[0]
+        if os.path.exists("/dev/snd/midiC5D0"):
+            return "/dev/snd/midiC5D0"
         time.sleep(2)
 
 

@@ -30,6 +30,15 @@ images ship stock clocks; with active cooling `arm_freq=2000` /
 `over_voltage=6` in `config.txt` is a free ~10% (the reference box runs 2 GHz
 at ~35 °C under load with a fan).
 
+## DDJ-1000 sound card on Linux
+
+The DDJ-1000's audio interface has **no Linux driver upstream** — the unit
+shows *"no audio driver"*. [`ddj1000-audio/`](ddj1000-audio/) has a small
+`snd-usb-audio` kernel quirk that fixes that (6 ch in/out, 24-bit 44.1 kHz,
+Mixxx plays through the controller's master out) plus a DKMS installer:
+`sudo ddj1000-audio/install.sh`. Details and the USB capture findings in
+its README.
+
 ## Screen modes
 
 All four decks loaded and on air:

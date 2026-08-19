@@ -16,13 +16,11 @@ set -u
 
 TWODECK_RE='DDJ-200|DDJ-250|DDJ-400|DDJ-FLX4|DDJ-SB3|DDJ-SB2|DDJ-WeGO|DDJ-REV1|DDJ-RB|DDJ-800'
 
-DEV=""
-until [ -n "$DEV" ]; do
-    for d in /dev/snd/midiC*D0; do
-        [ -e "$d" ] && DEV="$d" && break
-    done
-    [ -n "$DEV" ] || sleep 2
-done
+# The VirMIDI card is pinned to index 5 (/etc/modprobe.d/virmidi.conf).
+# Do NOT glob midiC*D0: a real controller (DDJ-1000 = card 1) would be
+# grabbed first and blocked from Mixxx.
+DEV=/dev/snd/midiC5D0
+until [ -e "$DEV" ]; do sleep 2; done
 
 exec 3>"$DEV"
 
