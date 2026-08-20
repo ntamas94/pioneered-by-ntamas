@@ -237,6 +237,21 @@ PioneerDDJ1000.sendLoop = function (deck) {
         0xF7], 13);
 };
 
+PioneerDDJ1000.sendCuePoint = function (deck, group) {
+    var rate = engine.getValue(group, "track_samplerate") || 44100;
+    var point = engine.getValue(group, "cue_point");
+    var ms = point >= 0 ? Math.round(point / (rate * 2) * 1000) : 0;
+    ms = Math.max(0, Math.min(0xFFFFFFF, ms));
+    if (PioneerDDJ1000.sentCuePoint[deck] === ms) {
+        return;
+    }
+    PioneerDDJ1000.sentCuePoint[deck] = ms;
+    midi.sendSysexMsg([0xF0, 0x7D, 0x60 | (deck - 1),
+        (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F, 0xF7], 8);
+};
+
+PioneerDDJ1000.sentCuePoint = {};
+
 PioneerDDJ1000.sendPosition = function (deck, elapsedMs, bpm) {
     var ms = Math.max(0, Math.min(0xFFFFFFF, Math.round(elapsedMs)));
     // The tempo rides along rather than going out as the display CC: the
@@ -1008,6 +1023,7 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     PioneerDDJ1000.sendPosition(deck, elapsed * 1000, bpm);
     PioneerDDJ1000.sendGridInfo(deck);
     PioneerDDJ1000.sendCues(deck);
+    PioneerDDJ1000.sendCuePoint(deck, group);
     PioneerDDJ1000.sendLoop(deck);
 
     // The playing-speed pair is the one display CC the HID view itself reads:

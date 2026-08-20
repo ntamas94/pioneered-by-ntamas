@@ -71,6 +71,7 @@ asound.snd_rawmidi_drain.argtypes = [ctypes.c_void_p]
 asound.snd_rawmidi_drain.restype = ctypes.c_int
 DEBUG = bool(os.environ.get("DDJ_DEBUG"))
 DEBUG_STATE = bool(os.environ.get("DDJ_DEBUG_STATE"))
+DEBUG_HID = bool(os.environ.get("DDJ_DEBUG_HID"))
 
 
 HDR = bytes([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x00, 0x00])
@@ -190,6 +191,7 @@ class DeckScreen:
         self.duration_ms = 0
         self.remaining = False
         self.cues = []
+        self.cue_ms = 0
         self.bpm = 0
         self.track_id = 0
         self.first_beat_ms = 0
@@ -295,7 +297,7 @@ class DeckScreen:
             marker = self.loop_in
         else:
             b[27] = 0x80
-            marker = self.first_beat_ms
+            marker = self.cue_ms or self.first_beat_ms
         b[31], b[32], b[33] = u24(marker)
         b[55], b[56], b[57] = u24(marker)
         b[58] = 0x01 if self.loaded else 0x00
@@ -342,9 +344,14 @@ CUE_EMPTY_SLOT = bytes((0x9E, 0x2F, 0x27, 0x01, 0x00))
 
 
 def cue_table(key, cues):
-    """The 0x2D transfer: ten slots of cue markers for the beat scale."""
+    """The 0x2D transfer: ten slots of cue markers for the beat scale.
+
+    Starts at the track id. The two bytes in front of it in a capture belong
+    to the transfer header -- every chunk repeats how many chunks there are --
+    and copying them into the payload here shifts the whole table along by two,
+    which is enough for the screen to file it under nothing at all.
+    """
     body = bytearray()
-    body += bytes((0x01, 0x00))
     body += key
     body += bytes((0x0A, 0x00))
     for minute, second, ms in cues[:10]:
@@ -752,6 +759,13 @@ class Bridge:
         if len(msg) < 5 or msg[1] != 0x7D:
             return False
         deck_index = msg[2] & 0x0F
+        if deck_index <= 3 and (msg[2] & 0x60) == 0x60:
+            # The cue point. This is the marker the screen draws across the
+            # waveform: left at zero it sits against the very start of the
+            # track, which is where it stayed while nothing sent one.
+            self.screens[deck_index].cue_ms = (
+                (msg[3] << 21) | (msg[4] << 14) | (msg[5] << 7) | msg[6])
+            return True
         if deck_index <= 3 and (msg[2] & 0x50) == 0x50:
             # The hot cue positions, for the markers on the beat scale.
             screen = self.screens[deck_index]
@@ -776,7 +790,10 @@ class Bridge:
             return True
         if deck_index <= 3 and (msg[2] & 0x30) == 0x30:
             # Which time readout to show. Five bytes, so it has to be picked
-            # off before the length check the longer messages need.
+            # off before the length check the longer messages need. Only the
+            # state bit changes: the overlay's remaining-time note must never
+            # be sent with the screens up -- it drags the unit into its
+            # overlay picture, which reads as the whole display falling apart.
             self.screens[deck_index].remaining = bool(msg[3])
             return True
         if len(msg) < 8:
@@ -809,10 +826,15 @@ class Bridge:
             self.drawn[deck_index] = None
             self.screens[deck_index].track_id = 0
             return True
-        # A stable non-zero id per track: the unit files artwork and waveform
-        # under it, and with a zero id it throws them away again after a moment.
-        self.screens[deck_index].track_id = ms & 0x7FFFFFFF
-        self.screens[deck_index].duration_ms = ms
+        # The id the unit files artwork, waveform and cues under. Shaped the
+        # way rekordbox shapes it: the track's length in milliseconds in the
+        # upper three bytes, a small counter in the low one. The length alone
+        # is unique enough, but the counter is what makes reloading the same
+        # track a different id, which is how the screen knows to redraw.
+        screen = self.screens[deck_index]
+        counter = ((screen.track_id & 0xFF) % 7) + 1
+        screen.track_id = ((ms & 0xFFFFFF) << 8) | counter
+        screen.duration_ms = ms
         # The mapping repeats the announcement so a restarted daemon can catch
         # up; only redraw when it is actually a different track.
         if self.drawn.get(deck_index) == ms:
@@ -878,9 +900,7 @@ class Bridge:
 
         grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
         self.send_hid_transfer(deck, 0x2F, grid)
-        # The id sits two bytes in, behind a constant 02 00 -- sent flush
-        # against the front it lands in the wrong field entirely.
-        self.send_hid_transfer(deck, 0x30, bytes((0x02, 0x00)) + key + bytes(110))
+        self.send_hid_transfer(deck, 0x30, key + bytes(112))
         self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
         payloads = self.build_track_payloads(deck_index, path)
@@ -949,7 +969,11 @@ class Bridge:
         total = len(chunks)
 
         def report(index, data):
-            self.to_ddj_hid(struct.pack("<BBHH", deck, cmd, index, total) + data)
+            packet = struct.pack("<BBHH", deck, cmd, index, total) + data
+            if DEBUG_HID and index <= 2:
+                syslog.syslog("hid %02x deck%02x chunk %d/%d: %s"
+                              % (cmd, deck, index, total, packet.hex()))
+            self.to_ddj_hid(packet)
             time.sleep(0.0012)
 
         # The short records get a lone copy of their last chunk first; artwork
@@ -972,6 +996,9 @@ class Bridge:
                 syslog.syslog("jog screen %d: no word from Mixxx for %.1f s, "
                               "blanking" % (i + 1, now - screen.last_seen))
             record = screen.record(deck)
+            if DEBUG_STATE and screen.loaded and now - self.state_logged > 3.0:
+                self.state_logged = now
+                syslog.syslog("state deck%d: %s" % (i + 1, record.hex()))
             if DEBUG_STATE and i == 0 and now - self.state_logged > 2.0:
                 self.state_logged = now
                 syslog.syslog("deck 1 state: b9=%02x %d:%02d.%03d id %08x bpm %d.%d"
@@ -1121,7 +1148,11 @@ class Bridge:
                 # sound card, so a replug leaves Mixxx holding a stream that no
                 # longer exists, and it has no way of noticing on its own. The
                 # mapping turns this note into [SoundManager],reopen_devices.
+                # The note-off matters: the control only signals on a change,
+                # so left at 7F it fires once in Mixxx's lifetime and every
+                # later reconnect is ignored.
                 self.to_mixxx(bytes((0x9F, 0x7F, 0x7F)))
+                self.to_mixxx(bytes((0x9F, 0x7F, 0x00)))
                 self.authenticated = True
             self.display_bringup()
             return True
