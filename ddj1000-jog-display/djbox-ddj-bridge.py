@@ -638,6 +638,11 @@ class Bridge:
         self.rbuf = ctypes.create_string_buffer(1024)
         self.vir = os.open(vir_path, os.O_RDWR | os.O_NONBLOCK)
         self.from_ddj = MidiSplitter()
+        self.probe_at = 0.0
+        self.probe_seen = 0
+        self.burst_at = 0.0
+        self.burst_seen = set()
+        self.panel = {}
         self.from_vir = MidiSplitter()
         self.screens = [DeckScreen() for _ in range(4)]
         self.drawn = {}
@@ -931,6 +936,33 @@ class Bridge:
             return
         self._display_bringup_fallback()
 
+    def request_panel_state(self):
+        """Make the unit report where its knobs and faders are sitting.
+
+        It does this once, unprompted, as the host brings it up -- which is
+        long before Mixxx has opened its port, so Mixxx never sees it and
+        starts out disagreeing with the panel. Replaying that same opening
+        burst asks for it again. The mapping's own note on a deck channel is
+        the signal that Mixxx is ready for the answer.
+        """
+        now = time.monotonic()
+        if now - self.probe_at < 2.0:          # the mapping sends one per deck
+            return
+        self.probe_at = now
+
+        # Ask again first, in case this is a session where the unit still has
+        # something to say, then hand over what it said last time. Sorting puts
+        # each 14-bit control's high byte before its low one, which is the
+        # order Mixxx expects to assemble them in.
+        for ch in range(4):
+            self.to_ddj(bytes((0x90 | ch, 0x21, 0x20)))
+            time.sleep(0.002)
+        for address in sorted(self.panel):
+            self.to_mixxx(bytes(address) + bytes([self.panel[address]]))
+            time.sleep(0.001)
+        if self.panel:
+            syslog.syslog("replayed %d control positions to Mixxx" % len(self.panel))
+
     def _display_bringup_fallback(self):
         for payload in JOGSCREEN_ENABLE:
             self.sysex(payload)
@@ -1019,8 +1051,30 @@ class Bridge:
                 if DEBUG:
                     syslog.syslog("rx %d: %s" % (len(chunk), chunk[:32].hex()))
                 for msg in self.from_ddj.feed(chunk):
+                    if len(msg) == 3 and msg[0] & 0xF0 == 0xB0:
+                        # Remember where every knob and fader is. The unit
+                        # reports its whole panel once, just after it
+                        # authenticates, and never again -- which is before
+                        # Mixxx has opened its port, so Mixxx would otherwise
+                        # never learn any of it.
+                        self.panel[msg[:2]] = msg[2]
+                        # The unit reports its whole panel in one burst; say so
+                        # when it happens, since when it happens is the whole
+                        # question -- Mixxx only picks the values up if its
+                        # port is open at the time. Count distinct addresses,
+                        # not messages: turning the jog wheel produces hundreds
+                        # of messages from a single one.
+                        if now - self.burst_at > 0.3:
+                            self.burst_seen = set()
+                        self.burst_at = now
+                        self.burst_seen.add(msg[:2])
                     if not self.handle_unit_message(msg):
                         self.to_mixxx(msg)
+
+            if len(self.burst_seen) >= 20 and now - self.burst_at > 0.3:
+                syslog.syslog("panel state: %d control positions from the unit"
+                              % len(self.burst_seen))
+                self.burst_seen = set()
 
             if self.hid is not None:
                 # Draining the reports keeps the poll running; their content is
@@ -1048,6 +1102,10 @@ class Bridge:
                         if self.announce_track(msg):
                             continue           # ours, never goes to the controller
                         syslog.syslog("sysex from Mixxx: %s" % msg[:10].hex())
+                    if len(msg) == 3 and msg[0] in (0x90, 0x91, 0x92, 0x93) \
+                            and msg[1] == 0x21:
+                        self.request_panel_state()
+                        continue
                     self.watch_display_midi(msg)
                     self.to_ddj(msg)
 
