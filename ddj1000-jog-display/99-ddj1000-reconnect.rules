@@ -1,0 +1,2 @@
+# Bring Mixxx's audio back when the DDJ-1000 is plugged in or power-cycled.
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0020", RUN+="/usr/local/bin/djbox-ddj-reconnect.sh"

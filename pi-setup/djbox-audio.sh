@@ -35,20 +35,17 @@ pcm.!default {
 EOF
 }
 
-# $1 = alsaHwDevice attr, $2 = name attr, $3 = portAudioIndex
+# $1 = alsaHwDevice attr, $2 = name attr, $3 = portAudioIndex.
+# The helper rebuilds the file when Mixxx left it without any device,
+# which is what happens after it starts with no working output.
 set_mixxx_device() {
-    python3 - "$1" "$2" "$3" <<'PYEOF'
-import re, sys
-p = '/home/dj/.mixxx/soundconfig.xml'
-s = open(p).read()
-new = '<SoundDevice alsaHwDevice="%s" name="%s" portAudioIndex="%s">' % tuple(sys.argv[1:4])
-s2 = re.sub(r'<SoundDevice alsaHwDevice="[^"]*" name="[^"]*" portAudioIndex="[^"]*">', new, s, count=1)
-open(p, 'w').write(s2)
-PYEOF
+    /usr/local/bin/djbox-mixxx-sounddevice.py "$1" "$2" "$3"
 }
 
-# Emits "<cardnum>|<PortAudio name>". PortAudio names ALSA hw devices as
-# "<card name>: <device name> (hw:N,0)", e.g. "DDJ-1000: USB Audio (hw:1,0)".
+# Emits "<cardnum>|<Mixxx device name>". PortAudio names ALSA hw devices as
+# "<card name>: <device name> (hw:N,0)", but Mixxx stores and matches them with
+# that suffix stripped -- writing the suffixed form leaves it with no output
+# device at all ("Mixxx was configured without any output sound devices").
 usb_card() {
     aplay -l 2>/dev/null | grep '^card' | grep -viE 'vc4-hdmi|bcm2835' | head -1 \
         | python3 -c '
@@ -56,7 +53,7 @@ import re, sys
 line = sys.stdin.read()
 m = re.match(r"card (\d+): \S+ \[([^\]]+)\], device 0: [^\[]+\[([^\]]+)\]", line)
 if m:
-    print("%s|%s: %s (hw:%s,0)" % (m.group(1), m.group(2), m.group(3), m.group(1)))
+    print("%s|%s: %s" % (m.group(1), m.group(2), m.group(3)))
 '
 }
 

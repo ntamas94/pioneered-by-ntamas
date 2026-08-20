@@ -39,6 +39,11 @@ Mixxx plays through the controller's master out) plus a DKMS installer:
 `sudo ddj1000-audio/install.sh`. Details and the USB capture findings in
 its README.
 
+## DDJ-1000 jog wheel displays
+
+Cover art, waveform and live deck state on a DDJ-1000's jog wheels, driven from
+Mixxx. Work in progress; see [`ddj1000-jog-display/`](ddj1000-jog-display/).
+
 ## Screen modes
 
 All four decks loaded and on air:
