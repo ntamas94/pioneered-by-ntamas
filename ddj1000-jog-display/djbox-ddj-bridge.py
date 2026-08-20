@@ -163,6 +163,9 @@ CMD_WAVEFORM = 0x2C
 # no track length behind it to count down from.
 TIME_REMAINING_BIT = 0x08
 DISPLAY_FLAGS = int(os.environ.get("DDJ_DISPLAY_FLAGS", "0x18"), 16)
+# Where rekordbox's library row numbers sat in every capture.
+LIBRARY_ROW_BASE = 8439680
+FORCED_ID = int(os.environ.get("DDJ_FORCE_ID", "0"), 16)
 
 
 def track_by_duration(seconds):
@@ -355,12 +358,11 @@ def beat_grid(bpm, first_beat_ms, duration_s):
     if bpm <= 0:
         bpm = 120.0
     interval = 60000.0 / bpm
-    # Sixteen bars past the end: the cue scope reads that far ahead of the
-    # playhead, so a grid stopping dead on the last beat leaves it with
-    # nothing to draw as the track runs out. rekordbox's own grids overshoot
-    # by rather more than this, but nothing observed needs more.
-    span_ms = duration_s * 1000 + 64 * interval - first_beat_ms
-    count = min(int(span_ms / interval), 2000)
+    # Exactly the track and no further. The screen lays the waveform out
+    # across the whole grid, so beats past the end of the music stretch the
+    # picture: sixteen bars of overshoot at 87 BPM put the playhead a good
+    # twenty seconds adrift of where the music actually was.
+    count = min(int((duration_s * 1000 - first_beat_ms) / interval), 2000)
     if count < 1:
         return bytes(58)
     body = bytearray(struct.pack("<H", count))
@@ -719,6 +721,7 @@ class Bridge:
         self.panel = {}
         # Seeded from the clock so ids differ across restarts too.
         self.load_seq = int(time.time()) % 5
+        self.library_row = 0
         self.screens_woken = False
         self.paused = False
         self.time_mode_reset = False
@@ -915,8 +918,16 @@ class Bridge:
             # there makes it call the track over and show END. The low byte
             # is a small sequence number, which is all that distinguishes one
             # load of a track from the next.
-            self.load_seq = self.load_seq % 5 + 3
-            screen.track_id = ((ms & 0xFFFFFF) << 8) | self.load_seq
+            # The same track keeps the same id every time it is loaded. The
+            # screens only animate a track they hold an entry for, and an id
+            # that changes on every load never gets past a first sighting --
+            # the entry, whatever creates it, is never met twice.
+            screen.track_id = ((ms & 0xFFFFFF) << 8) | 0x03
+            if FORCED_ID:
+                # Diagnostic: an id a capture proves the screens animate. If
+                # the playhead moves under it and under nothing else, the unit
+                # is only animating tracks it already knows.
+                screen.track_id = FORCED_ID
         screen.duration_ms = ms
         # The mapping repeats the announcement so a restarted daemon can catch
         # up; only redraw when it is actually a different track.
@@ -974,6 +985,13 @@ class Bridge:
         # It runs before the artwork build, not after: decoding a track for
         # its waveform takes seconds, and the deck should read right the
         # moment something lands on it. The picture catches up when ready.
+        # Announced before any of the upload, which is the order a capture
+        # shows: the two Pioneer messages, then the load trigger, and only
+        # then a single byte of track data. Sent from the middle of the
+        # sequence instead, the unit has already been handed a track it was
+        # never told about.
+        self.announce_load(screen.track_id)
+
         self.send_hid_transfer(deck, 0x30, bytes(116), prime=False)
         # The load trigger, from rekordbox's own mapping table: note 9F 00..03
         # per deck, "Trigger for Load illumination". It rides the MIDI side,
@@ -993,7 +1011,6 @@ class Bridge:
         self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
         self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
-        self.announce_load(screen.track_id)
         self.to_ddj(bytes((0x9F, deck_index, 0x7F)))
         payloads = self.build_track_payloads(deck_index, path)
         syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
@@ -1148,7 +1165,13 @@ class Bridge:
         # and terminator these already carry.
         self.to_ddj(bytes.fromhex("f00040050000020000000b2b6800000000f7"))
         time.sleep(0.002)
-        value = track_id & 0x0FFFFFFF
+        # Not the display id: rekordbox puts its own library row number here,
+        # and every one seen sits within a few hundred of 8.44 million while
+        # the display id swings with the track's length. Kept in the same
+        # narrow band and stepped once per load, in case the unit files it
+        # somewhere that cares.
+        self.library_row += 1
+        value = (LIBRARY_ROW_BASE + self.library_row) & 0x0FFFFFFF
         self.to_ddj(bytes((0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02,
                            0x00, 0x00, 0x00, 0x0C, 0x00, 0x00,
                            (value >> 21) & 0x7F, (value >> 14) & 0x7F,
