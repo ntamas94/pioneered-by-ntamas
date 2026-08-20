@@ -145,6 +145,13 @@ ART_CACHE = "/var/cache/djbox-art"
 CMD_ARTWORK = 0x2B
 CMD_WAVEFORM = 0x2C
 
+# Byte 3 of the state record, bit 0x08: set counts the time down, clear counts
+# it up. The Time Mode preference is not a MIDI setting at all -- capturing
+# rekordbox while it was switched shows nothing on the MIDI side and this bit
+# flipping -- so a fixed 0x0A here is what left every screen on remaining, with
+# no track length behind it to count down from.
+TIME_REMAINING_BIT = 0x08
+
 
 def track_by_duration(seconds):
     """Find the loaded track in Mixxx's library by its duration.
@@ -181,6 +188,8 @@ class DeckScreen:
         self.loaded = False
         self.suspend = False
         self.duration_ms = 0
+        self.remaining = False
+        self.cues = []
         self.bpm = 0
         self.track_id = 0
         self.first_beat_ms = 0
@@ -240,7 +249,7 @@ class DeckScreen:
         b[0] = deck
         b[1] = 0x21
         b[2] = 0x18
-        b[3] = 0x0A
+        b[3] = 0x02 | (TIME_REMAINING_BIT if self.remaining else 0)
         b[4] = 0x11
         b[5] = 0x81
         if self.suspend:
@@ -294,9 +303,6 @@ class DeckScreen:
         b[61] = 0x0D
         return bytes(b)
 
-# The cue table the unit gets when a track has no cue points: a count of ten
-# and ten copies of the empty-slot marker, exactly as rekordbox sends it.
-CUE_TABLE = struct.pack("<H", 10) + bytes.fromhex("9e2f270100") * 10 + bytes(2)
 
 
 def beat_grid(bpm, first_beat_ms, duration_s):
@@ -326,6 +332,26 @@ def beat_grid(bpm, first_beat_ms, duration_s):
 
 
 POST_AUTH_FILE = "/usr/local/share/ddj1000-post-auth-midi.txt"
+
+
+# One line of the cue table: minute, second, millisecond (16-bit), and a flag
+# byte whose meaning is still unknown -- rekordbox writes zero for real cues.
+# An empty slot is the out-of-range time 158:47.295, which is what rekordbox
+# fills its unused slots with.
+CUE_EMPTY_SLOT = bytes((0x9E, 0x2F, 0x27, 0x01, 0x00))
+
+
+def cue_table(key, cues):
+    """The 0x2D transfer: ten slots of cue markers for the beat scale."""
+    body = bytearray()
+    body += bytes((0x01, 0x00))
+    body += key
+    body += bytes((0x0A, 0x00))
+    for minute, second, ms in cues[:10]:
+        body += bytes((minute & 0xFF, second % 60, ms & 0xFF, (ms >> 8) & 0xFF, 0x00))
+    for _ in range(max(0, 10 - len(cues))):
+        body += CUE_EMPTY_SLOT
+    return bytes(body)
 
 
 def load_post_auth():
@@ -723,9 +749,38 @@ class Bridge:
 
     def announce_track(self, msg):
         """Handle the mapping's private track announcement (F0 7D deck ms F7)."""
-        if len(msg) < 8 or msg[1] != 0x7D:
+        if len(msg) < 5 or msg[1] != 0x7D:
             return False
         deck_index = msg[2] & 0x0F
+        if deck_index <= 3 and (msg[2] & 0x50) == 0x50:
+            # The hot cue positions, for the markers on the beat scale.
+            screen = self.screens[deck_index]
+            count = msg[3]
+            cues = []
+            for i in range(count):
+                base = 4 + i * 4
+                if base + 4 > len(msg) - 1:
+                    break
+                cues.append((msg[base], msg[base + 1],
+                             (msg[base + 2] << 7) | msg[base + 3]))
+            if cues != screen.cues:
+                screen.cues = cues
+                if screen.loaded and self.authenticated:
+                    # Already on a deck: update the table in place.
+                    key = struct.pack("<I", screen.track_id)
+                    threading.Thread(
+                        target=self.send_hid_transfer,
+                        args=(SCREEN_DECKS[deck_index], 0x2D,
+                              cue_table(key, cues)),
+                        daemon=True).start()
+            return True
+        if deck_index <= 3 and (msg[2] & 0x30) == 0x30:
+            # Which time readout to show. Five bytes, so it has to be picked
+            # off before the length check the longer messages need.
+            self.screens[deck_index].remaining = bool(msg[3])
+            return True
+        if len(msg) < 8:
+            return False
         ms = (msg[3] << 21) | (msg[4] << 14) | (msg[5] << 7) | msg[6]
         if deck_index > 3:
             return True
@@ -737,7 +792,7 @@ class Bridge:
                 screen.loop_in = (msg[4] << 21) | (msg[5] << 14) | (msg[6] << 7) | msg[7]
                 screen.loop_out = (msg[8] << 21) | (msg[9] << 14) | (msg[10] << 7) | msg[11]
             return True
-        if msg[2] & 0x20:                      # grid start, key, time mode
+        if msg[2] & 0x20:                      # grid start and key
             screen = self.screens[deck_index]
             screen.first_beat_ms = (msg[3] << 7) | msg[4]
             screen.key_code = msg[5]
@@ -823,8 +878,10 @@ class Bridge:
 
         grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
         self.send_hid_transfer(deck, 0x2F, grid)
-        self.send_hid_transfer(deck, 0x30, key + bytes(112))
-        self.send_hid_transfer(deck, 0x2D, key + CUE_TABLE)
+        # The id sits two bytes in, behind a constant 02 00 -- sent flush
+        # against the front it lands in the wrong field entirely.
+        self.send_hid_transfer(deck, 0x30, bytes((0x02, 0x00)) + key + bytes(110))
+        self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
         payloads = self.build_track_payloads(deck_index, path)
         syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"

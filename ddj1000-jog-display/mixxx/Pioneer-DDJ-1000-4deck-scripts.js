@@ -89,6 +89,38 @@ PioneerDDJ1000.lastSent = {};
 
 // -- lifecycle ------------------------------------------------------------
 
+// The cue positions, for the markers along the jog screen's beat scale. The
+// screen has ten slots; hot cues fill them in pad order. Sent as minutes,
+// seconds and milliseconds because that is how the table wants them.
+PioneerDDJ1000.sentCues = {};
+
+PioneerDDJ1000.sendCues = function (deck) {
+    var group = "[Channel" + deck + "]";
+    var rate = engine.getValue(group, "track_samplerate") || 44100;
+    var entries = [];
+    for (var cue = 1; cue <= 8 && entries.length < 10; cue++) {
+        var position = engine.getValue(group, "hotcue_" + cue + "_position");
+        if (position < 0) {
+            continue;
+        }
+        var ms = Math.max(0, Math.round(position / (rate * 2) * 1000));
+        entries.push([Math.min(127, Math.floor(ms / 60000)),
+            Math.floor(ms / 1000) % 60, ms % 1000]);
+    }
+    var packed = JSON.stringify(entries);
+    if (PioneerDDJ1000.sentCues[deck] === packed) {
+        return;
+    }
+    PioneerDDJ1000.sentCues[deck] = packed;
+    var message = [0xF0, 0x7D, 0x50 | (deck - 1), entries.length];
+    for (var i = 0; i < entries.length; i++) {
+        message.push(entries[i][0], entries[i][1],
+            (entries[i][2] >> 7) & 0x7F, entries[i][2] & 0x7F);
+    }
+    message.push(0xF7);
+    midi.sendSysexMsg(message, message.length);
+};
+
 // Announced from the display timer rather than from a track_loaded callback:
 // the callback fires before the duration is readable, so it would report zero.
 PioneerDDJ1000.announcedMs = {};
@@ -140,13 +172,19 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     firstBeat = Math.min(firstBeat, 16383);
 
     var key = PioneerDDJ1000.ddjKeyCode(engine.getValue(group, "key"));
-    var packed = firstBeat + ":" + key;
+    // Whichever time readout Mixxx is showing, the jog shows the same one. It
+    // rides along here rather than going out as a MIDI setting because there
+    // is no such setting: rekordbox switches it on the state record, so this
+    // is what the bridge needs to put on the wire.
+    var remaining = engine.getValue("[Controls]", "ShowDurationRemaining")
+        === PioneerDDJ1000.timeModeRemaining ? 1 : 0;
+    var packed = firstBeat + ":" + key + ":" + remaining;
     if (PioneerDDJ1000.gridInfo[deck] === packed) {
         return;
     }
     PioneerDDJ1000.gridInfo[deck] = packed;
     midi.sendSysexMsg([0xF0, 0x7D, 0x20 | (deck - 1),
-        (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, 0x00, 0xF7], 8);
+        (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, remaining, 0xF7], 8);
     // The jog always shows elapsed time. Switching it to remaining is possible
     // -- the mode note and BF 45 both put the minus sign up -- but the unit
     // then counts down from a track length it computes itself and does not
@@ -276,11 +314,48 @@ PioneerDDJ1000.armSoftTakeover = function () {
 // only has the first two, so bounce straight past "both" and keep the readout
 // to a single number. This lives in the mapping because the skin cannot
 // override a compiled widget's click handler.
+// Which readout the jog screens show. Its own message, sent the moment the
+// setting changes: the grid message it used to ride on is only re-sent when
+// the grid itself changes, so switching the readout alone never reached the
+// bridge at all.
+PioneerDDJ1000.lastTimeMode = -1;
+
+// Polled from the display timer as well as driven by the callback: a control
+// change that arrives while the mapping is still starting up has nobody
+// connected to it yet, and the screens then sit on the wrong readout forever.
+PioneerDDJ1000.timeModeSentAt = 0;
+
+PioneerDDJ1000.pollTimeMode = function () {
+    var value = engine.getValue("[Controls]", "ShowDurationRemaining");
+    var now = Date.now();
+    // Repeated, not just sent on change: the bridge rebuilds itself whenever
+    // the controller re-enumerates, and a setting sent once before that is
+    // simply lost -- which left the screens on elapsed while Mixxx had been
+    // set to remaining all along.
+    if (value === PioneerDDJ1000.lastTimeMode &&
+            now - PioneerDDJ1000.timeModeSentAt < 5000) {
+        return;
+    }
+    PioneerDDJ1000.lastTimeMode = value;
+    PioneerDDJ1000.timeModeSentAt = now;
+    PioneerDDJ1000.sendTimeMode();
+};
+
+PioneerDDJ1000.sendTimeMode = function () {
+    var remaining = engine.getValue("[Controls]", "ShowDurationRemaining")
+        === PioneerDDJ1000.timeModeRemaining ? 1 : 0;
+    for (var deck = 1; deck <= 4; deck++) {
+        midi.sendSysexMsg([0xF0, 0x7D, 0x30 | (deck - 1), remaining, 0xF7], 5);
+    }
+};
+
 PioneerDDJ1000.skipBothTimeMode = function () {
     var connection = engine.makeConnection("[Controls]", "ShowDurationRemaining", function (value) {
         if (value === PioneerDDJ1000.timeModeBoth) {
             engine.setValue("[Controls]", "ShowDurationRemaining", PioneerDDJ1000.timeModeElapsed);
+            return;
         }
+        PioneerDDJ1000.sendTimeMode();
     });
 
     if (connection) {
@@ -289,6 +364,7 @@ PioneerDDJ1000.skipBothTimeMode = function () {
         if (engine.getValue("[Controls]", "ShowDurationRemaining") === PioneerDDJ1000.timeModeBoth) {
             engine.setValue("[Controls]", "ShowDurationRemaining", PioneerDDJ1000.timeModeElapsed);
         }
+        PioneerDDJ1000.sendTimeMode();
     }
 };
 
@@ -787,6 +863,59 @@ PioneerDDJ1000.browseFast = function (channel, control, value) {
         PioneerDDJ1000.relativeTicks(value) > 0 ? 5 : -5);
 };
 
+// -- Beat FX --------------------------------------------------------------
+//
+// The unit's fourteen effect buttons each select one effect outright, so they
+// map to positions in the loaded chain rather than to a next/previous step.
+// Mixxx's chain is whatever the user has loaded, so the index is what the
+// button carries; the name on the unit's own FX display is the unit's, and it
+// shows whichever button was last pressed regardless.
+PioneerDDJ1000.effectSlot = "[EffectRack1_EffectUnit1_Effect1]";
+PioneerDDJ1000.effectUnit = "[EffectRack1_EffectUnit1]";
+
+PioneerDDJ1000.selectEffectByIndex = function (index) {
+    return function (channel, control, value) {
+        if (value === 0) {
+            return;
+        }
+        engine.setValue(PioneerDDJ1000.effectSlot, "effect_selector", 0);
+        for (var step = 0; step < index; step++) {
+            engine.setValue(PioneerDDJ1000.effectSlot, "effect_selector", 1);
+        }
+    };
+};
+
+// The beat buttons step the effect's period, which is what "beat" means on the
+// unit: how long the echo, roll or delay lasts.
+PioneerDDJ1000.beatStep = function (direction) {
+    return function (channel, control, value) {
+        if (value === 0) {
+            return;
+        }
+        var current = engine.getValue(PioneerDDJ1000.effectSlot, "parameter1");
+        engine.setValue(PioneerDDJ1000.effectSlot, "parameter1",
+            Math.max(0, Math.min(1, current + direction * 0.1)));
+    };
+};
+
+PioneerDDJ1000.beatDown = PioneerDDJ1000.beatStep(-1);
+PioneerDDJ1000.beatUp = PioneerDDJ1000.beatStep(1);
+
+PioneerDDJ1000.selectEffect20 = PioneerDDJ1000.selectEffectByIndex(0);
+PioneerDDJ1000.selectEffect21 = PioneerDDJ1000.selectEffectByIndex(1);
+PioneerDDJ1000.selectEffect22 = PioneerDDJ1000.selectEffectByIndex(2);
+PioneerDDJ1000.selectEffect23 = PioneerDDJ1000.selectEffectByIndex(3);
+PioneerDDJ1000.selectEffect24 = PioneerDDJ1000.selectEffectByIndex(4);
+PioneerDDJ1000.selectEffect25 = PioneerDDJ1000.selectEffectByIndex(5);
+PioneerDDJ1000.selectEffect26 = PioneerDDJ1000.selectEffectByIndex(6);
+PioneerDDJ1000.selectEffect27 = PioneerDDJ1000.selectEffectByIndex(7);
+PioneerDDJ1000.selectEffect28 = PioneerDDJ1000.selectEffectByIndex(8);
+PioneerDDJ1000.selectEffect29 = PioneerDDJ1000.selectEffectByIndex(9);
+PioneerDDJ1000.selectEffect2A = PioneerDDJ1000.selectEffectByIndex(10);
+PioneerDDJ1000.selectEffect2B = PioneerDDJ1000.selectEffectByIndex(11);
+PioneerDDJ1000.selectEffect2C = PioneerDDJ1000.selectEffectByIndex(12);
+PioneerDDJ1000.selectEffect2D = PioneerDDJ1000.selectEffectByIndex(13);
+
 // -- pad lighting ---------------------------------------------------------
 
 // The pads are RGB: a note with data2 in 1..127 lights that colour, 0x00 dims
@@ -864,6 +993,9 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     PioneerDDJ1000.checkJogSpindown(deck);
     PioneerDDJ1000.updateSearch(deck);
     PioneerDDJ1000.announceIfChanged(deck);
+    if (deck === 1) {
+        PioneerDDJ1000.pollTimeMode();
+    }
 
     var duration = engine.getValue(group, "duration");
     var position = engine.getValue(group, "playposition");
@@ -875,6 +1007,7 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     var bpm = engine.getValue(group, "bpm") || 0;
     PioneerDDJ1000.sendPosition(deck, elapsed * 1000, bpm);
     PioneerDDJ1000.sendGridInfo(deck);
+    PioneerDDJ1000.sendCues(deck);
     PioneerDDJ1000.sendLoop(deck);
 
     // The playing-speed pair is the one display CC the HID view itself reads:
