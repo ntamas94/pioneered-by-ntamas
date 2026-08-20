@@ -311,18 +311,23 @@ class DeckScreen:
         else:
             b[27] = 0x80
             marker = self.cue_ms or self.first_beat_ms
+        # The two marker fields hold the same value in every captured record
+        # bar one: b55 is a copy of b31, not the playhead. Writing the live
+        # position into b55 was a guess that never matched rekordbox, so the
+        # marker sat at whatever the guess produced.
         b[31], b[32], b[33] = u24(marker)
-        # Not a copy of the marker: this is the playhead the screen draws
-        # across the waveform, and it follows the music. In a capture it
-        # tracks the position while playing and parks while paused; fed the
-        # marker instead, the line stands at the start of the track forever.
-        b[55], b[56], b[57] = u24(self.position_ms())
+        b[55], b[56], b[57] = u24(marker)
         # 1 while a track is being handed over, 3 once its waveform is up.
         # rekordbox holds 1 for the length of the upload and then sits on 3 for
         # the rest of the track -- and 3 is what moves the playhead along the
         # waveform. Stuck on 1, the screen draws everything and never marks
         # where the music is.
         b[58] = (0x03 if self.ready else 0x01) if self.loaded else 0x00
+        # Set just before the 3 goes into the byte before it, and cleared just
+        # after it goes back to 1. In every capture where the playhead travels
+        # this pair reads 03 and non-zero together; where it stands still they
+        # read 01 and 00 for the whole recording.
+        b[59] = 0x16 if (self.loaded and self.ready) else 0x00
         b[60] = self.key_code                  # musical key, constant per track
         b[61] = 0x0D
         return bytes(b)
