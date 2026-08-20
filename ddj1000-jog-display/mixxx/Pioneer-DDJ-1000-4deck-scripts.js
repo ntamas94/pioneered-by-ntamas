@@ -229,6 +229,7 @@ PioneerDDJ1000.init = function () {
         }
 
         PioneerDDJ1000.connectLoopState(deck);
+        PioneerDDJ1000.connectWaveformReturn(deck);
 
     });
 
@@ -371,6 +372,11 @@ PioneerDDJ1000.sendNoteIfChanged = function (deck, note, value) {
 PioneerDDJ1000.jogTouched = {};
 PioneerDDJ1000.jogLastTick = {};
 PioneerDDJ1000.jogSpeed = {};
+// True only between letting go of a spinning platter and the throw running
+// out. Without it the outer ring would keep feeding the scratch for as long
+// as it was turned, because a turning ring looks exactly like a wheel that
+// has not come to rest yet.
+PioneerDDJ1000.jogThrowing = {};
 
 // A wheel turning at playing speed sends this many ticks a second. Below a
 // fraction of it the throw has run out, and the deck should be handed back to
@@ -387,6 +393,7 @@ PioneerDDJ1000.jogTouch = function (channel, control, value, status) {
 
     if (value > 0) {
         PioneerDDJ1000.jogTouched[deck] = true;
+        PioneerDDJ1000.jogThrowing[deck] = false;
         PioneerDDJ1000.jogSpeed[deck] = undefined;
         engine.scratchEnable(
             deck,
@@ -398,13 +405,14 @@ PioneerDDJ1000.jogTouch = function (channel, control, value, status) {
         );
     } else {
         PioneerDDJ1000.jogTouched[deck] = false;
+        PioneerDDJ1000.jogThrowing[deck] = engine.isScratching(deck);
     }
 };
 
 // Called from the display timer: end a scratch once the platter has stopped
 // feeding it, ramping the rate back rather than snapping it.
 PioneerDDJ1000.checkJogSpindown = function (deck) {
-    if (PioneerDDJ1000.jogTouched[deck] || !engine.isScratching(deck)) {
+    if (!PioneerDDJ1000.jogThrowing[deck] || PioneerDDJ1000.jogTouched[deck]) {
         return;
     }
     var idle = Date.now() - (PioneerDDJ1000.jogLastTick[deck] || 0);
@@ -414,6 +422,7 @@ PioneerDDJ1000.checkJogSpindown = function (deck) {
 };
 
 PioneerDDJ1000.endThrow = function (deck) {
+    PioneerDDJ1000.jogThrowing[deck] = false;
     PioneerDDJ1000.jogSpeed[deck] = undefined;
     // Ramped, so the rate is eased back to playing speed instead of jumping.
     engine.scratchDisable(deck, true);
@@ -468,7 +477,7 @@ PioneerDDJ1000.jogBend = function (channel, control, value, status) {
         return;
     }
     if (engine.isScratching(deck)) {
-        if (!PioneerDDJ1000.jogTouched[deck]) {
+        if (PioneerDDJ1000.jogThrowing[deck] && !PioneerDDJ1000.jogTouched[deck]) {
             PioneerDDJ1000.coast(deck, PioneerDDJ1000.jogTicks(value));
         }
         return;
@@ -590,12 +599,143 @@ PioneerDDJ1000.jogTicks = function (value) {
 // how fast it is spun). Browse one row per detent regardless of speed; the
 // shifted knob pages by 5. (No timer coalescing: a one-shot engine timer
 // that gets re-armed while firing can wedge and the knob goes dead.)
+// Pressing the TRAX encoder means "show me the library" while the waveforms
+// are up, and "take this one" once they are not -- and loading a track puts
+// the waveforms back, so browsing is one button in and one button out.
+PioneerDDJ1000.browsePress = function (channel, control, value) {
+    if (value === 0) {
+        return;
+    }
+    PioneerDDJ1000.focusVisiblePane();
+    engine.setValue("[Library]", "GoToItem", 1);
+};
+
+// LOAD is the way in and out of the library: pressed while the waveforms are
+// up it brings the browser forward, pressed there it loads what is selected --
+// and the load itself puts the waveforms back.
+// VIEW swaps between the waveforms and the library, which is what it does on
+// the unit's own screen too.
+PioneerDDJ1000.viewButton = function (channel, control, value) {
+    if (value === 0) {
+        return;
+    }
+    PioneerDDJ1000.showTab(PioneerDDJ1000.onLibraryTab()
+        ? PioneerDDJ1000.tabOverview
+        : PioneerDDJ1000.tabLibrary);
+};
+
+// SHIFT + BACK leaves the library without loading anything -- the way out for
+// when you went in to look rather than to choose.
+PioneerDDJ1000.backToOverview = function (channel, control, value) {
+    if (value === 0) {
+        return;
+    }
+    PioneerDDJ1000.showTab(PioneerDDJ1000.tabOverview);
+};
+
+// BACK shows and hides the tree view, which is this skin's version of what the
+// manual describes: moving between the tree and the track list.
+PioneerDDJ1000.backButton = function (channel, control, value) {
+    if (value === 0) {
+        return;
+    }
+    if (!PioneerDDJ1000.onLibraryTab()) {
+        PioneerDDJ1000.showTab(PioneerDDJ1000.tabLibrary);
+        return;
+    }
+    // Showing the tree is not enough: the encoder moves whatever has focus, so
+    // the focus has to follow the tree in and out. 1 is the sidebar, 2 the
+    // track list.
+    var showing = engine.getValue("[Sidebar]", "sidebar_visible") < 1;
+    engine.setValue("[Sidebar]", "sidebar_visible", showing ? 1 : 0);
+    // Focus follows the tree in and out: the encoder moves whichever library
+    // widget Qt has the keyboard on, so showing the tree without focusing it
+    // leaves the encoder still scrolling the track list.
+};
+
+PioneerDDJ1000.loadPress = function (deck) {
+    return function (channel, control, value) {
+        if (value === 0) {
+            return;
+        }
+        if (!PioneerDDJ1000.onLibraryTab()) {
+            PioneerDDJ1000.showTab(PioneerDDJ1000.tabLibrary);
+            return;
+        }
+        // On the tree the press means "open this one", the way the manual puts
+        // it: the cursor moves from the tree to the track list. Only a press on
+        // the list itself loads anything.
+        if (engine.getValue("[Sidebar]", "sidebar_visible") > 0) {
+            // Mixxx decides what this means: a branch with children opens or
+            // closes, a leaf hands over to the track list. Forcing the panes
+            // to swap here would stop a branch from ever opening.
+            engine.setValue("[Library]", "GoToItem", 1);
+            return;
+        }
+        engine.setValue("[Channel" + deck + "]", "LoadSelectedTrack", 1);
+    };
+};
+
+PioneerDDJ1000.loadDeck1 = PioneerDDJ1000.loadPress(1);
+PioneerDDJ1000.loadDeck2 = PioneerDDJ1000.loadPress(2);
+PioneerDDJ1000.loadDeck3 = PioneerDDJ1000.loadPress(3);
+PioneerDDJ1000.loadDeck4 = PioneerDDJ1000.loadPress(4);
+
+// The skin puts its screens in a stack rather than using Mixxx's own
+// maximize_library: [Tab],current selects one, 0 being the waveforms and 1 the
+// library.
+PioneerDDJ1000.tabOverview = 0;
+PioneerDDJ1000.tabLibrary = 1;
+
+PioneerDDJ1000.showTab = function (tab) {
+    engine.setValue("[Tab]", "current", tab);
+};
+
+PioneerDDJ1000.onLibraryTab = function () {
+    return engine.getValue("[Tab]", "current") === PioneerDDJ1000.tabLibrary;
+};
+
+// Back to the waveforms as soon as a deck has something on it. Guarded on the
+// opening state having been sent, so restoring a session's decks at startup
+// does not count as a load.
+PioneerDDJ1000.connectWaveformReturn = function (deck) {
+    var connection = engine.makeConnection("[Channel" + deck + "]", "track_loaded",
+        function (value) {
+            if (value > 0 && PioneerDDJ1000.openingSent
+                    && PioneerDDJ1000.onLibraryTab()) {
+                PioneerDDJ1000.showTab(PioneerDDJ1000.tabOverview);
+            }
+        });
+    if (connection) {
+        PioneerDDJ1000.connections.push(connection);
+    }
+};
+
+// The skin shows either the tree or the track list, never both, so whichever
+// is up has to be the one the encoder drives. Focus is claimed here rather
+// than when the panes are swapped: Qt only makes a widget focusable once it is
+// actually visible, and that happens after the button handler has returned.
+// focused_widget counts the search bar first: 1 is the search box -- focusing
+// that pops the on-screen keyboard up over everything -- 2 the tree, 3 the
+// track list.
+PioneerDDJ1000.focusSidebar = 2;
+PioneerDDJ1000.focusTracks = 3;
+
+PioneerDDJ1000.focusVisiblePane = function () {
+    engine.setValue("[Library]", "focused_widget",
+        engine.getValue("[Sidebar]", "sidebar_visible") > 0
+            ? PioneerDDJ1000.focusSidebar
+            : PioneerDDJ1000.focusTracks);
+};
+
 PioneerDDJ1000.browse = function (channel, control, value) {
+    PioneerDDJ1000.focusVisiblePane();
     engine.setValue("[Library]", "MoveVertical",
         PioneerDDJ1000.relativeTicks(value) > 0 ? 1 : -1);
 };
 
 PioneerDDJ1000.browseFast = function (channel, control, value) {
+    PioneerDDJ1000.focusVisiblePane();
     engine.setValue("[Library]", "MoveVertical",
         PioneerDDJ1000.relativeTicks(value) > 0 ? 5 : -5);
 };

@@ -643,6 +643,7 @@ class Bridge:
         self.burst_at = 0.0
         self.burst_seen = set()
         self.panel = {}
+        self.draw_locks = [threading.Lock() for _ in SCREEN_DECKS]
         self.from_vir = MidiSplitter()
         self.screens = [DeckScreen() for _ in range(4)]
         self.drawn = {}
@@ -771,6 +772,19 @@ class Bridge:
         return True
 
     def _load_artwork_guarded(self, deck_index, seconds):
+        # One draw per deck at a time. A second unload arriving while the first
+        # is still uploading leaves the screen half written, which looks like
+        # the display flickering and dropping out.
+        lock = self.draw_locks[deck_index]
+        if not lock.acquire(blocking=False):
+            syslog.syslog("jog screen %d: already drawing, skipped" % (deck_index + 1))
+            return
+        try:
+            self._load_artwork_locked(deck_index, seconds)
+        finally:
+            lock.release()
+
+    def _load_artwork_locked(self, deck_index, seconds):
         # A worker thread that dies silently would just leave the screen blank,
         # so say what went wrong.
         try:
@@ -822,8 +836,8 @@ class Bridge:
         time.sleep(0.01)
 
         grid = beat_grid(held_bpm, screen.first_beat_ms, seconds)
-        syslog.syslog("jog screen %d: %.1f s, %.1f BPM, %d beats, art %d, wave %d"
-                      % (deck_index + 1, seconds, held_bpm,
+        syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
+                      % (deck_index + 1, screen.track_id, seconds, held_bpm,
                          int.from_bytes(grid[:2], "little"),
                          len(payloads.get(CMD_ARTWORK, b"")),
                          len(payloads.get(CMD_WAVEFORM, b""))))
@@ -1068,6 +1082,8 @@ class Bridge:
                             self.burst_seen = set()
                         self.burst_at = now
                         self.burst_seen.add(msg[:2])
+                    if len(msg) == 3 and msg[0] == 0x96 and msg[2] == 0x7F:
+                        syslog.syslog("browser button: %s" % msg.hex())
                     if not self.handle_unit_message(msg):
                         self.to_mixxx(msg)
 
