@@ -284,7 +284,9 @@ class DeckScreen:
         # this same field, and counting it down runs the needle backwards.
         # The remaining readout is the unit's own, switched by the mode note.
         seconds, ms = divmod(self.position_ms(), 1000)
-        b[11] = min(255, seconds // 60)
+        # Bit 7 of the minute byte is the needle's direction, not a flag to
+        # set: raising it runs the two pointers backwards against each other.
+        b[11] = min(127, seconds // 60)
         b[12] = seconds % 60
         b[13] = ms & 0xFF
         b[14] = (ms >> 8) & 0xFF
@@ -363,6 +365,21 @@ POST_AUTH_FILE = "/usr/local/share/ddj1000-post-auth-midi.txt"
 CUE_EMPTY_SLOT = bytes((0x9E, 0x2F, 0x27, 0x01, 0x00))
 
 
+def track_record(key, cues):
+    """The 0x30 transfer: the track id followed by its hot cues.
+
+    Six bytes each -- a marker, a colour, a spare, then the position as a
+    24-bit millisecond figure -- in the order they were set rather than in
+    time order, which is how a capture of rekordbox has them. Sent once as
+    the track is handed over and again once its waveform is up.
+    """
+    body = bytearray(key)
+    for _minute, _second, _ms, ms in cues[:16]:
+        body += bytes((0x01, 0x16, 0x00))
+        body += bytes((ms & 0xFF, (ms >> 8) & 0xFF, (ms >> 16) & 0xFF))
+    return bytes(body) + bytes(max(0, 116 - len(body)))
+
+
 def cue_table(key, cues):
     """The 0x2D transfer: ten slots of cue markers for the beat scale.
 
@@ -374,7 +391,7 @@ def cue_table(key, cues):
     body = bytearray()
     body += key
     body += bytes((0x0A, 0x00))
-    for minute, second, ms in cues[:10]:
+    for minute, second, ms, _total in cues[:10]:
         body += bytes((minute & 0xFF, second % 60, ms & 0xFF, (ms >> 8) & 0xFF, 0x00))
     for _ in range(max(0, 10 - len(cues))):
         body += CUE_EMPTY_SLOT
@@ -798,8 +815,10 @@ class Bridge:
                 base = 4 + i * 4
                 if base + 4 > len(msg) - 1:
                     break
-                cues.append((msg[base], msg[base + 1],
-                             (msg[base + 2] << 7) | msg[base + 3]))
+                minute, second = msg[base], msg[base + 1]
+                milli = (msg[base + 2] << 7) | msg[base + 3]
+                cues.append((minute, second, milli,
+                             (minute * 60 + second) * 1000 + milli))
             if cues != screen.cues:
                 screen.cues = cues
                 if screen.loaded and self.authenticated:
@@ -956,7 +975,7 @@ class Bridge:
 
         grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
         self.send_hid_transfer(deck, 0x2F, grid)
-        self.send_hid_transfer(deck, 0x30, key + bytes(112))
+        self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
         self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
         self.to_ddj(bytes((0x9F, deck_index, 0x7F)))
@@ -971,6 +990,8 @@ class Bridge:
         time.sleep(0.42)                       # rekordbox's pause before the waveform
         if CMD_WAVEFORM in payloads:
             self.send_hid_transfer(deck, CMD_WAVEFORM, payloads[CMD_WAVEFORM])
+        # rekordbox sends the track record again once the waveform is up.
+        self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
         screen.ready = True
         syslog.syslog("jog screen %d: drew %s" % (deck_index + 1, os.path.basename(path)))
 
@@ -1027,7 +1048,12 @@ class Bridge:
         total = len(chunks)
 
         def report(index, data):
+            # Every report is a full 64 bytes, short final chunk padded out.
+            # rekordbox never sends a short one, and the screen treats one as
+            # an unfinished transfer: it will draw the waveform it was given
+            # and still refuse to run the playhead across it.
             packet = struct.pack("<BBHH", deck, cmd, index, total) + data
+            packet += bytes(64 - len(packet))
             if DEBUG_HID and index <= 2:
                 syslog.syslog("hid %02x deck%02x chunk %d/%d: %s"
                               % (cmd, deck, index, total, packet.hex()))

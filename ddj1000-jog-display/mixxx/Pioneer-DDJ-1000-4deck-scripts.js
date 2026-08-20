@@ -92,6 +92,10 @@ PioneerDDJ1000.lastSent = {};
 // The cue positions, for the markers along the jog screen's beat scale. The
 // screen has ten slots; hot cues fill them in pad order. Sent as minutes,
 // seconds and milliseconds because that is how the table wants them.
+//
+// Positions divide by the sample rate alone. Treating them as interleaved
+// stereo samples and halving them again put a cue set at the end of a track
+// squarely in the middle of the display.
 PioneerDDJ1000.sentCues = {};
 
 PioneerDDJ1000.sendCues = function (deck) {
@@ -103,7 +107,7 @@ PioneerDDJ1000.sendCues = function (deck) {
         if (position < 0) {
             continue;
         }
-        var ms = Math.max(0, Math.round(position / (rate * 2) * 1000));
+        var ms = Math.max(0, Math.round(position / rate * 1000));
         entries.push([Math.min(127, Math.floor(ms / 60000)),
             Math.floor(ms / 1000) % 60, ms % 1000]);
     }
@@ -165,8 +169,10 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     var firstBeat = 0;
     if (bpm > 0 && beat >= 0) {
         var interval = 60000 / bpm;
-        // beat_closest counts engine samples, which are frames times two.
-        var beatMs = beat / (rate * 2) * 1000;
+        // Sample positions here are frames, not interleaved stereo samples:
+        // halving them again put a cue set at the end of a track in the
+        // middle of the jog display.
+        var beatMs = beat / rate * 1000;
         firstBeat = Math.round(((beatMs % interval) + interval) % interval);
     }
     firstBeat = Math.min(firstBeat, 16383);
@@ -240,7 +246,7 @@ PioneerDDJ1000.sendLoop = function (deck) {
 PioneerDDJ1000.sendCuePoint = function (deck, group) {
     var rate = engine.getValue(group, "track_samplerate") || 44100;
     var point = engine.getValue(group, "cue_point");
-    var ms = point >= 0 ? Math.round(point / (rate * 2) * 1000) : 0;
+    var ms = point >= 0 ? Math.round(point / rate * 1000) : 0;
     ms = Math.max(0, Math.min(0xFFFFFFF, ms));
     if (PioneerDDJ1000.sentCuePoint[deck] === ms) {
         return;
