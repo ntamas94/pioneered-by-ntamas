@@ -43,6 +43,7 @@ import struct
 import subprocess
 import threading
 import select
+import signal
 import zlib
 import sys
 import syslog
@@ -72,6 +73,15 @@ asound.snd_rawmidi_drain.restype = ctypes.c_int
 DEBUG = bool(os.environ.get("DDJ_DEBUG"))
 DEBUG_STATE = bool(os.environ.get("DDJ_DEBUG_STATE"))
 DEBUG_HID = bool(os.environ.get("DDJ_DEBUG_HID"))
+# Diagnostic switch: skip uploading artwork to the jog screens. The upload
+# sits between the cue table and the waveform in the load, and whether its
+# presence is what keeps the playhead from moving is exactly the question.
+NO_ARTWORK = bool(os.environ.get("DDJ_NO_ARTWORK"))
+# Diagnostic switch: only push state for decks that hold a track.
+LOADED_ONLY = bool(os.environ.get("DDJ_LOADED_ONLY"))
+# Diagnostic tape: append every outgoing screen report here, so the exact
+# byte stream the bridge produced can be replayed at the unit by itself.
+TAPE = os.environ.get("DDJ_TAPE")
 
 
 HDR = bytes([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x00, 0x00])
@@ -192,6 +202,7 @@ class DeckScreen:
         self.remaining = False
         self.cues = []
         self.cue_ms = 0
+        self.ready = False
         self.bpm = 0
         self.track_id = 0
         self.first_beat_ms = 0
@@ -299,8 +310,17 @@ class DeckScreen:
             b[27] = 0x80
             marker = self.cue_ms or self.first_beat_ms
         b[31], b[32], b[33] = u24(marker)
-        b[55], b[56], b[57] = u24(marker)
-        b[58] = 0x01 if self.loaded else 0x00
+        # Not a copy of the marker: this is the playhead the screen draws
+        # across the waveform, and it follows the music. In a capture it
+        # tracks the position while playing and parks while paused; fed the
+        # marker instead, the line stands at the start of the track forever.
+        b[55], b[56], b[57] = u24(self.position_ms())
+        # 1 while a track is being handed over, 3 once its waveform is up.
+        # rekordbox holds 1 for the length of the upload and then sits on 3 for
+        # the rest of the track -- and 3 is what moves the playhead along the
+        # waveform. Stuck on 1, the screen draws everything and never marks
+        # where the music is.
+        b[58] = (0x03 if self.ready else 0x01) if self.loaded else 0x00
         b[60] = self.key_code                  # musical key, constant per track
         b[61] = 0x0D
         return bytes(b)
@@ -665,7 +685,10 @@ class Bridge:
         self.burst_at = 0.0
         self.burst_seen = set()
         self.panel = {}
+        # Seeded from the clock so ids differ across restarts too.
+        self.load_seq = int(time.time()) % 5
         self.screens_woken = False
+        self.paused = False
         self.time_mode_reset = False
         self.state_logged = 0.0
         self.draw_locks = [threading.Lock() for _ in SCREEN_DECKS]
@@ -818,13 +841,25 @@ class Bridge:
             screen = self.screens[deck_index]
             screen.set_position(ms)
             screen.last_seen = time.monotonic()
-            screen.loaded = True
+            # Only a deck that has actually been announced counts as loaded.
+            # The mapping reports a playhead for every deck, empty ones
+            # included, and taking that as "a track is here" left the screen
+            # holding a loaded deck with a zero id -- nothing for it to hang
+            # the waveform or the playhead on.
+            screen.loaded = screen.track_id != 0
             if len(msg) >= 10:                 # the tempo rides along with it
                 screen.bpm = ((msg[7] << 7) | msg[8]) / 10.0
             return True
-        if ms <= 0:
+        if ms <= 0:                            # the deck was emptied
+            screen = self.screens[deck_index]
             self.drawn[deck_index] = None
-            self.screens[deck_index].track_id = 0
+            screen.track_id = 0
+            screen.loaded = False
+            screen.ready = False
+            screen.duration_ms = 0
+            screen.bpm = 0
+            screen.cue_ms = 0
+            screen.cues = []
             return True
         # The id the unit files artwork, waveform and cues under. Shaped the
         # way rekordbox shapes it: the track's length in milliseconds in the
@@ -832,8 +867,22 @@ class Bridge:
         # is unique enough, but the counter is what makes reloading the same
         # track a different id, which is how the screen knows to redraw.
         screen = self.screens[deck_index]
-        counter = ((screen.track_id & 0xFF) % 7) + 1
-        screen.track_id = ((ms & 0xFFFFFF) << 8) | counter
+        if screen.duration_ms != ms or not screen.track_id:
+            # A new track gets an id the unit has never seen. Never derived
+            # from the track itself: the unit remembers what it was sent
+            # under an id, and an id it holds bad state for -- a botched
+            # upload from an earlier run -- is quietly ignored, artwork,
+            # waveform, playhead and all. Deriving the id from the track's
+            # length pinned every track to its one poisoned id forever.
+            # rekordbox's own ids are its database row numbers: arbitrary,
+            # with a small low byte, which is what this imitates.
+            # Upper three bytes are the track's length in milliseconds --
+            # the screen measures the playhead against it, and a wrong value
+            # there makes it call the track over and show END. The low byte
+            # is a small sequence number, which is all that distinguishes one
+            # load of a track from the next.
+            self.load_seq = self.load_seq % 5 + 3
+            screen.track_id = ((ms & 0xFFFFFF) << 8) | self.load_seq
         screen.duration_ms = ms
         # The mapping repeats the announcement so a restarted daemon can catch
         # up; only redraw when it is actually a different track.
@@ -891,7 +940,14 @@ class Bridge:
         # It runs before the artwork build, not after: decoding a track for
         # its waveform takes seconds, and the deck should read right the
         # moment something lands on it. The picture catches up when ready.
-        self.send_hid_transfer(deck, 0x30, bytes(116))
+        self.send_hid_transfer(deck, 0x30, bytes(116), prime=False)
+        # The load trigger, from rekordbox's own mapping table: note 9F 00..03
+        # per deck, "Trigger for Load illumination". It rides the MIDI side,
+        # not the HID side, which is why byte-perfect HID uploads never
+        # registered: without it the unit takes the whole upload and never
+        # binds it to the deck -- artwork shown, playhead forever parked.
+        self.to_ddj(bytes((0x9F, deck_index, 0x00)))
+        screen.ready = False
         screen.suspend = True                  # a few frames of "no track"
         time.sleep(0.03)
         screen.suspend = False
@@ -903,17 +959,19 @@ class Bridge:
         self.send_hid_transfer(deck, 0x30, key + bytes(112))
         self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
+        self.to_ddj(bytes((0x9F, deck_index, 0x7F)))
         payloads = self.build_track_payloads(deck_index, path)
         syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
                       % (deck_index + 1, screen.track_id, seconds, screen.bpm,
                          int.from_bytes(grid[:2], "little"),
                          len(payloads.get(CMD_ARTWORK, b"")),
                          len(payloads.get(CMD_WAVEFORM, b""))))
-        if CMD_ARTWORK in payloads:
+        if CMD_ARTWORK in payloads and not NO_ARTWORK:
             self.send_hid_transfer(deck, CMD_ARTWORK, payloads[CMD_ARTWORK])
         time.sleep(0.42)                       # rekordbox's pause before the waveform
         if CMD_WAVEFORM in payloads:
             self.send_hid_transfer(deck, CMD_WAVEFORM, payloads[CMD_WAVEFORM])
+        screen.ready = True
         syslog.syslog("jog screen %d: drew %s" % (deck_index + 1, os.path.basename(path)))
 
     def build_track_payloads(self, deck_index, path):
@@ -963,7 +1021,7 @@ class Bridge:
                 pass
         return payloads
 
-    def send_hid_transfer(self, deck, cmd, payload):
+    def send_hid_transfer(self, deck, cmd, payload, prime=True):
         """Upload one chunked transfer to the screen, one report per ms."""
         chunks = [payload[i:i + 58] for i in range(0, len(payload), 58)] or [b""]
         total = len(chunks)
@@ -976,18 +1034,37 @@ class Bridge:
             self.to_ddj_hid(packet)
             time.sleep(0.0012)
 
-        # The short records get a lone copy of their last chunk first; artwork
-        # and the waveform do not. Priming those two makes the unit see the
-        # final index before the first one and drop the whole transfer.
-        if cmd in (0x2D, 0x2F, 0x30):
+        # The short records are led by a copy of their last chunk; artwork
+        # and the waveform are sent straight through. Lead only: a capture of
+        # a working load shows the run simply ending on its natural last
+        # chunk, and repeating it once more after the run is what a capture
+        # of this bridge had -- with the screens taking the data and never
+        # moving the playhead over it.
+        if prime and cmd in (0x2D, 0x2F, 0x30):
             report(total, chunks[-1])
         for i, data in enumerate(chunks, start=1):
             report(i, data)
 
+    def pause(self, _signum=None, _frame=None):
+        """Stop driving the screens without letting go of the controller.
+
+        The unit only keeps its screens alive while something polls its HID
+        interrupt endpoint, so simply stopping the daemon blanks them -- which
+        makes it impossible to hand the screens to anything else, a capture
+        replay included, and see what they do. SIGUSR1 toggles this: the poll
+        and the session stay up, the state records stop.
+        """
+        self.paused = not self.paused
+        syslog.syslog("state records %s" % ("paused" if self.paused else "resumed"))
+
     def push_state(self):
+        if self.paused:
+            return
         now = time.monotonic()
         for i, deck in enumerate(SCREEN_DECKS):
             screen = self.screens[i]
+            if LOADED_ONLY and not screen.loaded:
+                continue
             if screen.loaded and now - screen.last_seen > 5.0:
                 # The mapping went quiet, so the deck is empty -- or Mixxx
                 # stopped talking for a moment, which looks the same from here
@@ -999,16 +1076,15 @@ class Bridge:
             if DEBUG_STATE and screen.loaded and now - self.state_logged > 3.0:
                 self.state_logged = now
                 syslog.syslog("state deck%d: %s" % (i + 1, record.hex()))
-            if DEBUG_STATE and i == 0 and now - self.state_logged > 2.0:
-                self.state_logged = now
-                syslog.syslog("deck 1 state: b9=%02x %d:%02d.%03d id %08x bpm %d.%d"
-                              % (record[9], record[11], record[12],
-                                 record[13] | (record[14] << 8),
-                                 int.from_bytes(record[15:19], "little"),
-                                 record[21], record[22] >> 4))
             self.to_ddj_hid(record)
 
     def to_ddj_hid(self, report):
+        if TAPE:
+            try:
+                with open(TAPE, "a") as fh:
+                    fh.write("%.4f %s\n" % (time.monotonic(), bytes(report).hex()))
+            except OSError:
+                pass
         if self.hid is None:
             return
         try:
@@ -1272,9 +1348,13 @@ class Bridge:
                     self.to_ddj(msg)
 
 
+BRIDGE = [None]
+
+
 def main():
     syslog.openlog("djbox-ddj")
     faulthandler.enable()
+    signal.signal(signal.SIGUSR1, lambda *a: BRIDGE[0] and BRIDGE[0].pause())
     sub = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     while True:
         card = card_by_name("DDJ")
@@ -1284,6 +1364,7 @@ def main():
             continue
         try:
             bridge = Bridge(card, vir_path)
+            BRIDGE[0] = bridge
         except OSError as exc:
             if exc.errno == errno.EBUSY:
                 syslog.syslog("raw MIDI busy -- another client holds the controller")

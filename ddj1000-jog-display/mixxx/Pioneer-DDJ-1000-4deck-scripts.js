@@ -1001,9 +1001,13 @@ PioneerDDJ1000.sendOpeningState = function () {
     });
 };
 
+PioneerDDJ1000.resendMs = 4000;
+PioneerDDJ1000.resentAt = {};
+
 PioneerDDJ1000.updateDeckDisplay = function (deck) {
     var group = "[Channel" + deck + "]";
     var d = PioneerDDJ1000.display;
+    var now = Date.now();
 
     PioneerDDJ1000.checkJogSpindown(deck);
     PioneerDDJ1000.updateSearch(deck);
@@ -1018,6 +1022,19 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     // ahead of the start; the screens read either as nonsense time.
     position = Math.max(0, Math.min(1, position));
     var elapsed = duration > 0 ? position * duration : 0;
+
+    // Everything below this point is only sent when it changes, which is
+    // fine until the bridge restarts -- it comes back knowing nothing, and a
+    // value that never changes again is never resent, so the screens sat
+    // there missing their grid, cues and cue point. Forget what was sent
+    // every few seconds so all of it goes out again.
+    if (now - (PioneerDDJ1000.resentAt[deck] || 0) > PioneerDDJ1000.resendMs) {
+        PioneerDDJ1000.resentAt[deck] = now;
+        delete PioneerDDJ1000.gridInfo[deck];
+        delete PioneerDDJ1000.sentCues[deck];
+        delete PioneerDDJ1000.sentCuePoint[deck];
+        delete PioneerDDJ1000.loopState[deck];
+    }
 
     var bpm = engine.getValue(group, "bpm") || 0;
     PioneerDDJ1000.sendPosition(deck, elapsed * 1000, bpm);
