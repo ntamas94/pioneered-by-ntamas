@@ -67,23 +67,9 @@ asound.snd_rawmidi_read.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_s
 asound.snd_rawmidi_read.restype = ctypes.c_ssize_t
 asound.snd_rawmidi_drain.argtypes = [ctypes.c_void_p]
 asound.snd_rawmidi_drain.restype = ctypes.c_int
-asound.snd_rawmidi_poll_descriptors_count.argtypes = [ctypes.c_void_p]
-asound.snd_rawmidi_poll_descriptors_count.restype = ctypes.c_int
-asound.snd_rawmidi_poll_descriptors.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint]
-asound.snd_rawmidi_poll_descriptors.restype = ctypes.c_int
 DEBUG = bool(os.environ.get("DDJ_DEBUG"))
+DEBUG_STATE = bool(os.environ.get("DDJ_DEBUG_STATE"))
 
-
-class pollfd_t(ctypes.Structure):
-    _fields_ = [("fd", ctypes.c_int), ("events", ctypes.c_short), ("revents", ctypes.c_short)]
-
-
-def rawmidi_poll_fd(handle):
-    """File descriptor to select() on for a raw MIDI input handle."""
-    count = asound.snd_rawmidi_poll_descriptors_count(handle)
-    pfds = (pollfd_t * max(count, 1))()
-    asound.snd_rawmidi_poll_descriptors(handle, pfds, count)
-    return pfds[0].fd
 
 HDR = bytes([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x00, 0x00])
 
@@ -104,7 +90,12 @@ KEEPALIVE = bytes([0x50, 0x01])
 KEEPALIVE_INTERVAL = 0.2
 SESSION_TIMEOUT = 10.0      # no ACK within this -> re-enumerate and try again
 RECONNECT_CHECK = 0.3       # how often to notice the controller re-enumerating
-SCREENS_REFRESH = 2.0       # how often to re-assert "screens on" on the unit
+# Re-asserting "screens on" used to be needed every couple of seconds, the way
+# the community mappings do it, because nothing else kept the unit awake. The
+# 0x21 state record at 125 Hz does that now, and re-sending the display and
+# time-mode notes on top of it makes the picture twitch. Set a number of
+# seconds here to bring the old behaviour back.
+SCREENS_REFRESH = 0
 DEVICE_POLL = 0.02          # how often to look for the controller coming back
 
 DEVICE_ID = bytes([0x08, 0x07, 0x0A, 0x00, 0x08, 0x0E, 0x0E, 0x0A, 0x0C, 0x00,
@@ -183,10 +174,7 @@ def u24(value):
 class DeckScreen:
     def __init__(self):
         self.loaded = False
-        self.minutes = 0
-        self.seconds = 0
         self.bpm = 0
-        self.bpm_msb = 0
         self.track_id = 0
         self.first_beat_ms = 0
         self.key_code = 0
@@ -195,26 +183,9 @@ class DeckScreen:
         self.last_seen = 0.0
         self.base_ms = -1
         self.base_time = 0.0
-        self.exact = False
         self.rate = 0.0
         self.report_ms = 0
         self.report_time = 0.0
-
-    def resync(self):
-        """Re-anchor the playhead from the whole-second display notes.
-
-        Only used until the first millisecond report arrives: those notes
-        repeat the same second many times over, and re-anchoring on every
-        repeat drags the position back to the whole second each time, which
-        shows up as a needle that shivers instead of turning.
-        """
-        if self.exact:
-            return
-        whole = (self.minutes * 60 + self.seconds) * 1000
-        if whole == self.base_ms:
-            return
-        self.base_ms = whole
-        self.base_time = time.monotonic()
 
     def set_position(self, ms):
         """Take a millisecond figure from the mapping into a smoothed clock.
@@ -229,8 +200,7 @@ class DeckScreen:
         """
         now = time.monotonic()
         dt = now - self.report_time
-        if not self.exact or dt <= 0.0 or dt > 0.5:
-            self.exact = True
+        if dt <= 0.0 or dt > 0.5:
             self.base_ms, self.base_time, self.rate = ms, now, 0.0
             self.report_ms, self.report_time = ms, now
             return
@@ -250,9 +220,6 @@ class DeckScreen:
     def position_ms(self):
         # Run the clock on between reports so the needle turns at the 125 Hz
         # the screen is fed rather than stepping at the rate they arrive.
-        if not self.exact:
-            elapsed = min(time.monotonic() - self.base_time, 1.5)
-            return max(0, int(self.base_ms + elapsed * 1000))
         elapsed = min(time.monotonic() - self.base_time, 0.5)
         return max(0, int(self.base_ms + elapsed * 1000.0 * self.rate))
 
@@ -634,15 +601,15 @@ class Bridge:
                                      name, SND_RAWMIDI_NONBLOCK)
         if rc < 0:
             raise OSError(errno.EBUSY, "snd_rawmidi_open(%s) failed: %d" % (name.decode(), rc))
-        self.ddj_fd = rawmidi_poll_fd(self.inp)
         self.rbuf = ctypes.create_string_buffer(1024)
         self.vir = os.open(vir_path, os.O_RDWR | os.O_NONBLOCK)
         self.from_ddj = MidiSplitter()
         self.probe_at = 0.0
-        self.probe_seen = 0
         self.burst_at = 0.0
         self.burst_seen = set()
         self.panel = {}
+        self.screens_woken = False
+        self.state_logged = 0.0
         self.draw_locks = [threading.Lock() for _ in SCREEN_DECKS]
         self.from_vir = MidiSplitter()
         self.screens = [DeckScreen() for _ in range(4)]
@@ -754,6 +721,9 @@ class Bridge:
             screen = self.screens[deck_index]
             screen.set_position(ms)
             screen.last_seen = time.monotonic()
+            screen.loaded = True
+            if len(msg) >= 10:                 # the tempo rides along with it
+                screen.bpm = ((msg[7] << 7) | msg[8]) / 10.0
             return True
         if ms <= 0:
             self.drawn[deck_index] = None
@@ -823,6 +793,15 @@ class Bridge:
         # still holds the previous track is what made the screen show the
         # artwork for a moment and throw it away again.
         screen = self.screens[deck_index]
+
+        # The announcement arrives before the first tempo report, so a draw
+        # that starts immediately builds its beat grid from nothing and falls
+        # back to 120. The reports come every 50 ms; a moment's wait is enough.
+        for _ in range(20):
+            if screen.bpm > 0:
+                break
+            time.sleep(0.05)
+
         self.send_hid_transfer(deck, 0x30, bytes(116))
 
         held_bpm, held_loaded = screen.bpm, screen.loaded
@@ -868,40 +847,26 @@ class Bridge:
         for i, data in enumerate(chunks, start=1):
             report(i, data)
 
-    def watch_display_midi(self, msg):
-        """Learn the deck state from the display messages Mixxx sends."""
-        if len(msg) != 3:
-            return
-        status, d1, d2 = msg
-        channel = status & 0x0F
-        if channel > 3:
-            return
-        screen = self.screens[channel]
-        kind = status & 0xF0
-        if kind == 0x90:                       # notes carry the time readout
-            if d1 == 0x42:
-                screen.minutes = d2
-                screen.loaded = True
-                screen.last_seen = time.monotonic()
-                screen.resync()
-            elif d1 == 0x43:
-                screen.seconds = d2
-                screen.loaded = True
-                screen.last_seen = time.monotonic()
-                screen.resync()
-        elif kind == 0xB0:                     # BPM arrives as a 14-bit CC
-            if d1 == 0x15:
-                screen.bpm_msb = d2
-            elif d1 == 0x35:
-                screen.bpm = ((screen.bpm_msb << 7) | d2) / 10.0
-
     def push_state(self):
         now = time.monotonic()
         for i, deck in enumerate(SCREEN_DECKS):
             screen = self.screens[i]
             if screen.loaded and now - screen.last_seen > 5.0:
-                screen.loaded = False          # the mapping went quiet: deck empty
-            self.to_ddj_hid(screen.record(deck))
+                # The mapping went quiet, so the deck is empty -- or Mixxx
+                # stopped talking for a moment, which looks the same from here
+                # and blanks the screen for as long as it lasts.
+                screen.loaded = False
+                syslog.syslog("jog screen %d: no word from Mixxx for %.1f s, "
+                              "blanking" % (i + 1, now - screen.last_seen))
+            record = screen.record(deck)
+            if DEBUG_STATE and i == 0 and now - self.state_logged > 2.0:
+                self.state_logged = now
+                syslog.syslog("deck 1 state: b9=%02x %d:%02d.%03d id %08x bpm %d.%d"
+                              % (record[9], record[11], record[12],
+                                 record[13] | (record[14] << 8),
+                                 int.from_bytes(record[15:19], "little"),
+                                 record[21], record[22] >> 4))
+            self.to_ddj_hid(record)
 
     def to_ddj_hid(self, report):
         if self.hid is None:
@@ -912,14 +877,24 @@ class Bridge:
             pass
 
     def screens_on(self):
-        """Wake the jog screens: ring light, display on, remaining-time dash.
+        """Wake the jog screens: ring light and display on, once per session.
 
         Note 0x5D is inverted -- 0x00 turns the screen on, 0x7F turns it off.
+
+        Kept deliberately short. These notes belong to the MIDI overlay the
+        Traktor and Serato style mappings draw with, and anything from that set
+        pulls the unit back to its own picture for a moment -- which, sent
+        again on every audio-interface transition, is a screen that keeps
+        flashing. The remaining-time marker in particular is part of that
+        overlay and is not sent at all. Once is enough: the HID state record
+        keeps the screens up from then on.
         """
+        if self.screens_woken:
+            return
+        self.screens_woken = True
         for ch in range(4):
             self.to_ddj(bytes((0x90 | ch, 0x5B, 0x01)))
             self.to_ddj(bytes((0x90 | ch, 0x5D, 0x00)))
-            self.to_ddj(bytes((0x90 | ch, 0x44, 0x7F)))
 
     def unit_settings(self):
         """Settings the DJ software applies on the unit itself.
@@ -1008,6 +983,11 @@ class Bridge:
         if cmd == 0x15 and sub == 0x02:
             if not self.authenticated:
                 syslog.syslog("authenticated -- jog displays unlocked")
+                # Tell Mixxx to reopen the sound device: the controller is the
+                # sound card, so a replug leaves Mixxx holding a stream that no
+                # longer exists, and it has no way of noticing on its own. The
+                # mapping turns this note into [SoundManager],reopen_devices.
+                self.to_mixxx(bytes((0x9F, 0x7F, 0x7F)))
                 self.authenticated = True
             self.display_bringup()
             return True
@@ -1039,15 +1019,18 @@ class Bridge:
             if now - self.last_state >= STATE_INTERVAL:
                 self.last_state = now
                 self.push_state()
-            if now - last_screens > SCREENS_REFRESH and audio_alt_setting() == 1:
-                # The unit drops back to its idle logo unless the screens are
-                # re-asserted; the community mappings re-send this with every
-                # display update for the same reason.
+            if SCREENS_REFRESH and now - last_screens > SCREENS_REFRESH                     and audio_alt_setting() == 1:
                 self.screens_on()
                 last_screens = now
             if now - last_check > RECONNECT_CHECK:
                 last_check = now
                 alt = audio_alt_setting()
+                if alt is None:
+                    # A failed read is not a change. Treating it as one made
+                    # the release fire again on the next good read, and every
+                    # one of those repaints the screens -- which under load,
+                    # when sysfs is slow, showed up as the picture flashing.
+                    alt = last_alt
                 if alt == 1 and last_alt != 1:
                     if vendor_probe():
                         syslog.syslog("audio interface went to alt 1 -- jog displays released")
@@ -1082,8 +1065,6 @@ class Bridge:
                             self.burst_seen = set()
                         self.burst_at = now
                         self.burst_seen.add(msg[:2])
-                    if len(msg) == 3 and msg[0] == 0x96 and msg[2] == 0x7F:
-                        syslog.syslog("browser button: %s" % msg.hex())
                     if not self.handle_unit_message(msg):
                         self.to_mixxx(msg)
 
@@ -1122,7 +1103,6 @@ class Bridge:
                             and msg[1] == 0x21:
                         self.request_panel_state()
                         continue
-                    self.watch_display_midi(msg)
                     self.to_ddj(msg)
 
 

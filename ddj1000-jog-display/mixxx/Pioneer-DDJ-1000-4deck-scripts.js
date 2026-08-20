@@ -89,21 +89,6 @@ PioneerDDJ1000.lastSent = {};
 
 // -- lifecycle ------------------------------------------------------------
 
-// The jog screens want the track's artwork and waveform, which only the bridge
-// daemon can build (it needs the file). Mixxx's scripting API exposes no path,
-// so announce the duration on load and let the daemon match it against the
-// library database. A private manufacturer id (0x7D) keeps this off the wire to
-// the controller -- the bridge intercepts it.
-PioneerDDJ1000.announceTrack = function (deck) {
-    var group = "[Channel" + deck + "]";
-    var ms = Math.round(engine.getValue(group, "duration") * 1000);
-    if (!engine.getValue(group, "track_loaded") || ms <= 0) {
-        ms = 0;
-    }
-    midi.sendSysexMsg([0xF0, 0x7D, deck - 1,
-        (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F, 0xF7], 8);
-};
-
 // Announced from the display timer rather than from a track_loaded callback:
 // the callback fires before the duration is readable, so it would report zero.
 PioneerDDJ1000.announcedMs = {};
@@ -164,9 +149,10 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
         (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, 0x00, 0xF7], 8);
 };
 
-// Mixxx numbers the keys chromatically, 1..12 major from C and 13..24 minor
-// from C. The jog display has its own order: majors on the odd codes from C,
-// minors on the even ones from A.
+// Mixxx numbers the keys chromatically: 1..12 are C..B major and 13..24 are
+// C..B minor, so 13 is C minor and 22 is A minor. The jog display has its own
+// order -- majors on the odd codes counting from C, minors on the even ones
+// counting from A -- which is why this cannot be a straight offset.
 PioneerDDJ1000.ddjKeyCode = function (value) {
     var key = Math.round(value);
     if (key >= 1 && key <= 12) {
@@ -208,10 +194,15 @@ PioneerDDJ1000.sendLoop = function (deck) {
         0xF7], 13);
 };
 
-PioneerDDJ1000.sendPosition = function (deck, elapsedMs) {
+PioneerDDJ1000.sendPosition = function (deck, elapsedMs, bpm) {
     var ms = Math.max(0, Math.min(0xFFFFFFF, Math.round(elapsedMs)));
+    // The tempo rides along rather than going out as the display CC: the
+    // screens are drawn over HID, and the unit takes the MIDI display messages
+    // as a second, competing source for the same picture.
+    var tenths = Math.max(0, Math.min(0x3FFF, Math.round(bpm * 10)));
     midi.sendSysexMsg([0xF0, 0x7D, 0x10 | (deck - 1),
-        (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F, 0xF7], 8);
+        (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F,
+        (tenths >> 7) & 0x7F, tenths & 0x7F, 0xF7], 10);
 };
 
 PioneerDDJ1000.init = function () {
@@ -387,6 +378,57 @@ PioneerDDJ1000.jogTicksPerSecond = function () {
 };
 PioneerDDJ1000.jogReleaseFraction = 0.25;
 PioneerDDJ1000.jogSpinDownMs = 80;
+
+// SEARCH runs the track past at a steady speed while it is held. The unit
+// sends one note on the press and another once the press becomes a hold, and
+// both drive this, so a quick press already starts moving rather than waiting
+// for the hold to register.
+// It starts gently and winds up the longer the button is held, the way the
+// CDJs do -- a tap nudges, a long hold crosses the track. The ramp is driven
+// from the display timer rather than a timer of its own.
+PioneerDDJ1000.searchRate = 2.0;          // where a press starts
+PioneerDDJ1000.searchMaxRate = 20.0;      // where holding it ends up
+PioneerDDJ1000.searchRampSeconds = 2.5;   // how long it takes to get there
+PioneerDDJ1000.searching = {};
+
+PioneerDDJ1000.startSearch = function (deck, group, direction) {
+    if (direction === 0) {
+        delete PioneerDDJ1000.searching[deck];
+        engine.setValue(group, "rateSearch", 0);
+        return;
+    }
+    if (PioneerDDJ1000.searching[deck]) {
+        return;                            // the hold note after the press
+    }
+    PioneerDDJ1000.searching[deck] = {
+        group: group,
+        direction: direction,
+        since: Date.now(),
+    };
+    engine.setValue(group, "rateSearch", direction * PioneerDDJ1000.searchRate);
+};
+
+PioneerDDJ1000.updateSearch = function (deck) {
+    var state = PioneerDDJ1000.searching[deck];
+    if (!state) {
+        return;
+    }
+    var elapsed = (Date.now() - state.since) / 1000;
+    var through = Math.min(1, elapsed / PioneerDDJ1000.searchRampSeconds);
+    var rate = PioneerDDJ1000.searchRate
+        + (PioneerDDJ1000.searchMaxRate - PioneerDDJ1000.searchRate) * through * through;
+    engine.setValue(state.group, "rateSearch", state.direction * rate);
+};
+
+PioneerDDJ1000.searchBackward = function (channel, control, value, status) {
+    PioneerDDJ1000.startSearch(PioneerDDJ1000.deckFromStatus(status),
+        PioneerDDJ1000.groupFromStatus(status), value ? -1 : 0);
+};
+
+PioneerDDJ1000.searchForward = function (channel, control, value, status) {
+    PioneerDDJ1000.startSearch(PioneerDDJ1000.deckFromStatus(status),
+        PioneerDDJ1000.groupFromStatus(status), value ? 1 : 0);
+};
 
 PioneerDDJ1000.jogTouch = function (channel, control, value, status) {
     var deck = PioneerDDJ1000.deckFromStatus(status);
@@ -815,79 +857,27 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     var d = PioneerDDJ1000.display;
 
     PioneerDDJ1000.checkJogSpindown(deck);
+    PioneerDDJ1000.updateSearch(deck);
     PioneerDDJ1000.announceIfChanged(deck);
 
     var duration = engine.getValue(group, "duration");
     var position = engine.getValue(group, "playposition");
     var elapsed = duration > 0 ? position * duration : 0;
 
-    PioneerDDJ1000.sendPosition(deck, elapsed * 1000);
+    var bpm = engine.getValue(group, "bpm") || 0;
+    PioneerDDJ1000.sendPosition(deck, elapsed * 1000, bpm);
     PioneerDDJ1000.sendGridInfo(deck);
     PioneerDDJ1000.sendLoop(deck);
 
-    // Position bar: an angle in 0..359 degrees that spins once per platter
-    // revolution, so the display behaves like a turntable rather than a
-    // progress bar. Max is 0x0167 = 359.
-    var revolutions = elapsed / PioneerDDJ1000.secondsPerRevolution;
-    var degrees = Math.floor((revolutions - Math.floor(revolutions)) * 360);
-    PioneerDDJ1000.send14(deck, d.positionBarMsb, degrees, 359);
-
-    // BPM is sent as tenths: 0x4E0F = 9999 is 999.9 BPM.
-    var bpm = engine.getValue(group, "bpm") || 0;
-    PioneerDDJ1000.send14(deck, d.bpmMsb, bpm * 10, 9999, true);
-
-    // Playing speed spans -100.0%..+100.0% over the same 0..9999 range, so
-    // zero rate sits at the midpoint.
-    var rate = engine.getValue(group, "rate") * engine.getValue(group, "rateRange");
-    PioneerDDJ1000.send14(deck, d.speedMsb, (rate + 1) * 4999.5, 9999);
-
-    // Elapsed time, split the way the display expects it. The time marker goes
-    // out with every update rather than only on change: the screens fall back
-    // to the idle logo if the deck stops being told it has something to show,
-    // which is why the community mappings re-send it each time too.
-    var totalSeconds = Math.floor(elapsed);
-    if (engine.getValue(group, "track_loaded")) {
-        PioneerDDJ1000.sendNote(deck, d.timeMode, 0x7F);
-        PioneerDDJ1000.sendNote(deck, d.timeMinute, Math.min(99, Math.floor(totalSeconds / 60)));
-        PioneerDDJ1000.sendNote(deck, d.timeSecond, totalSeconds % 60);
-    } else {
-        PioneerDDJ1000.sendNoteIfChanged(deck, d.timeMinute, 0);
-        PioneerDDJ1000.sendNoteIfChanged(deck, d.timeSecond, 0);
-    }
-
-    // Cue marker, as an angle on the same scale. 0x7F/0x7F hides it.
-    var cuePoint = engine.getValue(group, "cue_point");
-    var sampleRate = engine.getValue(group, "track_samplerate") || 44100;
-    if (cuePoint >= 0 && duration > 0) {
-        // cue_point is in engine samples: frames * 2.
-        var cueSeconds = cuePoint / (sampleRate * 2);
-        var cueRevs = cueSeconds / PioneerDDJ1000.secondsPerRevolution;
-        var cueDegrees = Math.floor((cueRevs - Math.floor(cueRevs)) * 360);
-        PioneerDDJ1000.send14(deck, d.cueMarkerMsb, cueDegrees, 359);
-    } else {
-        PioneerDDJ1000.send14(deck, d.cueMarkerMsb, 16383, 16383); // 0x7F/0x7F
-    }
-
-    // Key, mapped onto the controller's own 25-entry table.
-    var key = engine.getValue(group, "key");
-    PioneerDDJ1000.sendNoteIfChanged(deck, d.keyValue, PioneerDDJ1000.keyToDisplayCode(key));
+    // The screens themselves are drawn over HID by the bridge, which is how
+    // rekordbox drives them. The MIDI display messages -- position ring, BPM,
+    // tempo, the time readout, the cue marker, the key -- are a second source
+    // for the same picture, and sending both makes the unit flip between them.
+    // The Traktor and Serato style mappings use them because they have no HID
+    // path; this one does, so everything above goes out over the private
+    // SysEx instead and none of that is sent.
 
     PioneerDDJ1000.sendNoteIfChanged(deck, d.syncMaster, engine.getValue(group, "sync_master") ? 0x7F : 0x00);
     PioneerDDJ1000.sendNoteIfChanged(deck, d.syncState, engine.getValue(group, "sync_enabled") ? 0x7F : 0x00);
 };
 
-// Mixxx reports key as an Open Key / Lancelot style integer 1..24 where odd
-// values are minor. The controller wants an index into its own table, which
-// interleaves major and minor differently, so map through the note name.
-PioneerDDJ1000.keyToDisplayCode = function (mixxxKey) {
-    if (!mixxxKey || mixxxKey < 1 || mixxxKey > 24) {
-        return 0x00; // "---"
-    }
-    // Mixxx KeyUtils: 1..12 are C..B major, 13..24 are A..G# minor.
-    var majors = ["C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
-    var minors = ["Am", "Bbm", "Bm", "Cm", "Dbm", "Dm", "Ebm", "Em", "Fm", "F#m", "Gm", "Abm"];
-    var name = mixxxKey <= 12 ? majors[mixxxKey - 1] : minors[mixxxKey - 13];
-
-    var index = PioneerDDJ1000.keyCodes.indexOf(name);
-    return index > 0 ? index : 0x00;
-};
