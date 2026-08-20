@@ -162,6 +162,7 @@ CMD_WAVEFORM = 0x2C
 # flipping -- so a fixed 0x0A here is what left every screen on remaining, with
 # no track length behind it to count down from.
 TIME_REMAINING_BIT = 0x08
+DISPLAY_FLAGS = int(os.environ.get("DDJ_DISPLAY_FLAGS", "0x18"), 16)
 
 
 def track_by_duration(seconds):
@@ -261,7 +262,11 @@ class DeckScreen:
         b = bytearray(64)
         b[0] = deck
         b[1] = 0x21
-        b[2] = 0x18
+        # Display Artwork (0x08) and CUE SCOPE (0x10). Both are off in the one
+        # capture where the playhead travels and on in the ones where it does
+        # not, and CUE SCOPE is a waveform view in its own right -- switchable
+        # here so the pair can be tried against the playhead.
+        b[2] = DISPLAY_FLAGS
         b[3] = 0x02 | (TIME_REMAINING_BIT if self.remaining else 0)
         b[4] = 0x11
         b[5] = 0x81
@@ -983,6 +988,7 @@ class Bridge:
         self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
         self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
+        self.announce_load(screen.track_id)
         self.to_ddj(bytes((0x9F, deck_index, 0x7F)))
         payloads = self.build_track_payloads(deck_index, path)
         syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
@@ -1122,6 +1128,28 @@ class Bridge:
             os.write(self.hid, bytes([0x00]) + bytes(report).ljust(64, bytes([0x00])))
         except OSError:
             pass
+
+    def announce_load(self, track_id):
+        """Tell the unit a track is being put on a deck.
+
+        Two Pioneer messages rekordbox sends at every load and this never did.
+        The first is fixed; the second carries the track's id as a 28-bit
+        figure in seven-bit pieces. Without them the uploads still draw --
+        artwork and waveform appear -- but the screen never turns them into a
+        track it can follow, which is why the playhead stayed parked whatever
+        the state record said.
+        """
+        # Written whole rather than through sysex(), which adds the header
+        # and terminator these already carry.
+        self.to_ddj(bytes.fromhex("f00040050000020000000b2b6800000000f7"))
+        time.sleep(0.002)
+        value = track_id & 0x0FFFFFFF
+        self.to_ddj(bytes((0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02,
+                           0x00, 0x00, 0x00, 0x0C, 0x00, 0x00,
+                           (value >> 21) & 0x7F, (value >> 14) & 0x7F,
+                           (value >> 7) & 0x7F, value & 0x7F,
+                           0x00, 0x00, 0xF7)))
+        time.sleep(0.002)
 
     def reset_time_mode(self):
         """Put the time readout back to elapsed.
