@@ -37,11 +37,13 @@ import errno
 import fcntl
 import glob
 import os
+import shutil
 import sqlite3
 import struct
 import subprocess
 import threading
 import select
+import zlib
 import sys
 import syslog
 import time
@@ -137,6 +139,9 @@ SCREEN_DECKS = (0x10, 0x20, 0x30, 0x40)
 STATE_INTERVAL = 0.008
 MIXXX_DB = "/home/dj/.mixxx/mixxxdb.sqlite"
 TRACKART = "/usr/local/bin/djbox-ddj-trackart.py"
+# Built artwork and waveforms, kept between loads: building one means
+# decoding the whole track, which takes seconds.
+ART_CACHE = "/var/cache/djbox-art"
 CMD_ARTWORK = 0x2B
 CMD_WAVEFORM = 0x2C
 
@@ -174,6 +179,8 @@ def u24(value):
 class DeckScreen:
     def __init__(self):
         self.loaded = False
+        self.suspend = False
+        self.duration_ms = 0
         self.bpm = 0
         self.track_id = 0
         self.first_beat_ms = 0
@@ -221,7 +228,12 @@ class DeckScreen:
         # Run the clock on between reports so the needle turns at the 125 Hz
         # the screen is fed rather than stepping at the rate they arrive.
         elapsed = min(time.monotonic() - self.base_time, 0.5)
-        return max(0, int(self.base_ms + elapsed * 1000.0 * self.rate))
+        position = max(0, int(self.base_ms + elapsed * 1000.0 * self.rate))
+        if self.duration_ms:
+            # Never past the end of the track: the screen reads anything
+            # beyond it as "over" and counts negative time at the DJ.
+            position = min(position, self.duration_ms)
+        return position
 
     def record(self, deck):
         b = bytearray(64)
@@ -231,12 +243,24 @@ class DeckScreen:
         b[3] = 0x0A
         b[4] = 0x11
         b[5] = 0x81
+        if self.suspend:
+            # The unloading frame of a load: no track at all, whatever the
+            # rest of the state says. A flag rather than juggling the real
+            # fields, because the playhead reports keep arriving while the
+            # sequence runs and would put them straight back -- the unit then
+            # never sees the empty frame and quietly drops the new upload.
+            b[9] = 0x10
+            b[61] = 0x0D
+            return bytes(b)
         looping = self.loaded and self.loop_out > self.loop_in >= 0
         b[9] = (0xBC if looping else 0xB4) if self.loaded else 0x10
         b[10] = 0x01 if looping else 0x00
         # The playhead is minutes and seconds, not a 16-bit second count: the
         # second byte never goes past 59 in a capture, and feeding it 60 is
-        # what made the screen call the track over a minute in.
+        # what made the screen call the track over a minute in. Always the
+        # elapsed figure, even in remaining mode: the needle is drawn from
+        # this same field, and counting it down runs the needle backwards.
+        # The remaining readout is the unit's own, switched by the mode note.
         seconds, ms = divmod(self.position_ms(), 1000)
         b[11] = min(255, seconds // 60)
         b[12] = seconds % 60
@@ -609,6 +633,7 @@ class Bridge:
         self.burst_seen = set()
         self.panel = {}
         self.screens_woken = False
+        self.time_mode_reset = False
         self.state_logged = 0.0
         self.draw_locks = [threading.Lock() for _ in SCREEN_DECKS]
         self.from_vir = MidiSplitter()
@@ -712,7 +737,7 @@ class Bridge:
                 screen.loop_in = (msg[4] << 21) | (msg[5] << 14) | (msg[6] << 7) | msg[7]
                 screen.loop_out = (msg[8] << 21) | (msg[9] << 14) | (msg[10] << 7) | msg[11]
             return True
-        if msg[2] & 0x20:                      # where the grid starts, and the key
+        if msg[2] & 0x20:                      # grid start, key, time mode
             screen = self.screens[deck_index]
             screen.first_beat_ms = (msg[3] << 7) | msg[4]
             screen.key_code = msg[5]
@@ -732,6 +757,7 @@ class Bridge:
         # A stable non-zero id per track: the unit files artwork and waveform
         # under it, and with a zero id it throws them away again after a moment.
         self.screens[deck_index].track_id = ms & 0x7FFFFFFF
+        self.screens[deck_index].duration_ms = ms
         # The mapping repeats the announcement so a restarted daemon can catch
         # up; only redraw when it is actually a different track.
         if self.drawn.get(deck_index) == ms:
@@ -767,31 +793,7 @@ class Bridge:
         if not path or not os.path.exists(path):
             syslog.syslog("no library match for a %.3f s track" % seconds)
             return
-        art = "/run/djbox-ddj-art-%d.bin" % deck_index
-        wave = "/run/djbox-ddj-wave-%d.bin" % deck_index
-        try:
-            subprocess.run([TRACKART, path, art, wave], timeout=240,
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        except (OSError, subprocess.SubprocessError) as exc:
-            syslog.syslog("could not build the jog artwork: %s" % exc)
-            return
         deck = SCREEN_DECKS[deck_index]
-        key = struct.pack("<I", self.screens[deck_index].track_id)
-
-        payloads = {}
-        for name, cmd in ((art, CMD_ARTWORK), (wave, CMD_WAVEFORM)):
-            try:
-                with open(name, "rb") as fh:
-                    payloads[cmd] = fh.read()
-            except OSError:
-                pass
-
-        # rekordbox's load, in the order a capture of it shows. The unloading
-        # step matters as much as the upload: it clears the deck with an
-        # all-zero 0x30, lets a few state records go out with no track at all,
-        # and only then announces the new id. Uploading against a deck that
-        # still holds the previous track is what made the screen show the
-        # artwork for a moment and throw it away again.
         screen = self.screens[deck_index]
 
         # The announcement arrives before the first tempo report, so a draw
@@ -802,33 +804,87 @@ class Bridge:
                 break
             time.sleep(0.05)
 
+        # rekordbox's load, in the order a capture of it shows. The unloading
+        # step matters as much as the upload: it clears the deck with an
+        # all-zero 0x30, lets a few state records go out with no track at all,
+        # and only then announces the new id. Uploading against a deck that
+        # still holds the previous track is what made the screen show the
+        # artwork for a moment and throw it away again.
+        #
+        # It runs before the artwork build, not after: decoding a track for
+        # its waveform takes seconds, and the deck should read right the
+        # moment something lands on it. The picture catches up when ready.
         self.send_hid_transfer(deck, 0x30, bytes(116))
-
-        held_bpm, held_loaded = screen.bpm, screen.loaded
-        screen.track_id = 0
-        screen.bpm = 0
-        screen.loaded = False                  # one frame of "no track"
-        time.sleep(0.02)
-        screen.loaded = held_loaded
-        screen.track_id = struct.unpack("<I", key)[0]
-        screen.bpm = held_bpm
+        screen.suspend = True                  # a few frames of "no track"
+        time.sleep(0.03)
+        screen.suspend = False
         time.sleep(0.01)
+        key = struct.pack("<I", screen.track_id)
 
-        grid = beat_grid(held_bpm, screen.first_beat_ms, seconds)
-        syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
-                      % (deck_index + 1, screen.track_id, seconds, held_bpm,
-                         int.from_bytes(grid[:2], "little"),
-                         len(payloads.get(CMD_ARTWORK, b"")),
-                         len(payloads.get(CMD_WAVEFORM, b""))))
+        grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
         self.send_hid_transfer(deck, 0x2F, grid)
         self.send_hid_transfer(deck, 0x30, key + bytes(112))
         self.send_hid_transfer(deck, 0x2D, key + CUE_TABLE)
+
+        payloads = self.build_track_payloads(deck_index, path)
+        syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
+                      % (deck_index + 1, screen.track_id, seconds, screen.bpm,
+                         int.from_bytes(grid[:2], "little"),
+                         len(payloads.get(CMD_ARTWORK, b"")),
+                         len(payloads.get(CMD_WAVEFORM, b""))))
         if CMD_ARTWORK in payloads:
             self.send_hid_transfer(deck, CMD_ARTWORK, payloads[CMD_ARTWORK])
         time.sleep(0.42)                       # rekordbox's pause before the waveform
         if CMD_WAVEFORM in payloads:
             self.send_hid_transfer(deck, CMD_WAVEFORM, payloads[CMD_WAVEFORM])
         syslog.syslog("jog screen %d: drew %s" % (deck_index + 1, os.path.basename(path)))
+
+    def build_track_payloads(self, deck_index, path):
+        """The artwork and waveform for a track, cached across loads.
+
+        The build decodes the whole file, which takes seconds; the same track
+        loaded again -- the usual case in practice -- comes straight from the
+        cache and its picture is up almost at once.
+        """
+        try:
+            stamp = int(os.stat(path).st_mtime)
+        except OSError:
+            stamp = 0
+        tag = "%08x-%d" % (zlib.crc32(path.encode("utf-8", "replace")) & 0xFFFFFFFF,
+                           stamp)
+        cache_art = os.path.join(ART_CACHE, tag + ".art")
+        cache_wave = os.path.join(ART_CACHE, tag + ".wave")
+
+        if not (os.path.exists(cache_art) or os.path.exists(cache_wave)):
+            try:
+                os.makedirs(ART_CACHE, exist_ok=True)
+            except OSError:
+                pass
+            art = "/run/djbox-ddj-art-%d.bin" % deck_index
+            wave = "/run/djbox-ddj-wave-%d.bin" % deck_index
+            try:
+                subprocess.run([TRACKART, path, art, wave], timeout=240,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except (OSError, subprocess.SubprocessError) as exc:
+                syslog.syslog("could not build the jog artwork: %s" % exc)
+                return {}
+            for made, kept in ((art, cache_art), (wave, cache_wave)):
+                # shutil, not os.replace: the build writes to /run, which is
+                # tmpfs, and the cache is on disk -- a rename across two
+                # filesystems fails, and this quietly cached nothing.
+                try:
+                    shutil.move(made, kept)
+                except (OSError, shutil.Error) as exc:
+                    syslog.syslog("could not cache %s: %s" % (kept, exc))
+
+        payloads = {}
+        for name, cmd in ((cache_art, CMD_ARTWORK), (cache_wave, CMD_WAVEFORM)):
+            try:
+                with open(name, "rb") as fh:
+                    payloads[cmd] = fh.read()
+            except OSError:
+                pass
+        return payloads
 
     def send_hid_transfer(self, deck, cmd, payload):
         """Upload one chunked transfer to the screen, one report per ms."""
@@ -876,6 +932,26 @@ class Bridge:
         except OSError:
             pass
 
+    def reset_time_mode(self):
+        """Put the time readout back to elapsed.
+
+        The unit remembers this across power cycles, and in remaining mode it
+        counts down from a track length it works out for itself -- which it
+        never gets from us, so it sits at -99:59. rekordbox never touches the
+        setting at all; it was an earlier version of this bridge, sending the
+        overlay's remaining-time marker on every display update, that latched
+        it on.
+
+        Sent once the screens are actually released, not during bring-up: a
+        locked screen takes the message and does nothing with it.
+        """
+        if self.time_mode_reset:
+            return
+        self.time_mode_reset = True
+        for ch in range(4):
+            self.to_ddj(bytes((0x90 | ch, 0x44, 0x00)))
+            time.sleep(0.002)
+
     def screens_on(self):
         """Wake the jog screens: ring light and display on, once per session.
 
@@ -895,6 +971,7 @@ class Bridge:
         for ch in range(4):
             self.to_ddj(bytes((0x90 | ch, 0x5B, 0x01)))
             self.to_ddj(bytes((0x90 | ch, 0x5D, 0x00)))
+
 
     def unit_settings(self):
         """Settings the DJ software applies on the unit itself.
@@ -1034,6 +1111,7 @@ class Bridge:
                 if alt == 1 and last_alt != 1:
                     if vendor_probe():
                         syslog.syslog("audio interface went to alt 1 -- jog displays released")
+                        self.reset_time_mode()
                         # The screens only accept "display on" once they are
                         # released, and the mapping sends its own copy when Mixxx
                         # starts, which is usually too early.

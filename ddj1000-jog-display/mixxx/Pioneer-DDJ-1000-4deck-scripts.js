@@ -147,6 +147,11 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     PioneerDDJ1000.gridInfo[deck] = packed;
     midi.sendSysexMsg([0xF0, 0x7D, 0x20 | (deck - 1),
         (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, 0x00, 0xF7], 8);
+    // The jog always shows elapsed time. Switching it to remaining is possible
+    // -- the mode note and BF 45 both put the minus sign up -- but the unit
+    // then counts down from a track length it computes itself and does not
+    // have from us, so it just shows -99:59. There is no track-length field in
+    // the protocol to feed it, so remaining is left to the laptop screen.
 };
 
 // Mixxx numbers the keys chromatically: 1..12 are C..B major and 13..24 are
@@ -862,12 +867,21 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
 
     var duration = engine.getValue(group, "duration");
     var position = engine.getValue(group, "playposition");
+    // playposition runs past 1.0 into the end-of-track roll-out, and below 0
+    // ahead of the start; the screens read either as nonsense time.
+    position = Math.max(0, Math.min(1, position));
     var elapsed = duration > 0 ? position * duration : 0;
 
     var bpm = engine.getValue(group, "bpm") || 0;
     PioneerDDJ1000.sendPosition(deck, elapsed * 1000, bpm);
     PioneerDDJ1000.sendGridInfo(deck);
     PioneerDDJ1000.sendLoop(deck);
+
+    // The playing-speed pair is the one display CC the HID view itself reads:
+    // without it the screen shows -100% and drops the range badge. It only
+    // goes out when the tempo actually moves, so it cannot flicker anything.
+    var rate = engine.getValue(group, "rate") * engine.getValue(group, "rateRange");
+    PioneerDDJ1000.send14(deck, d.speedMsb, (rate + 1) * 4999.5, 9999);
 
     // The screens themselves are drawn over HID by the bridge, which is how
     // rekordbox drives them. The MIDI display messages -- position ring, BPM,

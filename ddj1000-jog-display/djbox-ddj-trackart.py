@@ -39,6 +39,11 @@ QUIET_COLOURS = [
 ]
 QUIET_HEIGHT = 14        # columns shorter than this use the quiet set
 
+# What goes on the 80x80 tile: the track's name over its cover ("both"),
+# the cover alone, or the name alone. The unit's own layout has nowhere to
+# put a track name, which is the thing people ask for it to show.
+TILE_MODE = os.environ.get("DDJ_JOG_TILE", "both")
+
 
 def colour_for(outer, ratio):
     table = QUIET_COLOURS if outer < QUIET_HEIGHT else LOUD_COLOURS
@@ -49,14 +54,13 @@ def colour_for(outer, ratio):
 
 
 # Where to look when a file carries no cover of its own, in order: a picture
-# sitting beside it, then the box's own logo, so a screen is never left blank.
+# sitting beside it; failing that the track's name is drawn as a tile.
 FOLDER_COVERS = ("cover.jpg", "cover.png", "folder.jpg", "folder.png",
                  "front.jpg", "album.jpg")
-FALLBACK_COVER = "/home/dj/.mixxx/skins/Pioneered_by_ntamas/images/pioneered_logo.png"
 
 
 def artwork_source(path):
-    """The best picture available for a track: its own, its folder's, or ours."""
+    """The best picture available for a track: its own, or its folder's."""
     if embedded_cover(path):
         return path
     folder = os.path.dirname(path)
@@ -64,9 +68,7 @@ def artwork_source(path):
         candidate = os.path.join(folder, name)
         if os.path.exists(candidate):
             return candidate
-    if os.path.exists(FALLBACK_COVER):
-        return FALLBACK_COVER
-    return path
+    return None
 
 
 def embedded_cover(path):
@@ -81,6 +83,110 @@ def embedded_cover(path):
     return bool(out.strip())
 
 
+def track_name(path):
+    """Artist and title from the file's own tags, falling back to its name."""
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "quiet", "-show_entries",
+             "format_tags=artist,title", "-of", "default=nw=1:nk=0", path],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            timeout=15).stdout.decode("utf-8", "replace")
+    except (OSError, subprocess.SubprocessError):
+        out = ""
+    tags = {}
+    for line in out.splitlines():
+        key, _, value = line.partition("=")
+        key = key.split(":")[-1].strip().lower()
+        if value.strip():
+            tags[key] = value.strip()
+
+    if tags.get("title"):
+        return tags.get("artist", ""), tags["title"]
+
+    name = os.path.splitext(os.path.basename(path))[0]
+    # Strip the leading track number rippers put there.
+    words = name.split()
+    if words and words[0].rstrip(".-").isdigit():
+        words = words[1:]
+    return "", " ".join(words) or name
+
+
+def fit(draw, text, font, width):
+    """One line, cut with an ellipsis rather than dropped words."""
+    if draw.textlength(text, font=font) <= width:
+        return text
+    while text and draw.textlength(text + "\u2026", font=font) > width:
+        text = text[:-1]
+    return (text.rstrip() + "\u2026") if text else ""
+
+
+def wrap(draw, text, font, width, limit):
+    """Break text into lines that fit; the last one is cut with an ellipsis."""
+    lines, current = [], ""
+    for word in text.split():
+        trial = (current + " " + word).strip()
+        if draw.textlength(trial, font=font) <= width:
+            current = trial
+            continue
+        if not current:
+            current = fit(draw, trial, font, width)
+            continue
+        lines.append(current)
+        if len(lines) == limit:
+            return lines
+        current = word
+    if current and len(lines) < limit:
+        lines.append(current)
+    return lines[:limit]
+
+
+def label_tile(path, cover):
+    """The 80x80 tile: the track's name, over its cover when there is one.
+
+    The name is what people actually want off the jog -- it is the one thing
+    the unit's own layout has no room for -- so it goes on whether or not
+    there is a picture behind it. Over a cover it sits in a darkened band
+    across the bottom; with no cover it takes the whole tile.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+
+    artist, title = track_name(path)
+    over_cover = cover is not None
+    image = cover if over_cover else Image.new("RGB", (80, 80), (16, 18, 26))
+    draw = ImageDraw.Draw(image)
+    try:
+        font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            11 if over_cover else 13)
+        small = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 9)
+    except OSError:
+        font = small = ImageFont.load_default()
+
+    rows = [(line, font) for line in
+            wrap(draw, title, font, 76, 2 if over_cover else 4)]
+    if artist:
+        rows.append((fit(draw, artist, small, 76), small))
+
+    step = 12 if over_cover else 14
+    height = sum(step if face is font else 11 for _, face in rows) + 4
+
+    if over_cover:
+        # Darken the band the text sits in, hard enough to read over anything.
+        band = image.crop((0, 80 - height, 80, 80))
+        black = Image.new("RGB", band.size, (0, 0, 0))
+        image.paste(Image.blend(band, black, 0.75), (0, 80 - height))
+        y = 80 - height + 2
+    else:
+        y = (80 - height) // 2 + 2
+
+    for line, face in rows:
+        x = max(1, (80 - draw.textlength(line, font=face)) // 2)
+        draw.text((x, y), line, fill=(240, 242, 250), font=face)
+        y += step if face is font else 11
+    return image
+
+
 def artwork_payload(path):
     """Cover art, as the exact flavour of JPEG the screen decodes.
 
@@ -90,21 +196,26 @@ def artwork_payload(path):
     quietly ignored by the screen. So ffmpeg only unpacks the picture and the
     encoding is done here, where the flavour can be pinned down.
     """
-    source = artwork_source(path)
-    try:
-        raw = subprocess.run(
-            ["ffmpeg", "-v", "quiet", "-y", "-i", source, "-an", "-vframes", "1",
-             "-vf", "scale=80:80", "-pix_fmt", "rgb24", "-f", "rawvideo", "-"],
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=20).stdout
-    except (OSError, subprocess.SubprocessError):
-        return None
-    if len(raw) < 80 * 80 * 3:
-        return None
-
     import io
     from PIL import Image
 
-    image = Image.frombytes("RGB", (80, 80), raw[:80 * 80 * 3])
+    cover = None
+    source = artwork_source(path)
+    if source is not None:
+        try:
+            raw = subprocess.run(
+                ["ffmpeg", "-v", "quiet", "-y", "-i", source, "-an", "-vframes", "1",
+                 "-vf", "scale=80:80", "-pix_fmt", "rgb24", "-f", "rawvideo", "-"],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=20).stdout
+        except (OSError, subprocess.SubprocessError):
+            raw = b""
+        if len(raw) >= 80 * 80 * 3:
+            cover = Image.frombytes("RGB", (80, 80), raw[:80 * 80 * 3])
+
+    if TILE_MODE == "cover" and cover is not None:
+        image = cover
+    else:
+        image = label_tile(path, cover if TILE_MODE != "title" else None)
     for quality in (85, 75, 65, 55, 45, 35):
         buf = io.BytesIO()
         image.save(buf, "JPEG", quality=quality, subsampling=2, optimize=False)
