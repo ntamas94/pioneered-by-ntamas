@@ -355,7 +355,12 @@ def beat_grid(bpm, first_beat_ms, duration_s):
     if bpm <= 0:
         bpm = 120.0
     interval = 60000.0 / bpm
-    count = min(int((duration_s * 1000 - first_beat_ms) / interval), 2000)
+    # Sixteen bars past the end: the cue scope reads that far ahead of the
+    # playhead, so a grid stopping dead on the last beat leaves it with
+    # nothing to draw as the track runs out. rekordbox's own grids overshoot
+    # by rather more than this, but nothing observed needs more.
+    span_ms = duration_s * 1000 + 64 * interval - first_beat_ms
+    count = min(int(span_ms / interval), 2000)
     if count < 1:
         return bytes(58)
     body = bytearray(struct.pack("<H", count))
