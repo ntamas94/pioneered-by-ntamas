@@ -1194,6 +1194,30 @@ class Bridge:
         for i, data in enumerate(chunks, start=1):
             report(i, data)
 
+    def clear_all_decks(self):
+        """Empty every deck, so nothing from before is left standing.
+
+        The screens keep whatever they were last given across a restart of
+        this daemon and across the DJ software closing, which means a stale
+        track sits on the wheels looking current. Nothing should show until
+        something announces a track.
+        """
+        for index, deck in enumerate(SCREEN_DECKS):
+            screen = self.screens[index]
+            screen.loaded = False
+            screen.ready = False
+            screen.track_id = 0
+            screen.duration_ms = 0
+            screen.bpm = 0
+            screen.cues = []
+            screen.cue_ms = 0
+            self.drawn[index] = None
+            self.send_hid_transfer(deck, 0x30, bytes(116), prime=False)
+            self.send_hid_transfer(deck, CMD_WAVEFORM, bytes(WAVEFORM_BYTES),
+                                   prime=False)
+            self.send_hid_transfer(deck, 0x2F, bytes(58), prime=False)
+            self.to_ddj(bytes((0x9F, index, 0x00)))
+
     def hold_audio_open(self):
         """Keep the unit's audio interface streaming so the screens stay up.
 
@@ -1239,9 +1263,16 @@ class Bridge:
         if self.paused:
             return
         now = time.monotonic()
+        # Nothing at all until a deck has a track. Left to itself the unit
+        # shows its own start-up screen -- Pioneer DJ on one wheel, rekordbox
+        # on the other -- and pushing state over it replaces that with an
+        # empty deck before there is anything to say.
+        if not any(s.loaded for s in self.screens):
+            return
+
         for i, deck in enumerate(SCREEN_DECKS):
             screen = self.screens[i]
-            if LOADED_ONLY and not screen.loaded:
+            if not screen.loaded:
                 continue
             if screen.loaded and now - screen.last_seen > 5.0:
                 # The mapping went quiet, so the deck is empty -- or Mixxx

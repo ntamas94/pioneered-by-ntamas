@@ -163,6 +163,9 @@ WAVEFORM_BYTES = 1 + 600 * 7
 # from the scheduler, and across the couple of hundred reports a load
 # takes that was most of the second it spent.
 REPORT_GAP = float(os.environ.get("DDJ_REPORT_GAP", "0"))
+# Hold the unit's capture stream open so its screens never go dark for want
+# of a driver. Set DDJ_HOLD_AUDIO=0 to leave the interface alone.
+HOLD_AUDIO = os.environ.get("DDJ_HOLD_AUDIO", "1") != "0"
 
 # Byte 3 of the state record, bit 0x08: set counts the time down, clear counts
 # it up. The Time Mode preference is not a MIDI setting at all -- capturing
@@ -420,12 +423,17 @@ def track_record(key, cues):
     the track is handed over and again once its waveform is up.
     """
     body = bytearray(key)
-    for minute, second, milli, _total in cues[:16]:
+    for minute, second, milli, loop in cues[:16]:
         # A marker byte, a colour, then the position in the same shape as
         # every other time here: minutes, seconds, and a 16-bit millisecond
         # figure. Written as a 24-bit millisecond count instead, as this did,
         # the seconds land in the milliseconds and every cue sits wrong.
-        body += bytes((0x01, 0x16, minute & 0xFF, second % 60,
+        #
+        # Saved loops carry their own marker and colour: a capture of
+        # rekordbox writing one alongside a plain hot cue has 02/24 against
+        # the loop and 01/16 against the cue.
+        body += bytes((0x02 if loop else 0x01, 0x24 if loop else 0x16,
+                       minute & 0xFF, second % 60,
                        milli & 0xFF, (milli >> 8) & 0xFF))
     return bytes(body) + bytes(max(0, 116 - len(body)))
 
@@ -441,7 +449,7 @@ def cue_table(key, cues):
     body = bytearray()
     body += key
     body += bytes((0x0A, 0x00))
-    for minute, second, ms, _total in cues[:10]:
+    for minute, second, ms, _loop in cues[:10]:
         body += bytes((minute & 0xFF, second % 60, ms & 0xFF, (ms >> 8) & 0xFF, 0x00))
     for _ in range(max(0, 10 - len(cues))):
         body += CUE_EMPTY_SLOT
@@ -863,13 +871,12 @@ class Bridge:
             count = msg[3]
             cues = []
             for i in range(count):
-                base = 4 + i * 4
-                if base + 4 > len(msg) - 1:
+                base = 4 + i * 5
+                if base + 5 > len(msg) - 1:
                     break
                 minute, second = msg[base], msg[base + 1]
                 milli = (msg[base + 2] << 7) | msg[base + 3]
-                cues.append((minute, second, milli,
-                             (minute * 60 + second) * 1000 + milli))
+                cues.append((minute, second, milli, bool(msg[base + 4])))
             if cues != screen.cues:
                 screen.cues = cues
                 if cues:
@@ -1187,6 +1194,59 @@ class Bridge:
         for i, data in enumerate(chunks, start=1):
             report(i, data)
 
+    def clear_all_decks(self):
+        """Empty every deck, so nothing from before is left standing.
+
+        The screens keep whatever they were last given across a restart of
+        this daemon and across the DJ software closing, which means a stale
+        track sits on the wheels looking current. Nothing should show until
+        something announces a track.
+        """
+        for index, deck in enumerate(SCREEN_DECKS):
+            screen = self.screens[index]
+            screen.loaded = False
+            screen.ready = False
+            screen.track_id = 0
+            screen.duration_ms = 0
+            screen.bpm = 0
+            screen.cues = []
+            screen.cue_ms = 0
+            self.drawn[index] = None
+            self.send_hid_transfer(deck, 0x30, bytes(116), prime=False)
+            self.send_hid_transfer(deck, CMD_WAVEFORM, bytes(WAVEFORM_BYTES),
+                                   prime=False)
+            self.send_hid_transfer(deck, 0x2F, bytes(58), prime=False)
+            self.to_ddj(bytes((0x9F, index, 0x00)))
+
+    def hold_audio_open(self):
+        """Keep the unit's audio interface streaming so the screens stay up.
+
+        The screens go dark the moment nothing is streaming: the unit reads the
+        interface sitting at its idle alternate setting as "no driver here" and
+        locks them, which is what happens every time the DJ software is closed.
+        Opening the capture side is enough to hold it awake, and capture is the
+        side nothing else wants -- playback stays free for the DJ software.
+
+        Costs one input stream's worth of USB bandwidth and nothing else; the
+        samples go straight to /dev/null.
+        """
+        while True:
+            card = card_by_name("DDJ")
+            if card is None:
+                time.sleep(DEVICE_POLL)
+                continue
+            try:
+                with open(os.devnull, "wb") as sink:
+                    recorder = subprocess.Popen(
+                        ["arecord", "-D", "hw:%d,0" % card, "-f", "S24_3LE",
+                         "-c", "6", "-r", "44100", "-q"],
+                        stdout=sink, stderr=subprocess.DEVNULL)
+                    recorder.wait()
+            except OSError as exc:
+                syslog.syslog("cannot hold the audio interface open: %s" % exc)
+                return
+            time.sleep(1.0)
+
     def pause(self, _signum=None, _frame=None):
         """Stop driving the screens without letting go of the controller.
 
@@ -1203,9 +1263,16 @@ class Bridge:
         if self.paused:
             return
         now = time.monotonic()
+        # Nothing at all until a deck has a track. Left to itself the unit
+        # shows its own start-up screen -- Pioneer DJ on one wheel, rekordbox
+        # on the other -- and pushing state over it replaces that with an
+        # empty deck before there is anything to say.
+        if not any(s.loaded for s in self.screens):
+            return
+
         for i, deck in enumerate(SCREEN_DECKS):
             screen = self.screens[i]
-            if LOADED_ONLY and not screen.loaded:
+            if not screen.loaded:
                 continue
             if screen.loaded and now - screen.last_seen > 5.0:
                 # The mapping went quiet, so the deck is empty -- or Mixxx
@@ -1540,6 +1607,8 @@ def main():
             time.sleep(2)
             continue
         syslog.syslog("bridging DDJ-1000 (card %d) <-> %s" % (card, vir_path))
+        if HOLD_AUDIO:
+            threading.Thread(target=bridge.hold_audio_open, daemon=True).start()
         try:
             bridge.run()
         except SessionStale:
