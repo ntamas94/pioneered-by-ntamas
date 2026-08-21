@@ -171,6 +171,12 @@ TRACKART = "/usr/local/bin/djbox-ddj-trackart.py"
 # Built artwork and waveforms, kept between loads: building one means
 # decoding the whole track, which takes seconds.
 ART_CACHE = "/var/cache/djbox-art"
+# Where the panel's knob and fader positions are kept between runs. The unit
+# reports them once per USB session, just after it authenticates, and never
+# again however often it is asked -- so a daemon restarted mid-session has no
+# way to learn them, and the DJ software sits there disagreeing with every
+# knob on the panel until each one is touched.
+PANEL_CACHE = "/var/cache/djbox-panel"
 CMD_ARTWORK = 0x2B
 CMD_WAVEFORM = 0x2C
 # One lead byte and 600 columns of seven: the size every waveform this
@@ -892,7 +898,8 @@ class Bridge:
         self.probe_at = 0.0
         self.burst_at = 0.0
         self.burst_seen = set()
-        self.panel = {}
+        self.panel = self.load_panel()
+        self.panel_dirty = False
         # Seeded from the clock so ids differ across restarts too.
         self.load_seq = int(time.time()) % 5
         self.library_row = 0
@@ -1695,6 +1702,35 @@ class Bridge:
             return
         self._display_bringup_fallback()
 
+    @staticmethod
+    def load_panel():
+        """Whatever the unit last told us about its knobs, from before."""
+        try:
+            with open(PANEL_CACHE, "rb") as fh:
+                raw = fh.read()
+        except OSError:
+            return {}
+        panel = {}
+        for i in range(0, len(raw) - 2, 3):
+            panel[raw[i:i + 2]] = raw[i + 2]
+        if panel:
+            syslog.syslog("panel state: %d positions remembered from last time"
+                          % len(panel))
+        return panel
+
+    def save_panel(self):
+        if not self.panel_dirty:
+            return
+        self.panel_dirty = False
+        try:
+            tmp = PANEL_CACHE + ".new"
+            with open(tmp, "wb") as fh:
+                for address in sorted(self.panel):
+                    fh.write(bytes(address) + bytes([self.panel[address]]))
+            os.replace(tmp, PANEL_CACHE)
+        except OSError as exc:
+            syslog.syslog("cannot keep the panel state: %s" % exc)
+
     def request_panel_state(self):
         """Make the unit report where its knobs and faders are sitting.
 
@@ -1719,6 +1755,7 @@ class Bridge:
         for address in sorted(self.panel):
             self.to_mixxx(bytes(address) + bytes([self.panel[address]]))
             time.sleep(0.001)
+        self.save_panel()
         if self.panel:
             syslog.syslog("replayed %d control positions to Mixxx" % len(self.panel))
 
@@ -1889,6 +1926,7 @@ class Bridge:
                         # Mixxx has opened its port, so Mixxx would otherwise
                         # never learn any of it.
                         self.panel[msg[:2]] = msg[2]
+                        self.panel_dirty = True
                         # The unit reports its whole panel in one burst; say so
                         # when it happens, since when it happens is the whole
                         # question -- Mixxx only picks the values up if its

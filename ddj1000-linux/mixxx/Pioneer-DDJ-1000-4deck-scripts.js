@@ -293,7 +293,8 @@ PioneerDDJ1000.sendLoop = function (deck) {
     // As a rung on the ladder rather than a number. The ladder starts at
     // 1/64, which is a size Mixxx does not have, so rung 1 is its smallest:
     // 1 is 1/32 and 15 is 512. 0x7F means the loop is not on the ladder.
-    var size = engine.getValue(group, "beatloop_size");
+    var size = PioneerDDJ1000.padLoopWanted[deck]
+        || engine.getValue(group, "beatloop_size");
     var rung = 0x7F;
     if (size > 0) {
         var steps = Math.round(Math.log(size) / Math.LN2) + 6;
@@ -527,6 +528,78 @@ PioneerDDJ1000.beatLoopButton = function (channel, control, value, status, group
     }
     engine.setValue(group, "beatloop_4_activate", 1);
     engine.setValue(group, "beatloop_4_activate", 0);
+};
+
+// The beat loop pads. Mixxx refuses outright to make a loop that would run
+// past the end of the track -- loopingcontrol.cpp, "Do not allow beat loops to
+// go beyond the end of the track" -- so the long sizes simply do nothing near
+// the end of a track, where rekordbox instead clips the loop and keeps calling
+// it by the size that was asked for.
+//
+// Neither is reproducible from a mapping, so this steps down instead: the pad
+// gives you the largest size on the ladder that actually fits from here.
+// Pressing the pad of a running loop leaves it, whatever its size.
+// The size a pad asked for when the track was too short to hold it, so the
+// screen can name it rather than measuring the clipped span back.
+PioneerDDJ1000.padLoopWanted = {};
+
+PioneerDDJ1000.padLoopSizes = {
+    0x60: 1 / 32, 0x61: 1 / 16, 0x62: 1 / 8, 0x63: 1 / 4,
+    0x64: 1 / 2, 0x65: 1, 0x66: 2, 0x67: 4,
+    0x68: 8, 0x69: 16, 0x6A: 32, 0x6B: 64,
+    0x6C: 128, 0x6D: 256, 0x6E: 512,
+};
+
+PioneerDDJ1000.beatLoopPad = function (channel, control, value, status, group) {
+    if (!value) {
+        return;
+    }
+    // Pad channels are 0x97 + 2*(deck-1), so the deck is not the low nibble
+    // here the way it is everywhere else in this file.
+    var deck = Math.floor((status - 0x97) / 2) + 1;
+    var size = PioneerDDJ1000.padLoopSizes[control];
+    if (!size) {
+        return;
+    }
+    if (engine.getValue(group, "loop_enabled") > 0) {
+        engine.setValue(group, "reloop_toggle", 1);
+        engine.setValue(group, "reloop_toggle", 0);
+        return;
+    }
+    // How much track is left, in beats of its own tempo. Worked out here
+    // rather than by trying and looking: a control written from a script is
+    // not visible again until the engine has run, so asking whether the loop
+    // took would read the answer to the previous question.
+    var bpm = engine.getValue(group, "file_bpm") || engine.getValue(group, "bpm");
+    var duration = engine.getValue(group, "duration");
+    var left = (bpm > 0 && duration > 0)
+        ? duration * (1 - engine.getValue(group, "playposition")) * bpm / 60
+        : size;
+
+    if (size <= left) {
+        PioneerDDJ1000.padLoopWanted[deck] = 0;
+        engine.setValue(group, "beatloop_size", size);
+        engine.setValue(group, "beatloop_activate", 1);
+        engine.setValue(group, "beatloop_activate", 0);
+        return;
+    }
+
+    // Too long for what is left of the track. Mixxx will not make that loop at
+    // all; rekordbox makes it and clips it at the end, still calling it by the
+    // size that was asked for. Same here: the ends are set by hand, and the
+    // size asked for is remembered so the screen names it rather than writing
+    // two dashes at a loop it thinks nobody chose.
+    var rate = (engine.getValue(group, "track_samplerate") || 44100) * 2;
+    var start = engine.getValue(group, "playposition") * duration * rate;
+    var end = duration * rate;
+    if (!(end > start)) {
+        return;
+    }
+    PioneerDDJ1000.padLoopWanted[deck] = size;
+    engine.setValue(group, "loop_start_position", Math.round(start));
+    engine.setValue(group, "loop_end_position", Math.round(end));
+    engine.setValue(group, "reloop_toggle", 1);
+    engine.setValue(group, "reloop_toggle", 0);
 };
 
 PioneerDDJ1000.syncPressedAt = {};

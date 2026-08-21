@@ -213,10 +213,16 @@ def build_controls() -> str:
 
         out.append(f"      <!-- ============ DECK {deck} ============ -->\n")
 
-        for midino, key, desc in DECK_BUTTONS:
-            out.append(control(note_status, midino, g, key, f"Deck {deck} {desc}"))
-        for midino, key, desc in DECK_BUTTONS_SHIFT:
-            out.append(control(note_status, midino, g, key, f"Deck {deck} {desc}"))
+        # A fourth element carries the options, for the few buttons that need
+        # a script binding rather than a plain one.
+        for entry in DECK_BUTTONS:
+            midino, key, desc = entry[:3]
+            opts = entry[3] if len(entry) > 3 else ("normal",)
+            out.append(control(note_status, midino, g, key, f"Deck {deck} {desc}", opts))
+        for entry in DECK_BUTTONS_SHIFT:
+            midino, key, desc = entry[:3]
+            opts = entry[3] if len(entry) > 3 else ("normal",)
+            out.append(control(note_status, midino, g, key, f"Deck {deck} {desc}", opts))
         for midino, key, desc in DECK_BUTTONS_SCRIPT:
             out.append(control(note_status, midino, g, f"{SCRIPT_PREFIX}.{key}",
                                f"Deck {deck} {desc}", ("script-binding",)))
@@ -273,11 +279,22 @@ def build_controls() -> str:
             out.append(control(pad_status, base, g, f"hotcue_{n}_activate", f"Deck {deck} PAD {n} hot cue {n}"))
             out.append(control(shift_status, base, g, f"hotcue_{n}_clear", f"Deck {deck} SHIFT+PAD {n} clear hot cue {n}"))
 
-            # Beat loop: pads select loop lengths 1/4 .. 32 beats. Mixxx spells
-            # the fractional sizes with a dot, e.g. beatloop_0.25_toggle.
-            size = [0.25, 0.5, 1, 2, 4, 8, 16, 32][pad]
-            key = f"beatloop_{size:g}_toggle"
-            out.append(control(pad_status, PAD_MODE_BASE["beatloop"] + pad, g, key, f"Deck {deck} PAD {n} beat loop {size:g}"))
+            # Beat loop, both pages: the manual's fine ladder on page 1 and the
+            # long sizes on page 2. Scripted rather than bound straight to
+            # beatloop_N_toggle, because Mixxx will not make a loop that runs
+            # past the end of the track and the pad would simply do nothing
+            # there; the script steps down to the largest size that fits.
+            size = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4][pad]
+            out.append(control(pad_status, PAD_MODE_BASE["beatloop"] + pad, g,
+                               f"{SCRIPT_PREFIX}.beatLoopPad",
+                               f"Deck {deck} PAD {n} beat loop {size:g}",
+                               ("script-binding",)))
+            if pad < 7:
+                big = [8, 16, 32, 64, 128, 256, 512][pad]
+                out.append(control(pad_status, PAD_MODE_BASE["beatloop"] + 8 + pad, g,
+                                   f"{SCRIPT_PREFIX}.beatLoopPad",
+                                   f"Deck {deck} PAD {n} beat loop {big}, page 2",
+                                   ("script-binding",)))
 
             # Beat jump: backward on the top row, forward on the bottom.
             jump = [1, 2, 4, 8][pad % 4]

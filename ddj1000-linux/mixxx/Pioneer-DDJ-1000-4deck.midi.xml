@@ -56,7 +56,7 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 BEAT LOOP / auto loop -->
+        <!-- Deck 1 4 BEAT LOOP / EXIT -->
         <group>[Channel1]</group>
         <key>PioneerDDJ1000.beatLoopButton</key>
         <status>0x90</status>
@@ -456,12 +456,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 1 beat loop 1/32 -->
+        <!-- Deck 1 PAD 1 beat loop 0.03125 -->
         <group>[Channel1]</group>
-        <key>beatloop_0.03125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x60</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 beat loop 8, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x68</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 1 beat jump 1 backward -->
@@ -504,12 +512,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 2 beat loop 1/16 -->
+        <!-- Deck 1 PAD 2 beat loop 0.0625 -->
         <group>[Channel1]</group>
-        <key>beatloop_0.0625_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x61</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 beat loop 16, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x69</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 2 beat jump 2 backward -->
@@ -552,12 +568,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 3 beat loop 1/8 -->
+        <!-- Deck 1 PAD 3 beat loop 0.125 -->
         <group>[Channel1]</group>
-        <key>beatloop_0.125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x62</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 beat loop 32, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x6A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 3 beat jump 4 backward -->
@@ -600,12 +624,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 4 beat loop 1/4 -->
+        <!-- Deck 1 PAD 4 beat loop 0.25 -->
         <group>[Channel1]</group>
-        <key>beatloop_0.25_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x63</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 beat loop 64, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x6B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 4 beat jump 8 backward -->
@@ -648,12 +680,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 5 beat loop 1/2 -->
+        <!-- Deck 1 PAD 5 beat loop 0.5 -->
         <group>[Channel1]</group>
-        <key>beatloop_0.5_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x64</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 beat loop 128, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x6C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 5 beat jump 1 forward -->
@@ -698,10 +738,18 @@
       <control>
         <!-- Deck 1 PAD 6 beat loop 1 -->
         <group>[Channel1]</group>
-        <key>beatloop_1_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x65</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 beat loop 256, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x6D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 6 beat jump 2 forward -->
@@ -746,10 +794,18 @@
       <control>
         <!-- Deck 1 PAD 7 beat loop 2 -->
         <group>[Channel1]</group>
-        <key>beatloop_2_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x66</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 beat loop 512, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x97</status>
+        <midino>0x6E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 7 beat jump 4 forward -->
@@ -794,66 +850,10 @@
       <control>
         <!-- Deck 1 PAD 8 beat loop 4 -->
         <group>[Channel1]</group>
-        <key>beatloop_4_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x97</status>
         <midino>0x67</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 1 beat loop 8, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_8_toggle</key>
-        <status>0x97</status>
-        <midino>0x68</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 2 beat loop 16, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_16_toggle</key>
-        <status>0x97</status>
-        <midino>0x69</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 3 beat loop 32, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_32_toggle</key>
-        <status>0x97</status>
-        <midino>0x6A</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 4 beat loop 64, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_64_toggle</key>
-        <status>0x97</status>
-        <midino>0x6B</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 5 beat loop 128, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_128_toggle</key>
-        <status>0x97</status>
-        <midino>0x6C</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 6 beat loop 256, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_256_toggle</key>
-        <status>0x97</status>
-        <midino>0x6D</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 PAD 7 beat loop 512, page 2 -->
-        <group>[Channel1]</group>
-        <key>beatloop_512_toggle</key>
-        <status>0x97</status>
-        <midino>0x6E</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 8 beat jump 8 forward -->
@@ -913,7 +913,7 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 BEAT LOOP / auto loop -->
+        <!-- Deck 2 4 BEAT LOOP / EXIT -->
         <group>[Channel2]</group>
         <key>PioneerDDJ1000.beatLoopButton</key>
         <status>0x91</status>
@@ -1313,12 +1313,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 1 beat loop 1/32 -->
+        <!-- Deck 2 PAD 1 beat loop 0.03125 -->
         <group>[Channel2]</group>
-        <key>beatloop_0.03125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x60</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 beat loop 8, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x68</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 1 beat jump 1 backward -->
@@ -1361,12 +1369,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 2 beat loop 1/16 -->
+        <!-- Deck 2 PAD 2 beat loop 0.0625 -->
         <group>[Channel2]</group>
-        <key>beatloop_0.0625_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x61</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 beat loop 16, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x69</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 2 beat jump 2 backward -->
@@ -1409,12 +1425,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 3 beat loop 1/8 -->
+        <!-- Deck 2 PAD 3 beat loop 0.125 -->
         <group>[Channel2]</group>
-        <key>beatloop_0.125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x62</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 beat loop 32, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x6A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 3 beat jump 4 backward -->
@@ -1457,12 +1481,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 4 beat loop 1/4 -->
+        <!-- Deck 2 PAD 4 beat loop 0.25 -->
         <group>[Channel2]</group>
-        <key>beatloop_0.25_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x63</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 beat loop 64, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x6B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 4 beat jump 8 backward -->
@@ -1505,12 +1537,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 5 beat loop 1/2 -->
+        <!-- Deck 2 PAD 5 beat loop 0.5 -->
         <group>[Channel2]</group>
-        <key>beatloop_0.5_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x64</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 beat loop 128, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x6C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 5 beat jump 1 forward -->
@@ -1555,10 +1595,18 @@
       <control>
         <!-- Deck 2 PAD 6 beat loop 1 -->
         <group>[Channel2]</group>
-        <key>beatloop_1_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x65</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 beat loop 256, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x6D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 6 beat jump 2 forward -->
@@ -1603,10 +1651,18 @@
       <control>
         <!-- Deck 2 PAD 7 beat loop 2 -->
         <group>[Channel2]</group>
-        <key>beatloop_2_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x66</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 beat loop 512, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x99</status>
+        <midino>0x6E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 7 beat jump 4 forward -->
@@ -1651,66 +1707,10 @@
       <control>
         <!-- Deck 2 PAD 8 beat loop 4 -->
         <group>[Channel2]</group>
-        <key>beatloop_4_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x99</status>
         <midino>0x67</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 1 beat loop 8, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_8_toggle</key>
-        <status>0x99</status>
-        <midino>0x68</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 2 beat loop 16, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_16_toggle</key>
-        <status>0x99</status>
-        <midino>0x69</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 3 beat loop 32, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_32_toggle</key>
-        <status>0x99</status>
-        <midino>0x6A</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 4 beat loop 64, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_64_toggle</key>
-        <status>0x99</status>
-        <midino>0x6B</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 5 beat loop 128, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_128_toggle</key>
-        <status>0x99</status>
-        <midino>0x6C</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 6 beat loop 256, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_256_toggle</key>
-        <status>0x99</status>
-        <midino>0x6D</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 PAD 7 beat loop 512, page 2 -->
-        <group>[Channel2]</group>
-        <key>beatloop_512_toggle</key>
-        <status>0x99</status>
-        <midino>0x6E</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 8 beat jump 8 forward -->
@@ -1770,7 +1770,7 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 BEAT LOOP / auto loop -->
+        <!-- Deck 3 4 BEAT LOOP / EXIT -->
         <group>[Channel3]</group>
         <key>PioneerDDJ1000.beatLoopButton</key>
         <status>0x92</status>
@@ -2170,12 +2170,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 1 beat loop 1/32 -->
+        <!-- Deck 3 PAD 1 beat loop 0.03125 -->
         <group>[Channel3]</group>
-        <key>beatloop_0.03125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x60</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 beat loop 8, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x68</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 1 beat jump 1 backward -->
@@ -2218,12 +2226,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 2 beat loop 1/16 -->
+        <!-- Deck 3 PAD 2 beat loop 0.0625 -->
         <group>[Channel3]</group>
-        <key>beatloop_0.0625_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x61</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 beat loop 16, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x69</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 2 beat jump 2 backward -->
@@ -2266,12 +2282,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 3 beat loop 1/8 -->
+        <!-- Deck 3 PAD 3 beat loop 0.125 -->
         <group>[Channel3]</group>
-        <key>beatloop_0.125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x62</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 beat loop 32, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x6A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 3 beat jump 4 backward -->
@@ -2314,12 +2338,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 4 beat loop 1/4 -->
+        <!-- Deck 3 PAD 4 beat loop 0.25 -->
         <group>[Channel3]</group>
-        <key>beatloop_0.25_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x63</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 beat loop 64, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x6B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 4 beat jump 8 backward -->
@@ -2362,12 +2394,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 5 beat loop 1/2 -->
+        <!-- Deck 3 PAD 5 beat loop 0.5 -->
         <group>[Channel3]</group>
-        <key>beatloop_0.5_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x64</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 beat loop 128, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x6C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 5 beat jump 1 forward -->
@@ -2412,10 +2452,18 @@
       <control>
         <!-- Deck 3 PAD 6 beat loop 1 -->
         <group>[Channel3]</group>
-        <key>beatloop_1_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x65</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 beat loop 256, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x6D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 6 beat jump 2 forward -->
@@ -2460,10 +2508,18 @@
       <control>
         <!-- Deck 3 PAD 7 beat loop 2 -->
         <group>[Channel3]</group>
-        <key>beatloop_2_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x66</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 beat loop 512, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9B</status>
+        <midino>0x6E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 7 beat jump 4 forward -->
@@ -2508,66 +2564,10 @@
       <control>
         <!-- Deck 3 PAD 8 beat loop 4 -->
         <group>[Channel3]</group>
-        <key>beatloop_4_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9B</status>
         <midino>0x67</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 1 beat loop 8, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_8_toggle</key>
-        <status>0x9B</status>
-        <midino>0x68</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 2 beat loop 16, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_16_toggle</key>
-        <status>0x9B</status>
-        <midino>0x69</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 3 beat loop 32, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_32_toggle</key>
-        <status>0x9B</status>
-        <midino>0x6A</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 4 beat loop 64, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_64_toggle</key>
-        <status>0x9B</status>
-        <midino>0x6B</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 5 beat loop 128, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_128_toggle</key>
-        <status>0x9B</status>
-        <midino>0x6C</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 6 beat loop 256, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_256_toggle</key>
-        <status>0x9B</status>
-        <midino>0x6D</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 PAD 7 beat loop 512, page 2 -->
-        <group>[Channel3]</group>
-        <key>beatloop_512_toggle</key>
-        <status>0x9B</status>
-        <midino>0x6E</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 8 beat jump 8 forward -->
@@ -2627,7 +2627,7 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 BEAT LOOP / auto loop -->
+        <!-- Deck 4 4 BEAT LOOP / EXIT -->
         <group>[Channel4]</group>
         <key>PioneerDDJ1000.beatLoopButton</key>
         <status>0x93</status>
@@ -3027,12 +3027,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 1 beat loop 1/32 -->
+        <!-- Deck 4 PAD 1 beat loop 0.03125 -->
         <group>[Channel4]</group>
-        <key>beatloop_0.03125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x60</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 beat loop 8, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x68</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 1 beat jump 1 backward -->
@@ -3075,12 +3083,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 2 beat loop 1/16 -->
+        <!-- Deck 4 PAD 2 beat loop 0.0625 -->
         <group>[Channel4]</group>
-        <key>beatloop_0.0625_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x61</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 beat loop 16, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x69</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 2 beat jump 2 backward -->
@@ -3123,12 +3139,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 3 beat loop 1/8 -->
+        <!-- Deck 4 PAD 3 beat loop 0.125 -->
         <group>[Channel4]</group>
-        <key>beatloop_0.125_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x62</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 beat loop 32, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x6A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 3 beat jump 4 backward -->
@@ -3171,12 +3195,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 4 beat loop 1/4 -->
+        <!-- Deck 4 PAD 4 beat loop 0.25 -->
         <group>[Channel4]</group>
-        <key>beatloop_0.25_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x63</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 beat loop 64, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x6B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 4 beat jump 8 backward -->
@@ -3219,12 +3251,20 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 5 beat loop 1/2 -->
+        <!-- Deck 4 PAD 5 beat loop 0.5 -->
         <group>[Channel4]</group>
-        <key>beatloop_0.5_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x64</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 beat loop 128, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x6C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 5 beat jump 1 forward -->
@@ -3269,10 +3309,18 @@
       <control>
         <!-- Deck 4 PAD 6 beat loop 1 -->
         <group>[Channel4]</group>
-        <key>beatloop_1_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x65</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 beat loop 256, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x6D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 6 beat jump 2 forward -->
@@ -3317,10 +3365,18 @@
       <control>
         <!-- Deck 4 PAD 7 beat loop 2 -->
         <group>[Channel4]</group>
-        <key>beatloop_2_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x66</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 beat loop 512, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatLoopPad</key>
+        <status>0x9D</status>
+        <midino>0x6E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 7 beat jump 4 forward -->
@@ -3365,66 +3421,10 @@
       <control>
         <!-- Deck 4 PAD 8 beat loop 4 -->
         <group>[Channel4]</group>
-        <key>beatloop_4_toggle</key>
+        <key>PioneerDDJ1000.beatLoopPad</key>
         <status>0x9D</status>
         <midino>0x67</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 1 beat loop 8, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_8_toggle</key>
-        <status>0x9D</status>
-        <midino>0x68</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 2 beat loop 16, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_16_toggle</key>
-        <status>0x9D</status>
-        <midino>0x69</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 3 beat loop 32, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_32_toggle</key>
-        <status>0x9D</status>
-        <midino>0x6A</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 4 beat loop 64, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_64_toggle</key>
-        <status>0x9D</status>
-        <midino>0x6B</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 5 beat loop 128, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_128_toggle</key>
-        <status>0x9D</status>
-        <midino>0x6C</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 6 beat loop 256, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_256_toggle</key>
-        <status>0x9D</status>
-        <midino>0x6D</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 PAD 7 beat loop 512, page 2 -->
-        <group>[Channel4]</group>
-        <key>beatloop_512_toggle</key>
-        <status>0x9D</status>
-        <midino>0x6E</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 8 beat jump 8 forward -->
@@ -3661,8 +3661,7 @@
         <options><normal/></options>
       </control>
       <output>
-        <!-- BEAT FX lamp. The MIDI list puts it on the button's own note, 0x47;
-             0x46 is not an address the unit answers to, so this lamp never lit. -->
+        <!-- BEAT FX lamp -->
         <group>[EffectRack1_EffectUnit1]</group>
         <key>enabled</key>
         <status>0x94</status>
@@ -3762,16 +3761,16 @@
       </control>
       <control>
         <!-- SAMPLER VOLUME MSB -->
-        <group>[Master]</group>
-        <key>gain</key>
+        <group>[Sampler1]</group>
+        <key>pregain</key>
         <status>0xB6</status>
         <midino>0x03</midino>
         <options><fourteen-bit-msb/></options>
       </control>
       <control>
         <!-- SAMPLER VOLUME LSB -->
-        <group>[Master]</group>
-        <key>gain</key>
+        <group>[Sampler1]</group>
+        <key>pregain</key>
         <status>0xB6</status>
         <midino>0x23</midino>
         <options><fourteen-bit-lsb/></options>
