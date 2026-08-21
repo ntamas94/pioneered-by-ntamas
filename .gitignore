@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+
+# Kept out of the public tree on purpose: the protocol notes and the firmware
+# dissection, and the bitmap lifted out of Pioneer's own firmware image.
+PROTOCOL.md
+FIRMWARE.md
+no-audio-driver-res135.png

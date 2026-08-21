@@ -39,10 +39,8 @@ the track's waveform coloured by density, the beat scale with its markers, BPM,
 the playing speed and its range, the time, and MASTER lit on the deck that has
 the sync lead. The needle tracks the music. **No DJ software on Linux drives
 these screens**, and Pioneer documents none of it — it was worked out by
-capturing rekordbox on Windows, capturing this stack on Linux, comparing the
-two byte for byte, and disassembling the screens' own firmware where the
-traffic did not say enough. [`ddj1000-jog-display/PROTOCOL.md`](ddj1000-jog-display/PROTOCOL.md)
-writes the whole protocol down.
+capturing rekordbox on Windows, capturing this stack on Linux, and comparing
+the two byte for byte.
 
 ### Where it stands
 
