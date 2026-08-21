@@ -1086,6 +1086,25 @@ PioneerDDJ1000.sendOpeningState = function () {
 PioneerDDJ1000.resendMs = 4000;
 PioneerDDJ1000.resentAt = {};
 
+// The row of LEDs above each channel fader. The manual calls it the channel
+// level indicator and says it shows the level "before it passes through the
+// channel faders", which is Mixxx's own vu_meter: the fader is applied by the
+// mixer afterwards. rekordbox drives it with CC 0x02 on the deck's channel
+// about fifteen times a second, and the values it sends climb in steps of
+// seven -- 0, 50, 65, 72, 80, 87, 94, 101 in a capture of one track -- so the
+// unit is picking a segment out of the number rather than reading it finely.
+PioneerDDJ1000.lastLevel = {};
+
+PioneerDDJ1000.sendChannelLevel = function (deck) {
+    var level = engine.getValue("[Channel" + deck + "]", "vu_meter");
+    var value = Math.max(0, Math.min(127, Math.round(level * 127)));
+    if (PioneerDDJ1000.lastLevel[deck] === value) {
+        return;
+    }
+    PioneerDDJ1000.lastLevel[deck] = value;
+    midi.sendShortMsg(0xB0 | (deck - 1), 0x02, value);
+};
+
 PioneerDDJ1000.updateDeckDisplay = function (deck) {
     var group = "[Channel" + deck + "]";
     var d = PioneerDDJ1000.display;
@@ -1094,6 +1113,7 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     PioneerDDJ1000.checkJogSpindown(deck);
     PioneerDDJ1000.updateSearch(deck);
     PioneerDDJ1000.announceIfChanged(deck);
+    PioneerDDJ1000.sendChannelLevel(deck);
     if (deck === 1) {
         PioneerDDJ1000.pollTimeMode();
     }
