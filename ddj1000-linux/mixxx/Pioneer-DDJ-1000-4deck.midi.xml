@@ -58,7 +58,7 @@
       <control>
         <!-- Deck 1 BEAT LOOP / auto loop -->
         <group>[Channel1]</group>
-        <key>beatloop_activate</key>
+        <key>beatloop_4_activate</key>
         <status>0x90</status>
         <midino>0x14</midino>
         <options><normal/></options>
@@ -859,7 +859,7 @@
       <control>
         <!-- Deck 2 BEAT LOOP / auto loop -->
         <group>[Channel2]</group>
-        <key>beatloop_activate</key>
+        <key>beatloop_4_activate</key>
         <status>0x91</status>
         <midino>0x14</midino>
         <options><normal/></options>
@@ -1660,7 +1660,7 @@
       <control>
         <!-- Deck 3 BEAT LOOP / auto loop -->
         <group>[Channel3]</group>
-        <key>beatloop_activate</key>
+        <key>beatloop_4_activate</key>
         <status>0x92</status>
         <midino>0x14</midino>
         <options><normal/></options>
@@ -2461,7 +2461,7 @@
       <control>
         <!-- Deck 4 BEAT LOOP / auto loop -->
         <group>[Channel4]</group>
-        <key>beatloop_activate</key>
+        <key>beatloop_4_activate</key>
         <status>0x93</status>
         <midino>0x14</midino>
         <options><normal/></options>
