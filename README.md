@@ -30,19 +30,49 @@ images ship stock clocks; with active cooling `arm_freq=2000` /
 `over_voltage=6` in `config.txt` is a free ~10% (the reference box runs 2 GHz
 at ~35 °C under load with a fan).
 
-## DDJ-1000 sound card on Linux
+## The DDJ-1000 on Linux
 
-The DDJ-1000's audio interface has **no Linux driver upstream** — the unit
-shows *"no audio driver"*. [`ddj1000-audio/`](ddj1000-audio/) has a small
-`snd-usb-audio` kernel quirk that fixes that (6 ch in/out, 24-bit 44.1 kHz,
-Mixxx plays through the controller's master out) plus a DKMS installer:
-`sudo ddj1000-audio/install.sh`. Details and the USB capture findings in
-its README.
+<p align="center"><img src="docs/ddj1000-jog.jpg" alt="A DDJ-1000 jog wheel display driven from Mixxx on a Raspberry Pi" width="560"></p>
 
-## DDJ-1000 jog wheel displays
+That is a DDJ-1000 jog wheel running from Mixxx on a Raspberry Pi: cover art,
+the track's waveform coloured by density, the beat scale with its markers, BPM,
+the playing speed and its range, the time, and MASTER lit on the deck that has
+the sync lead. The needle tracks the music. **No DJ software on Linux drives
+these screens**, and Pioneer documents none of it — it was worked out by
+capturing rekordbox on Windows, capturing this stack on Linux, comparing the
+two byte for byte, and disassembling the screens' own firmware where the
+traffic did not say enough. [`ddj1000-jog-display/PROTOCOL.md`](ddj1000-jog-display/PROTOCOL.md)
+writes the whole protocol down.
 
-Cover art, waveform and live deck state on a DDJ-1000's jog wheels, driven from
-Mixxx. Work in progress; see [`ddj1000-jog-display/`](ddj1000-jog-display/).
+### Where it stands
+
+Working, and measured rather than assumed:
+
+- **Sound.** 44.1 kHz 24-bit, six channels out and twelve in — the asymmetry is
+  real, and getting it wrong cost a standing −2268 ppm clock error. Master on
+  channels 1-2, headphones on 3-4.
+- **The screens.** Artwork, waveform, beat grid, hot cues and saved loops, key,
+  tempo, the playhead, the loop length, on-air, SYNC and MASTER, and the
+  end-of-track flash — which is two speeds, not one.
+- **Plug and play.** The daemon is bound to the controller's own device unit,
+  so it starts when the DDJ is plugged in and stops when it is pulled out.
+  Nothing to enable, nothing to start by hand.
+- **Controls.** A four-deck mapping, jog scratching with real platter physics,
+  the pads, the mixer, browse.
+
+Set the sound output like this — and set **Headphones** as well as Main, or the
+CUE buttons do nothing at all, silently:
+
+<p align="center"><img src="docs/ddj1000-sound-hardware.png" alt="Mixxx Sound Hardware preferences for the DDJ-1000" width="640"></p>
+
+What is not wired yet is written down in
+[`ddj1000-linux/ROADMAP.md`](ddj1000-linux/ROADMAP.md), read out of Pioneer's
+own List of MIDI Messages: two pad modes still dark, the effect section's lamps,
+and a handful of bugs worth fixing first.
+
+Install with [`ddj1000-linux/install.sh`](ddj1000-linux/) — the kernel quirk,
+the daemon and the mapping, each usable on its own. The quirk on its own, as a
+patch against the kernel tree, is in [`ddj1000-audio/`](ddj1000-audio/).
 
 ## Screen modes
 
