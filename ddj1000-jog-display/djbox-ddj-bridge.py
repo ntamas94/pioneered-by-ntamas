@@ -155,6 +155,9 @@ TRACKART = "/usr/local/bin/djbox-ddj-trackart.py"
 ART_CACHE = "/var/cache/djbox-art"
 CMD_ARTWORK = 0x2B
 CMD_WAVEFORM = 0x2C
+# One lead byte and 600 columns of seven: the size every waveform this
+# builds comes out at, and the size of the empty one that clears it.
+WAVEFORM_BYTES = 1 + 600 * 7
 
 # Byte 3 of the state record, bit 0x08: set counts the time down, clear counts
 # it up. The Time Mode preference is not a MIDI setting at all -- capturing
@@ -190,6 +193,23 @@ def track_by_duration(seconds):
     finally:
         db.close()
     return row[0] if row else None
+
+
+def library_tracks():
+    """Every track Mixxx knows about, longest first."""
+    try:
+        db = sqlite3.connect("file:%s?mode=ro" % MIXXX_DB, uri=True)
+    except sqlite3.Error:
+        return []
+    try:
+        rows = db.execute(
+            "SELECT tl.location FROM library l JOIN track_locations tl"
+            " ON l.location = tl.id WHERE l.mixxx_deleted = 0").fetchall()
+    except sqlite3.Error:
+        return []
+    finally:
+        db.close()
+    return [r[0] for r in rows]
 
 
 def u24(value):
@@ -959,6 +979,33 @@ class Bridge:
         except Exception as exc:
             syslog.syslog("jog artwork failed: %r" % (exc,))
 
+    def prebuild_cache(self):
+        """Build every library track's artwork and waveform ahead of time.
+
+        Building one means decoding the whole file, which is seconds of work,
+        and doing it while a deck waits is the whole of the delay between
+        loading a track and seeing it. Done here in the background instead,
+        at the bottom of the scheduler, so the box is quietly ready.
+        """
+        try:
+            os.nice(19)
+        except OSError:
+            pass
+        tracks = library_tracks()
+        built = 0
+        for path in tracks:
+            if not os.path.exists(path):
+                continue
+            tag = self.cache_tag(path)
+            if tag and os.path.exists(os.path.join(ART_CACHE, tag + ".wave")):
+                continue
+            self.build_track_payloads(0, path)
+            built += 1
+            time.sleep(0.5)                    # leave the decks the machine
+        if built:
+            syslog.syslog("jog artwork: built %d of %d library tracks ahead of time"
+                          % (built, len(tracks)))
+
     def load_artwork(self, deck_index, seconds):
         path = track_by_duration(seconds)
         if not path or not os.path.exists(path):
@@ -985,19 +1032,19 @@ class Bridge:
         # It runs before the artwork build, not after: decoding a track for
         # its waveform takes seconds, and the deck should read right the
         # moment something lands on it. The picture catches up when ready.
-        # Announced before any of the upload, which is the order a capture
-        # shows: the two Pioneer messages, then the load trigger, and only
-        # then a single byte of track data. Sent from the middle of the
-        # sequence instead, the unit has already been handed a track it was
-        # never told about.
-        self.announce_load(screen.track_id)
-
+        # rekordbox's own order for a fresh track, from a capture of it
+        # loading one. Half of this sequence is demolition: the deck, the
+        # waveform, the grid and the cue table are each wiped with a transfer
+        # of the right shape full of zeros before anything real is sent, and
+        # the two Pioneer messages land in the middle of the wiping rather
+        # than in front of it.
+        #
+        #   clear deck, clear waveform, announce, clear grid, grid,
+        #   the id, clear cues, artwork, waveform
+        #
+        # Sending the real waveform where the empty one belongs, as this did,
+        # leaves the screen with a picture it will not run a playhead across.
         self.send_hid_transfer(deck, 0x30, bytes(116), prime=False)
-        # The load trigger, from rekordbox's own mapping table: note 9F 00..03
-        # per deck, "Trigger for Load illumination". It rides the MIDI side,
-        # not the HID side, which is why byte-perfect HID uploads never
-        # registered: without it the unit takes the whole upload and never
-        # binds it to the deck -- artwork shown, playhead forever parked.
         self.to_ddj(bytes((0x9F, deck_index, 0x00)))
         screen.ready = False
         screen.suspend = True                  # a few frames of "no track"
@@ -1007,26 +1054,49 @@ class Bridge:
         key = struct.pack("<I", screen.track_id)
 
         grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
-        self.send_hid_transfer(deck, 0x2F, grid)
-        self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
-        self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues))
 
+        # The clearing half runs before the artwork is built, not after:
+        # building means decoding the whole track, and rekordbox has its own
+        # ready long before it starts sending. Waiting on ours first left the
+        # deck sitting empty for seconds where rekordbox's lands at once.
+        self.send_hid_transfer(deck, CMD_WAVEFORM, bytes(WAVEFORM_BYTES),
+                               prime=False)
+        self.announce_load(screen.track_id)
+        self.send_hid_transfer(deck, 0x2F, bytes(58), prime=False)
+        self.send_hid_transfer(deck, 0x2F, grid, prime=False)
+        self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
+        for _ in range(3):
+            self.send_hid_transfer(deck, 0x2D, bytes(60), prime=False)
         self.to_ddj(bytes((0x9F, deck_index, 0x7F)))
+
         payloads = self.build_track_payloads(deck_index, path)
+        waveform = payloads.get(CMD_WAVEFORM, b"")
         syslog.syslog("jog screen %d: id %08x, %.1f s, %.1f BPM, %d beats, art %d, wave %d"
                       % (deck_index + 1, screen.track_id, seconds, screen.bpm,
                          int.from_bytes(grid[:2], "little"),
-                         len(payloads.get(CMD_ARTWORK, b"")),
-                         len(payloads.get(CMD_WAVEFORM, b""))))
+                         len(payloads.get(CMD_ARTWORK, b"")), len(waveform)))
         if CMD_ARTWORK in payloads and not NO_ARTWORK:
-            self.send_hid_transfer(deck, CMD_ARTWORK, payloads[CMD_ARTWORK])
-        time.sleep(0.42)                       # rekordbox's pause before the waveform
-        if CMD_WAVEFORM in payloads:
-            self.send_hid_transfer(deck, CMD_WAVEFORM, payloads[CMD_WAVEFORM])
-        # rekordbox sends the track record again once the waveform is up.
-        self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
+            self.send_hid_transfer(deck, CMD_ARTWORK, payloads[CMD_ARTWORK],
+                                   prime=False)
+        time.sleep(0.27)                       # rekordbox's pause before the waveform
+        if waveform:
+            self.send_hid_transfer(deck, CMD_WAVEFORM, waveform, prime=False)
+        if screen.cues:
+            # The markers along the beat scale, once the track itself is up.
+            self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues),
+                                   prime=False)
         screen.ready = True
         syslog.syslog("jog screen %d: drew %s" % (deck_index + 1, os.path.basename(path)))
+
+    @staticmethod
+    def cache_tag(path):
+        """Cache name for a track: its path and how recently it changed."""
+        try:
+            stamp = int(os.stat(path).st_mtime)
+        except OSError:
+            return None
+        return "%08x-%d" % (zlib.crc32(path.encode("utf-8", "replace")) & 0xFFFFFFFF,
+                            stamp)
 
     def build_track_payloads(self, deck_index, path):
         """The artwork and waveform for a track, cached across loads.
@@ -1035,12 +1105,9 @@ class Bridge:
         loaded again -- the usual case in practice -- comes straight from the
         cache and its picture is up almost at once.
         """
-        try:
-            stamp = int(os.stat(path).st_mtime)
-        except OSError:
-            stamp = 0
-        tag = "%08x-%d" % (zlib.crc32(path.encode("utf-8", "replace")) & 0xFFFFFFFF,
-                           stamp)
+        tag = self.cache_tag(path)
+        if not tag:
+            return {}
         cache_art = os.path.join(ART_CACHE, tag + ".art")
         cache_wave = os.path.join(ART_CACHE, tag + ".wave")
 
@@ -1307,6 +1374,7 @@ class Bridge:
         if cmd == 0x15 and sub == 0x02:
             if not self.authenticated:
                 syslog.syslog("authenticated -- jog displays unlocked")
+                threading.Thread(target=self.prebuild_cache, daemon=True).start()
                 # Tell Mixxx to reopen the sound device: the controller is the
                 # sound card, so a replug leaves Mixxx holding a stream that no
                 # longer exists, and it has no way of noticing on its own. The
