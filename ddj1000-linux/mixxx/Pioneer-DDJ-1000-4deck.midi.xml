@@ -3437,11 +3437,12 @@
         <options><normal/></options>
       </control>
       <output>
-        <!-- BEAT FX lamp -->
+        <!-- BEAT FX lamp. The MIDI list puts it on the button's own note, 0x47;
+             0x46 is not an address the unit answers to, so this lamp never lit. -->
         <group>[EffectRack1_EffectUnit1]</group>
         <key>enabled</key>
         <status>0x94</status>
-        <midino>0x46</midino>
+        <midino>0x47</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
