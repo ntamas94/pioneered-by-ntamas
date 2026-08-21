@@ -264,6 +264,7 @@ class DeckScreen:
         self.remaining = False
         self.on_air = True
         self.sync = False
+        self.leader = False
         self.moved_at = 0.0
         self.tempo_percent = 0.0
         self.cues = []
@@ -387,11 +388,17 @@ class DeckScreen:
                 period = 0.9 if left > END_HURRY_MS else 0.2
                 if int(now / period) & 1:
                     b[4] = 0x10
-        # Bit 0x10 is beat sync, and the jog screen shows it. Confirmed by
-        # pressing SYNC three times with nothing else happening: the bit and
-        # the button lamp on note 0x58 change together, inside ten
-        # milliseconds, every time.
-        b[5] = 0x81 | (0x10 if self.sync else 0)
+        # Byte 5 carries the two lamps the jog screen has for the sync
+        # section, and 0x01 is all that is left when neither is lit.
+        #
+        # 0x10 is SYNC, moving with the button lamp on note 0x58 inside ten
+        # milliseconds. 0x80 is MASTER, and exactly one deck has it at a time
+        # -- a capture of two decks passing the role back and forth has it
+        # leaving one the same moment it arrives at the other. Nothing on the
+        # MIDI side carries MASTER at all; this bit is the only word of it.
+        #
+        # Sending 0x81 unconditionally, as this did, lit MASTER on all four.
+        b[5] = 0x01 | (0x10 if self.sync else 0) | (0x80 if self.leader else 0)
         if self.suspend:
             # The unloading frame of a load: no track at all, whatever the
             # rest of the state says. A flag rather than juggling the real
@@ -1080,6 +1087,7 @@ class Bridge:
             # playing looks like.
             screen.on_air = bool(msg[7]) if len(msg) >= 9 else True
             screen.sync = bool(msg[8]) if len(msg) >= 10 else False
+            screen.leader = bool(msg[9]) if len(msg) >= 11 else False
             return True
         if msg[2] & 0x10:                      # a playhead report, not a load
             screen = self.screens[deck_index]

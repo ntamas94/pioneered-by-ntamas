@@ -42,10 +42,10 @@
       <control>
         <!-- Deck 1 SYNC -->
         <group>[Channel1]</group>
-        <key>beatsync</key>
+        <key>PioneerDDJ1000.syncPress</key>
         <status>0x90</status>
         <midino>0x58</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 HEADPHONE CUE -->
@@ -843,10 +843,10 @@
       <control>
         <!-- Deck 2 SYNC -->
         <group>[Channel2]</group>
-        <key>beatsync</key>
+        <key>PioneerDDJ1000.syncPress</key>
         <status>0x91</status>
         <midino>0x58</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 HEADPHONE CUE -->
@@ -1644,10 +1644,10 @@
       <control>
         <!-- Deck 3 SYNC -->
         <group>[Channel3]</group>
-        <key>beatsync</key>
+        <key>PioneerDDJ1000.syncPress</key>
         <status>0x92</status>
         <midino>0x58</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 HEADPHONE CUE -->
@@ -2445,10 +2445,10 @@
       <control>
         <!-- Deck 4 SYNC -->
         <group>[Channel4]</group>
-        <key>beatsync</key>
+        <key>PioneerDDJ1000.syncPress</key>
         <status>0x93</status>
         <midino>0x58</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 HEADPHONE CUE -->
@@ -3224,6 +3224,250 @@
         <key>eject</key>
         <status>0x9E</status>
         <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select LOW CUT ECHO -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect20</key>
+        <status>0x94</status>
+        <midino>0x20</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select ECHO -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect21</key>
+        <status>0x94</status>
+        <midino>0x21</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select MT DELAY -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect22</key>
+        <status>0x94</status>
+        <midino>0x22</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select SPIRAL -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect23</key>
+        <status>0x94</status>
+        <midino>0x23</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select REVERB -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect24</key>
+        <status>0x94</status>
+        <midino>0x24</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select TRANS -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect25</key>
+        <status>0x94</status>
+        <midino>0x25</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select ENIGMA JET -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect26</key>
+        <status>0x94</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select FLANGER -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect27</key>
+        <status>0x94</status>
+        <midino>0x27</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select PHASER -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect28</key>
+        <status>0x94</status>
+        <midino>0x28</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select PITCH -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect29</key>
+        <status>0x94</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select SLIP ROLL -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect2A</key>
+        <status>0x94</status>
+        <midino>0x2A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select ROLL -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect2B</key>
+        <status>0x94</status>
+        <midino>0x2B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select MOBIUS SAW -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect2C</key>
+        <status>0x94</status>
+        <midino>0x2C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX select MOBIUS TRIANGLE -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.selectEffect2D</key>
+        <status>0x94</status>
+        <midino>0x2D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX assign to CH1 -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x94</status>
+        <midino>0x10</midino>
+        <options><normal/></options>
+      </control>
+      <output>
+        <!-- BEAT FX CH1 lamp -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x94</status>
+        <midino>0x10</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <control>
+        <!-- BEAT FX assign to CH2 -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x94</status>
+        <midino>0x11</midino>
+        <options><normal/></options>
+      </control>
+      <output>
+        <!-- BEAT FX CH2 lamp -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x94</status>
+        <midino>0x11</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <control>
+        <!-- BEAT FX assign to CH3 -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel3]_enable</key>
+        <status>0x94</status>
+        <midino>0x12</midino>
+        <options><normal/></options>
+      </control>
+      <output>
+        <!-- BEAT FX CH3 lamp -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel3]_enable</key>
+        <status>0x94</status>
+        <midino>0x12</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <control>
+        <!-- BEAT FX assign to CH4 -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel4]_enable</key>
+        <status>0x94</status>
+        <midino>0x13</midino>
+        <options><normal/></options>
+      </control>
+      <output>
+        <!-- BEAT FX CH4 lamp -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel4]_enable</key>
+        <status>0x94</status>
+        <midino>0x13</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <control>
+        <!-- BEAT FX assign to MASTER -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Master]_enable</key>
+        <status>0x94</status>
+        <midino>0x14</midino>
+        <options><normal/></options>
+      </control>
+      <output>
+        <!-- BEAT FX MASTER lamp -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Master]_enable</key>
+        <status>0x94</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <control>
+        <!-- BEAT FX ON/OFF -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>enabled</key>
+        <status>0x94</status>
+        <midino>0x47</midino>
+        <options><normal/></options>
+      </control>
+      <output>
+        <!-- BEAT FX lamp -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>enabled</key>
+        <status>0x94</status>
+        <midino>0x46</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <control>
+        <!-- BEAT FX beat down -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.beatDown</key>
+        <status>0x94</status>
+        <midino>0x4A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX beat up -->
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>PioneerDDJ1000.beatUp</key>
+        <status>0x94</status>
+        <midino>0x4B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BEAT FX LEVEL/DEPTH -->
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>super1</key>
+        <status>0xB4</status>
+        <midino>0x02</midino>
         <options><normal/></options>
       </control>
       <!-- ============ MIXER ============ -->

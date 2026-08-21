@@ -231,14 +231,19 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     // pressing SYNC with nothing else happening moves bit 0x10 of byte 5 and
     // the lamp on note 0x58 together, within ten milliseconds.
     var sync = engine.getValue(group, "sync_enabled") ? 1 : 0;
-    var packed = firstBeat + ":" + key + ":" + remaining + ":" + onAir + ":" + sync;
+    // MASTER is the other lamp in that corner of the screen, and nothing on
+    // the MIDI side carries it -- the state record is the only word of it.
+    // Exactly one deck holds it at a time.
+    var leader = engine.getValue(group, "sync_leader") ? 1 : 0;
+    var packed = firstBeat + ":" + key + ":" + remaining + ":" + onAir
+        + ":" + sync + ":" + leader;
     if (PioneerDDJ1000.gridInfo[deck] === packed) {
         return;
     }
     PioneerDDJ1000.gridInfo[deck] = packed;
     midi.sendSysexMsg([0xF0, 0x7D, 0x20 | (deck - 1),
         (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, remaining, onAir,
-        sync, 0xF7], 10);
+        sync, leader, 0xF7], 11);
     // The jog always shows elapsed time. Switching it to remaining is possible
     // -- the mode note and BF 45 both put the minus sign up -- but the unit
     // then counts down from a track length it computes itself and does not
@@ -449,6 +454,32 @@ PioneerDDJ1000.skipBothTimeMode = function () {
 // from the menu and from Ctrl+P and nowhere else, so a skin button asking for
 // it silently creates a control with nobody on the other end. This puts
 // somebody there: the daemon presses the shortcut at the desktop.
+// SYNC latches, the way it does on the hardware. It was bound to beatsync,
+// which lines the beat up once and leaves nothing switched on: the button lamp
+// blinked and went out, and the sync indicator on the jog screen never lit at
+// all. A capture of rekordbox holds its lamp on until the button is pressed a
+// second time.
+//
+// A long press hands the deck the leader role instead, which is what the
+// hardware does and what the second lamp is for.
+PioneerDDJ1000.syncPressedAt = {};
+PioneerDDJ1000.syncLongPressMs = 600;
+
+PioneerDDJ1000.syncPress = function (channel, control, value, status, group) {
+    var deck = (status & 0x0F) + 1;
+    if (value) {
+        PioneerDDJ1000.syncPressedAt[deck] = Date.now();
+        return;
+    }
+    var held = Date.now() - (PioneerDDJ1000.syncPressedAt[deck] || Date.now());
+    if (held >= PioneerDDJ1000.syncLongPressMs) {
+        engine.setValue(group, "sync_leader", 1);
+        return;
+    }
+    engine.setValue(group, "sync_enabled",
+        engine.getValue(group, "sync_enabled") ? 0 : 1);
+};
+
 PioneerDDJ1000.watchPreferencesButton = function () {
     var connection = engine.makeConnection("[Pioneered]", "prefs_btn", function (value) {
         if (value) {
@@ -1172,7 +1203,7 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     // path; this one does, so everything above goes out over the private
     // SysEx instead and none of that is sent.
 
-    PioneerDDJ1000.sendNoteIfChanged(deck, d.syncMaster, engine.getValue(group, "sync_master") ? 0x7F : 0x00);
+    PioneerDDJ1000.sendNoteIfChanged(deck, d.syncMaster, engine.getValue(group, "sync_leader") ? 0x7F : 0x00);
     PioneerDDJ1000.sendNoteIfChanged(deck, d.syncState, engine.getValue(group, "sync_enabled") ? 0x7F : 0x00);
 };
 
