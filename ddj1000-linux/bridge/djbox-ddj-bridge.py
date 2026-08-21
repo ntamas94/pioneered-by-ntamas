@@ -109,6 +109,9 @@ RECONNECT_CHECK = 0.3       # how often to notice the controller re-enumerating
 # time-mode notes on top of it makes the picture twitch. Set a number of
 # seconds here to bring the old behaviour back.
 SCREENS_REFRESH = 0
+# How long after the DJ software goes quiet the screens are handed back to
+# the unit's own start-up picture.
+MIXXX_QUIET = 6.0
 DEVICE_POLL = 0.02          # how often to look for the controller coming back
 
 DEVICE_ID = bytes([0x08, 0x07, 0x0A, 0x00, 0x08, 0x0E, 0x0E, 0x0A, 0x0C, 0x00,
@@ -764,6 +767,7 @@ class Bridge:
         self.load_seq = int(time.time()) % 5
         self.library_row = 0
         self.screens_woken = False
+        self.mixxx_seen = 0.0
         self.paused = False
         self.time_mode_reset = False
         self.state_logged = 0.0
@@ -857,6 +861,7 @@ class Bridge:
         """Handle the mapping's private track announcement (F0 7D deck ms F7)."""
         if len(msg) < 5 or msg[1] != 0x7D:
             return False
+        self.mixxx_seen = time.monotonic()
         deck_index = msg[2] & 0x0F
         if deck_index <= 3 and (msg[2] & 0x60) == 0x60:
             # The cue point. This is the marker the screen draws across the
@@ -1219,33 +1224,59 @@ class Bridge:
             self.to_ddj(bytes((0x9F, index, 0x00)))
 
     def hold_audio_open(self):
-        """Keep the unit's audio interface streaming so the screens stay up.
+        """Keep the screens awake while the DJ software is not using the card.
 
-        The screens go dark the moment nothing is streaming: the unit reads the
-        interface sitting at its idle alternate setting as "no driver here" and
-        locks them, which is what happens every time the DJ software is closed.
-        Opening the capture side is enough to hold it awake, and capture is the
-        side nothing else wants -- playback stays free for the DJ software.
+        They go dark the moment nothing is streaming: the unit reads the audio
+        interface sitting at its idle alternate setting as "no driver here".
+        Opening the capture side holds it awake.
 
-        Costs one input stream's worth of USB bandwidth and nothing else; the
-        samples go straight to /dev/null.
+        Only while the card is otherwise idle, though. Sharing it with the DJ
+        software costs that software its engine -- Mixxx opens its output, the
+        callback never settles, and every track it is asked to load sits at
+        "loading" for ever, which is a far worse fault than a dark screen.
         """
+        recorder = None
         while True:
             card = card_by_name("DDJ")
             if card is None:
+                recorder = self.stop_recorder(recorder)
                 time.sleep(DEVICE_POLL)
                 continue
-            try:
-                with open(os.devnull, "wb") as sink:
+
+            if self.playback_in_use(card):
+                recorder = self.stop_recorder(recorder)
+            elif recorder is None or recorder.poll() is not None:
+                try:
                     recorder = subprocess.Popen(
                         ["arecord", "-D", "hw:%d,0" % card, "-f", "S24_3LE",
                          "-c", "6", "-r", "44100", "-q"],
-                        stdout=sink, stderr=subprocess.DEVNULL)
-                    recorder.wait()
-            except OSError as exc:
-                syslog.syslog("cannot hold the audio interface open: %s" % exc)
-                return
-            time.sleep(1.0)
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                except OSError as exc:
+                    syslog.syslog("cannot hold the audio interface open: %s" % exc)
+                    return
+            time.sleep(2.0)
+
+    @staticmethod
+    def stop_recorder(recorder):
+        if recorder is not None and recorder.poll() is None:
+            recorder.terminate()
+            try:
+                recorder.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                recorder.kill()
+        return None
+
+    @staticmethod
+    def playback_in_use(card):
+        """Whether anything has the controller's playback stream open."""
+        for status in glob.glob("/proc/asound/card%d/pcm*p/sub*/status" % card):
+            try:
+                with open(status) as fh:
+                    if "closed" not in fh.read():
+                        return True
+            except OSError:
+                continue
+        return False
 
     def pause(self, _signum=None, _frame=None):
         """Stop driving the screens without letting go of the controller.
@@ -1263,17 +1294,16 @@ class Bridge:
         if self.paused:
             return
         now = time.monotonic()
-        # Nothing at all until a deck has a track. Left to itself the unit
+        # Nothing at all until the DJ software is there. Left alone the unit
         # shows its own start-up screen -- Pioneer DJ on one wheel, rekordbox
-        # on the other -- and pushing state over it replaces that with an
-        # empty deck before there is anything to say.
-        if not any(s.loaded for s in self.screens):
+        # on the other -- and taking that over before anything can fill it in
+        # replaces it with an empty deck. Once the software is talking the
+        # decks are its to draw, track or no track.
+        if now - self.mixxx_seen > MIXXX_QUIET:
             return
 
         for i, deck in enumerate(SCREEN_DECKS):
             screen = self.screens[i]
-            if not screen.loaded:
-                continue
             if screen.loaded and now - screen.last_seen > 5.0:
                 # The mapping went quiet, so the deck is empty -- or Mixxx
                 # stopped talking for a moment, which looks the same from here

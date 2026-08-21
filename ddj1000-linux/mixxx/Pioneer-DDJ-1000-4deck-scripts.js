@@ -108,8 +108,15 @@ PioneerDDJ1000.sendCues = function (deck) {
             continue;
         }
         var ms = Math.max(0, Math.round(position / (rate * 2) * 1000));
+        // A hot cue with an end is a saved loop, and the screens mark the two
+        // differently. Mixxx keeps both on the same pads, so the end position
+        // is what tells them apart.
+        // Greater than zero, not at least zero: a control Mixxx does not have
+        // reads as 0, and taking that as an end would mark every plain cue a
+        // loop.
+        var loop = engine.getValue(group, "hotcue_" + cue + "_endposition") > 0;
         entries.push([Math.min(127, Math.floor(ms / 60000)),
-            Math.floor(ms / 1000) % 60, ms % 1000]);
+            Math.floor(ms / 1000) % 60, ms % 1000, loop ? 1 : 0]);
     }
     var packed = JSON.stringify(entries);
     if (PioneerDDJ1000.sentCues[deck] === packed) {
@@ -119,7 +126,7 @@ PioneerDDJ1000.sendCues = function (deck) {
     var message = [0xF0, 0x7D, 0x50 | (deck - 1), entries.length];
     for (var i = 0; i < entries.length; i++) {
         message.push(entries[i][0], entries[i][1],
-            (entries[i][2] >> 7) & 0x7F, entries[i][2] & 0x7F);
+            (entries[i][2] >> 7) & 0x7F, entries[i][2] & 0x7F, entries[i][3]);
     }
     message.push(0xF7);
     midi.sendSysexMsg(message, message.length);
@@ -815,14 +822,24 @@ PioneerDDJ1000.loadPress = function (deck) {
         // On the tree the press means "open this one", the way the manual puts
         // it: the cursor moves from the tree to the track list. Only a press on
         // the list itself loads anything.
-        if (engine.getValue("[Sidebar]", "sidebar_visible") > 0) {
+        //
+        // Which pane has the keyboard, not whether the tree is on screen: the
+        // sidebar is always on screen in this skin, so asking that instead
+        // meant every press navigated and none ever loaded a track.
+        if (engine.getValue("[Library]", "focused_widget") === 1) {
             // Mixxx decides what this means: a branch with children opens or
             // closes, a leaf hands over to the track list. Forcing the panes
             // to swap here would stop a branch from ever opening.
             engine.setValue("[Library]", "GoToItem", 1);
             return;
         }
+        print("DDJ: LoadSelectedTrack deck " + deck
+            + " (loaded before=" + engine.getValue("[Channel" + deck + "]", "track_loaded")
+            + ")");
         engine.setValue("[Channel" + deck + "]", "LoadSelectedTrack", 1);
+        print("DDJ: after load, track_loaded="
+            + engine.getValue("[Channel" + deck + "]", "track_loaded")
+            + " duration=" + engine.getValue("[Channel" + deck + "]", "duration"));
     };
 };
 
@@ -1058,14 +1075,18 @@ PioneerDDJ1000.updateDeckDisplay = function (deck) {
     // The playing-speed pair is the one display CC the HID view itself reads:
     // without it the screen shows -100% and drops the range badge. It only
     // goes out when the tempo actually moves, so it cannot flicker anything.
-    var rate = engine.getValue(group, "rate") * engine.getValue(group, "rateRange");
-    PioneerDDJ1000.send14(deck, d.speedMsb, (rate + 1) * 4999.5, 9999);
+    // rate_ratio, not rate: the latter is deprecated and reads as zero here,
+    // which pinned the readout at 0.0% however far the fader travelled. The
+    // ratio is 1.0 at the centre, so the offset from it is the percentage the
+    // screen wants, on a scale that runs -100%..+100%.
+    var ratio = engine.getValue(group, "rate_ratio");
+    if (!ratio) {
+        ratio = 1 + engine.getValue(group, "rate")
+            * engine.getValue(group, "rateRange");
+    }
+    PioneerDDJ1000.send14(deck, d.speedMsb, ratio * 4999.5, 9999);
 
     // The screens themselves are drawn over HID by the bridge, which is how
-    // rekordbox drives them. The MIDI display messages -- position ring, BPM,
-    // tempo, the time readout, the cue marker, the key -- are a second source
-    // for the same picture, and sending both makes the unit flip between them.
-    // The Traktor and Serato style mappings use them because s how
     // rekordbox drives them. The MIDI display messages -- position ring, BPM,
     // tempo, the time readout, the cue marker, the key -- are a second source
     // for the same picture, and sending both makes the unit flip between them.
