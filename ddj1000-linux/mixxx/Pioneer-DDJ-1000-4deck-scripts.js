@@ -227,13 +227,18 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     var remaining = engine.getValue("[Controls]", "ShowDurationRemaining")
         === PioneerDDJ1000.timeModeRemaining ? 1 : 0;
     var onAir = PioneerDDJ1000.isOnAir(group);
-    var packed = firstBeat + ":" + key + ":" + remaining + ":" + onAir;
+    // Beat sync shows on the jog screen too, not only on the button lamp:
+    // pressing SYNC with nothing else happening moves bit 0x10 of byte 5 and
+    // the lamp on note 0x58 together, within ten milliseconds.
+    var sync = engine.getValue(group, "sync_enabled") ? 1 : 0;
+    var packed = firstBeat + ":" + key + ":" + remaining + ":" + onAir + ":" + sync;
     if (PioneerDDJ1000.gridInfo[deck] === packed) {
         return;
     }
     PioneerDDJ1000.gridInfo[deck] = packed;
     midi.sendSysexMsg([0xF0, 0x7D, 0x20 | (deck - 1),
-        (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, remaining, onAir, 0xF7], 9);
+        (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, remaining, onAir,
+        sync, 0xF7], 10);
     // The jog always shows elapsed time. Switching it to remaining is possible
     // -- the mode note and BF 45 both put the minus sign up -- but the unit
     // then counts down from a track length it computes itself and does not

@@ -263,6 +263,7 @@ class DeckScreen:
         self.duration_ms = 0
         self.remaining = False
         self.on_air = True
+        self.sync = False
         self.moved_at = 0.0
         self.tempo_percent = 0.0
         self.cues = []
@@ -386,7 +387,11 @@ class DeckScreen:
                 period = 0.9 if left > END_HURRY_MS else 0.2
                 if int(now / period) & 1:
                     b[4] = 0x10
-        b[5] = 0x81
+        # Bit 0x10 is beat sync, and the jog screen shows it. Confirmed by
+        # pressing SYNC three times with nothing else happening: the bit and
+        # the button lamp on note 0x58 change together, inside ten
+        # milliseconds, every time.
+        b[5] = 0x81 | (0x10 if self.sync else 0)
         if self.suspend:
             # The unloading frame of a load: no track at all, whatever the
             # rest of the state says. A flag rather than juggling the real
@@ -1074,6 +1079,7 @@ class Bridge:
             # about is on air, which is what every capture of a DJ actually
             # playing looks like.
             screen.on_air = bool(msg[7]) if len(msg) >= 9 else True
+            screen.sync = bool(msg[8]) if len(msg) >= 10 else False
             return True
         if msg[2] & 0x10:                      # a playhead report, not a load
             screen = self.screens[deck_index]
