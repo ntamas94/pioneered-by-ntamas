@@ -105,7 +105,11 @@ KEEPALIVE_INTERVAL = 0.2
 SESSION_TIMEOUT = 10.0      # no ACK within this -> re-enumerate and try again
 # How long to hold the challenge back waiting for audio before answering
 # anyway. A locked screen is better than a unit that never gets an answer.
-AUDIO_WAIT = 25.0
+# Long, because bringing the audio back after a replug means restarting the DJ
+# software, and that takes half a minute of waiting for the card, the desktop
+# session and the application. Answering before it is up spends the one answer
+# the unit accepts per session on a unit that will not unlock for it.
+AUDIO_WAIT = 90.0
 # No challenge in this long, with audio running, means the unit accepted an
 # answer earlier in this USB session and will not ask again -- its screens are
 # already unlocked and only waiting to be drawn on.
@@ -872,6 +876,7 @@ class Bridge:
         self.authenticated = False
         self.deferred_at = -99.0
         self.challenges = 0
+        self.gave_up = False
         # When the identity answer went out; the session clock runs from here.
         self.answered_at = 0.0
         self.midi_lock = threading.Lock()
@@ -1682,12 +1687,17 @@ class Bridge:
             # what leaves them on NO AUDIO DRIVER with the handshake done.
             waited = time.monotonic() - self.started
             self.challenges += 1
-            if not audio_streaming() and waited < AUDIO_WAIT:
-                if waited - self.deferred_at > 3.0:
-                    self.deferred_at = waited
-                    syslog.syslog("challenge held: waiting for audio (%.0f s)"
-                                  % waited)
-                return True
+            if not audio_streaming():
+                if waited < AUDIO_WAIT:
+                    if waited - self.deferred_at > 3.0:
+                        self.deferred_at = waited
+                        syslog.syslog("challenge held: waiting for audio "
+                                      "(%.0f s)" % waited)
+                    return True
+                if not self.gave_up:
+                    self.gave_up = True
+                    syslog.syslog("no audio after %.0f s -- answering anyway, "
+                                  "the screens may stay locked" % waited)
             # rekordbox lets the first challenge go by and answers the second,
             # in all three captures of it meeting a freshly powered unit. Not
             # copied: tried here, and the unit put out no second challenge at

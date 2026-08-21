@@ -16,12 +16,11 @@ for _ in $(seq 1 60); do
 done
 [ -n "${card:-}" ] || { echo "no ALSA card appeared"; exit 0; }
 
-# Wait for the bridge to have the controller again: it re-authenticates on every
-# re-enumeration, and restarting Mixxx before that leaves the screens locked.
-for _ in $(seq 1 40); do
-    journalctl -u djbox-ddj-bridge --since '60 seconds ago' --no-pager -o cat         | grep -q 'jog displays unlocked' && break
-    sleep 1
-done
+# Deliberately not waiting for the bridge to authenticate first. It holds its
+# answer until audio is streaming -- which is what the unit itself waits for
+# before it will take the screens off NO AUDIO DRIVER -- and the audio is what
+# this script is here to bring back. Waiting for the handshake before
+# restarting Mixxx makes the two wait for each other and neither ever happens.
 
 # Wait for the desktop session: djbox-audio.sh restarts Mixxx, and the kiosk has
 # to be up for it to come back.
