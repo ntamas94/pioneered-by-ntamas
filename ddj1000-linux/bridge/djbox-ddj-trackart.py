@@ -11,6 +11,7 @@ The cover comes out of the file's own tags and the waveform from a decode, both
 through ffmpeg, so no Python imaging or audio libraries are needed.
 """
 import math
+import json
 import os
 import struct
 import subprocess
@@ -43,6 +44,37 @@ QUIET_HEIGHT = 14        # columns shorter than this use the quiet set
 # the cover alone, or the name alone. The unit's own layout has nowhere to
 # put a track name, which is the thing people ask for it to show.
 TILE_MODE = os.environ.get("DDJ_JOG_TILE", "both")
+
+# A theme for the tile, since the tile is the only part of the jog screen that
+# is ours -- the dial, the scale and the background are drawn by the unit's own
+# firmware from its own resources and cannot be reached.
+#
+# Read from a file so it can be changed without touching code. Anything left
+# out keeps the default below.
+#
+#   /etc/djbox-jog-theme.json
+#   {
+#     "background": [16, 18, 26],   the tile behind a track with no cover
+#     "text":       [240, 242, 250],
+#     "band":       0.75,           how hard the strip under the text darkens
+#     "image":      "/home/dj/logo.png",   use this instead of every cover
+#     "badge":      "/home/dj/badge.png",  corner mark over the cover, any size
+#     "badge_size": 22
+#   }
+THEME_FILE = os.environ.get("DDJ_JOG_THEME", "/etc/djbox-jog-theme.json")
+THEME = {
+    "background": [16, 18, 26],
+    "text": [240, 242, 250],
+    "band": 0.75,
+    "image": "",
+    "badge": "",
+    "badge_size": 22,
+}
+try:
+    with open(THEME_FILE) as _fh:
+        THEME.update(json.load(_fh))
+except (OSError, ValueError):
+    pass
 
 
 def colour_for(outer, ratio):
@@ -151,8 +183,17 @@ def label_tile(path, cover):
     from PIL import Image, ImageDraw, ImageFont
 
     artist, title = track_name(path)
+    # A theme picture stands in for every cover, for a deck that should look
+    # like itself rather than like whatever is loaded.
+    if THEME["image"]:
+        try:
+            cover = Image.open(THEME["image"]).convert("RGB").resize(
+                (80, 80), Image.LANCZOS)
+        except (OSError, ValueError):
+            pass
     over_cover = cover is not None
-    image = cover if over_cover else Image.new("RGB", (80, 80), (16, 18, 26))
+    image = cover if over_cover else Image.new(
+        "RGB", (80, 80), tuple(THEME["background"]))
     draw = ImageDraw.Draw(image)
     try:
         font = ImageFont.truetype(
@@ -175,15 +216,27 @@ def label_tile(path, cover):
         # Darken the band the text sits in, hard enough to read over anything.
         band = image.crop((0, 80 - height, 80, 80))
         black = Image.new("RGB", band.size, (0, 0, 0))
-        image.paste(Image.blend(band, black, 0.75), (0, 80 - height))
+        image.paste(Image.blend(band, black, float(THEME["band"])),
+                    (0, 80 - height))
         y = 80 - height + 2
     else:
         y = (80 - height) // 2 + 2
 
     for line, face in rows:
         x = max(1, (80 - draw.textlength(line, font=face)) // 2)
-        draw.text((x, y), line, fill=(240, 242, 250), font=face)
+        draw.text((x, y), line, fill=tuple(THEME["text"]), font=face)
         y += step if face is font else 11
+
+    # A small mark in the top corner, over whatever is behind it. Transparency
+    # is honoured, so a PNG with an alpha channel sits on the cover cleanly.
+    if THEME["badge"]:
+        try:
+            size = max(8, min(40, int(THEME["badge_size"])))
+            badge = Image.open(THEME["badge"]).convert("RGBA").resize(
+                (size, size), Image.LANCZOS)
+            image.paste(badge, (80 - size - 2, 2), badge)
+        except (OSError, ValueError):
+            pass
     return image
 
 
