@@ -334,15 +334,26 @@ class DeckScreen:
             position = min(position, self.duration_ms)
         return position
 
-    def loop_code(self):
-        """The screen's own name for how long the loop is: 12 + log2(beats).
+    # What the screen calls each loop length. Measured, not derived: a
+    # capture of rekordbox stepping through every size gives a table, and it
+    # is not the clean 12 + log2(beats) it looks like from one beat upward --
+    # 9 and 11 are skipped, so a half beat is 10 and a whole beat is 12.
+    # Deriving it would send 10 for a quarter beat, which the screen reads as
+    # a half.
+    LOOP_CODES = (
+        (1.0 / 64, 4), (1.0 / 32, 5), (1.0 / 16, 6), (1.0 / 8, 7),
+        (1.0 / 4, 8), (1.0 / 2, 10), (1, 12), (2, 13), (4, 14), (8, 15),
+        (16, 16), (32, 17), (64, 18), (128, 19), (256, 20), (512, 21),
+    )
 
-        One beat is 12 and 64 beats is 18, the whole auto-loop ladder in
-        between, and 1 means a length that is not on it -- a hand-set loop,
-        which the screen writes as two dashes. The beats have to be counted
-        against the track's own tempo: the loop ends are original-time
-        milliseconds while the BPM on the record is the pitched figure, and
-        counting against that one puts every loop a few percent off its step.
+    def loop_code(self):
+        """The screen's own name for how long the loop is.
+
+        A length that is not on the ladder -- a hand-set loop -- is 1, and the
+        screen writes two dashes for it. The beats have to be counted against
+        the track's own tempo: the loop ends are original-time milliseconds
+        while the BPM on the record is the pitched figure, and counting
+        against that one puts every loop a few percent off its step.
         """
         bpm = self.file_bpm or self.bpm
         if bpm <= 0 or self.loop_out <= self.loop_in:
@@ -350,11 +361,13 @@ class DeckScreen:
         beats = (self.loop_out - self.loop_in) / (60000.0 / bpm)
         if beats <= 0:
             return 0x01
-        steps = math.log2(beats)
-        nearest = int(round(steps))
-        if abs(steps - nearest) > 0.05 or not -5 <= nearest <= 6:
-            return 0x01
-        return 12 + nearest
+        for size, code in self.LOOP_CODES:
+            # Generous, because the sizes stand a factor of two apart and
+            # nothing else can be confused with them, while the beats figure
+            # carries the rounding of a BPM reported to one decimal.
+            if abs(beats - size) <= size * 0.15:
+                return code
+        return 0x01
 
     def record(self, deck):
         b = bytearray(64)
