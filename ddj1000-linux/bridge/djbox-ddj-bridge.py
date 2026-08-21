@@ -250,6 +250,7 @@ class DeckScreen:
         self.duration_ms = 0
         self.remaining = False
         self.on_air = True
+        self.moved_at = 0.0
         self.tempo_percent = 0.0
         self.cues = []
         self.cue_ms = 0
@@ -282,6 +283,11 @@ class DeckScreen:
         out right instead of fighting a hardcoded 1.0.
         """
         now = time.monotonic()
+        # When the figure last actually changed, which is the only honest
+        # answer to "is this deck playing": reports keep arriving at the same
+        # rate whether or not the music is moving.
+        if ms != self.report_ms:
+            self.moved_at = now
         dt = now - self.report_time
         if dt <= 0.0 or dt > 0.5:
             self.base_ms, self.base_time, self.rate = ms, now, 0.0
@@ -353,11 +359,17 @@ class DeckScreen:
         # drops bit 0 of this byte and puts it back every 0.9 s from 30.0 s
         # left, then every 0.2 s from 15 s -- the same warning, hurrying.
         b[4] = 0x11
-        if self.loaded and self.duration_ms:
+        now = time.monotonic()
+        # Only while the music is actually running. A deck paused inside the
+        # last thirty seconds sits still in a capture of rekordbox -- the
+        # warning is about the end arriving, and it stops arriving when the
+        # deck stops. Two paused stretches in that recording held byte 4 at
+        # 0x11 throughout while the stretch of playing between them flashed.
+        if self.loaded and self.duration_ms and now - self.moved_at < 0.5:
             left = self.duration_ms - self.position_ms()
             if 0 < left <= END_WARNING_MS:
                 period = 0.9 if left > END_HURRY_MS else 0.2
-                if int(time.monotonic() / period) & 1:
+                if int(now / period) & 1:
                     b[4] = 0x10
         b[5] = 0x81
         if self.suspend:
