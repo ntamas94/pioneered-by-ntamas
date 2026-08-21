@@ -103,6 +103,15 @@ MANUFACTURER, PRODUCT, PIONEER_SECRET = IDENTITIES[
 KEEPALIVE = bytes([0x50, 0x01])
 KEEPALIVE_INTERVAL = 0.2
 SESSION_TIMEOUT = 10.0      # no ACK within this -> re-enumerate and try again
+# How long to hold the challenge back waiting for audio before answering
+# anyway. A locked screen is better than a unit that never gets an answer.
+AUDIO_WAIT = 25.0
+# No challenge in this long, with audio running, means the unit accepted an
+# answer earlier in this USB session and will not ask again -- its screens are
+# already unlocked and only waiting to be drawn on.
+ASSUME_UNLOCKED = 8.0
+# How long after the acceptance rekordbox waits before its first HID report.
+HID_QUIET = 1.38
 RECONNECT_CHECK = 0.3       # how often to notice the controller re-enumerating
 # Re-asserting "screens on" used to be needed every couple of seconds, the way
 # the community mappings do it, because nothing else kept the unit awake. The
@@ -830,7 +839,15 @@ class Bridge:
         if rc < 0:
             raise OSError(errno.EBUSY, "snd_rawmidi_open(%s) failed: %d" % (name.decode(), rc))
         self.rbuf = ctypes.create_string_buffer(1024)
-        self.vir = os.open(vir_path, os.O_RDWR | os.O_NONBLOCK)
+        # Anything that fails from here on has to hand the raw MIDI back
+        # first. Leaving it open wedges the daemon for good: the retry a
+        # couple of seconds later finds the handle held -- by itself -- and
+        # every attempt after that reports the controller busy forever.
+        try:
+            self.vir = os.open(vir_path, os.O_RDWR | os.O_NONBLOCK)
+        except OSError:
+            self.close()
+            raise
         self.from_ddj = MidiSplitter()
         self.probe_at = 0.0
         self.burst_at = 0.0
@@ -853,6 +870,15 @@ class Bridge:
         self.drawn = {}
         self.last_state = 0.0
         self.authenticated = False
+        self.deferred_at = -99.0
+        self.challenges = 0
+        # When the identity answer went out; the session clock runs from here.
+        self.answered_at = 0.0
+        self.midi_lock = threading.Lock()
+        self.bringup = None
+        # Not one HID report before this. rekordbox's first one lands 1.38 s
+        # after the acceptance, behind the whole opening burst.
+        self.hid_ready_at = 0.0
         self.started = time.monotonic()
         # Hold the HID interface open for as long as we run. Linux only polls a
         # HID interrupt endpoint while some client has the device open, and this
@@ -878,15 +904,18 @@ class Bridge:
         # handle twice is a double free -- the daemon died of SIGSEGV every
         # time the controller hiccuped, which read as the jog displays
         # freezing and re-locking.
-        for attr in ("inp", "out"):
-            handle = getattr(self, attr, None)
-            if handle is None:
-                continue
-            setattr(self, attr, None)
-            try:
-                asound.snd_rawmidi_close(handle)
-            except Exception:
-                pass
+        # Under the same lock the writers use, so a burst thread mid-write
+        # finishes before the handle goes away rather than aborting on it.
+        with getattr(self, "midi_lock", threading.Lock()):
+            for attr in ("inp", "out"):
+                handle = getattr(self, attr, None)
+                if handle is None:
+                    continue
+                setattr(self, attr, None)
+                try:
+                    asound.snd_rawmidi_close(handle)
+                except Exception:
+                    pass
         for attr in ("vir", "hid"):
             fd = getattr(self, attr, None)
             if fd is None:
@@ -903,8 +932,18 @@ class Bridge:
         if DEBUG and len(data) > 3:
             syslog.syslog("tx %d: %s" % (len(data), data[:24].hex()))
         buf = ctypes.create_string_buffer(data, len(data))
-        asound.snd_rawmidi_write(self.out, buf, len(data))
-        asound.snd_rawmidi_drain(self.out)
+        # The opening burst runs on its own thread so the keepalive keeps its
+        # rhythm through it, the way rekordbox's does; two threads writing the
+        # same handle would otherwise interleave halfway through a message.
+        with self.midi_lock:
+            # The controller can go away mid-burst, and the burst runs on its
+            # own thread: writing to a handle the main loop has just closed
+            # aborts the process outright -- ALSA asserts rather than
+            # returning an error.
+            if self.out is None:
+                return
+            asound.snd_rawmidi_write(self.out, buf, len(data))
+            asound.snd_rawmidi_drain(self.out)
 
     def read_ddj(self):
         n = asound.snd_rawmidi_read(self.inp, self.rbuf, 1024)
@@ -1463,7 +1502,7 @@ class Bridge:
         # A restarted bridge is not locked out: the unit answers the opening
         # exchange with its "accepted" message again even mid-session, so
         # this flag comes back on its own.
-        if not self.authenticated:
+        if not self.authenticated or time.monotonic() < self.hid_ready_at:
             return
         try:
             os.write(self.hid, bytes([0x00]) + bytes(report).ljust(64, bytes([0x00])))
@@ -1557,16 +1596,32 @@ class Bridge:
         Captured from rekordbox on Windows (keep-alives removed, this daemon
         sends its own). Faithfully reproducing the whole burst is what takes the
         decks out of the locked screen; a hand-picked subset did not.
+
+        On its own thread, because rekordbox's keepalive keeps its 0.2 s beat
+        all the way through the burst -- twenty of them are interleaved with it
+        in the capture -- and running the burst inline stops the read loop for
+        the four seconds it takes.
         """
-        # The 0B/0A/0C block, exactly where the capture has it: first thing
-        # after the acceptance, 0B then 0C then 0A.
+        if self.bringup and self.bringup.is_alive():
+            return
+        self.bringup = threading.Thread(target=self._bringup, daemon=True)
+        self.bringup.start()
+
+    def _bringup(self):
+        # The shape of rekordbox's first seconds after the acceptance, at its
+        # own pace. Offsets are from the ACK: the 0B/0C/0A trio at +0.02, then
+        # a full second in which it says nothing but the keepalive, then the
+        # burst at +1.08, and the first HID report at +1.38.
+        time.sleep(0.02)
         for payload in PRELUDE:
             self.sysex(payload)
+            time.sleep(0.003)
+        time.sleep(1.05)
         self.unit_settings()
         if POST_AUTH:
             for msg in POST_AUTH:
                 self.to_ddj(msg)
-                time.sleep(0.002)
+                time.sleep(0.0024)
             return
         self._display_bringup_fallback()
 
@@ -1617,6 +1672,29 @@ class Bridge:
             return False
         cmd, sub = msg[9], msg[10]
         if cmd == 0x11 and sub == 0x02:
+            # Not until the audio is actually running. In a capture of
+            # rekordbox meeting a freshly powered unit the stream had been
+            # flowing for nine seconds before the handshake -- and rekordbox
+            # lets the first challenge go by unanswered, so a challenge is not
+            # a thing that has to be caught. The unit folds "a driver is
+            # streaming" and "rekordbox verified" together to decide what to
+            # put on the screens, and answering while nothing is streaming is
+            # what leaves them on NO AUDIO DRIVER with the handshake done.
+            waited = time.monotonic() - self.started
+            self.challenges += 1
+            if not audio_streaming() and waited < AUDIO_WAIT:
+                if waited - self.deferred_at > 3.0:
+                    self.deferred_at = waited
+                    syslog.syslog("challenge held: waiting for audio (%.0f s)"
+                                  % waited)
+                return True
+            # rekordbox lets the first challenge go by and answers the second,
+            # in all three captures of it meeting a freshly powered unit. Not
+            # copied: tried here, and the unit put out no second challenge at
+            # all -- it asks once per session of this daemon, so skipping the
+            # first is skipping the only one. What rekordbox does is almost
+            # certainly its own start-up latency rather than a rule.
+            self.answered_at = time.monotonic()
             self.sysex(identity_msg())
             return True
         if cmd == 0x13:
@@ -1629,15 +1707,7 @@ class Bridge:
             if not self.authenticated:
                 syslog.syslog("authenticated -- jog displays unlocked")
                 threading.Thread(target=self.prebuild_cache, daemon=True).start()
-                # Tell Mixxx to reopen the sound device: the controller is the
-                # sound card, so a replug leaves Mixxx holding a stream that no
-                # longer exists, and it has no way of noticing on its own. The
-                # mapping turns this note into [SoundManager],reopen_devices.
-                # The note-off matters: the control only signals on a change,
-                # so left at 7F it fires once in Mixxx's lifetime and every
-                # later reconnect is ignored.
-                self.to_mixxx(bytes((0x9F, 0x7F, 0x7F)))
-                self.to_mixxx(bytes((0x9F, 0x7F, 0x00)))
+                self.hid_ready_at = time.monotonic() + HID_QUIET
                 self.authenticated = True
             self.display_bringup()
             return True
@@ -1650,6 +1720,16 @@ class Bridge:
         # the unit's acceptance -- sending it cold, before the handshake, is a
         # sequence rekordbox never produces. The keepalive loop below is the
         # ping; the block moved to display_bringup, behind the acceptance.
+        # Tell Mixxx to reopen the sound device before answering anything. The
+        # controller is the sound card, so a replug leaves Mixxx holding a
+        # stream that no longer exists and it has no way of noticing on its
+        # own. This used to go out on the acceptance, which deadlocks now that
+        # the acceptance waits for audio: Mixxx was waiting for the handshake
+        # and the handshake was waiting for Mixxx. The note-off matters -- the
+        # control only signals on a change, so left at 7F it fires once in
+        # Mixxx's lifetime and every later reconnect is ignored.
+        self.to_mixxx(bytes((0x9F, 0x7F, 0x7F)))
+        self.to_mixxx(bytes((0x9F, 0x7F, 0x00)))
         last_ka = 0.0
         last_check = 0.0
         # None, not the current value: if the interface is already in alt 1 when
@@ -1703,8 +1783,25 @@ class Bridge:
                 last_alt = alt
                 if self.device_changed():
                     raise OSError(errno.ENODEV, "controller re-enumerated")
-            if not self.authenticated and now - self.started > SESSION_TIMEOUT:
+            # Counted from the moment an answer actually went out, not from
+            # the start of the session: the challenge is deliberately held
+            # back until audio is running, and re-enumerating in the middle of
+            # that wait would throw away the very thing being waited for.
+            if not self.authenticated and self.answered_at \
+                    and now - self.answered_at > SESSION_TIMEOUT:
                 raise SessionStale()
+            # A daemon restarted in the middle of a USB session hears no
+            # challenge at all: the unit accepts one answer per session and
+            # has already had it. Its screens are still unlocked, so gating
+            # our own drawing on a handshake that will never come again just
+            # leaves them frozen on whatever was last drawn there.
+            if not self.authenticated and not self.challenges \
+                    and now - self.started > ASSUME_UNLOCKED \
+                    and audio_streaming():
+                syslog.syslog("no challenge, audio streaming -- "
+                              "already unlocked earlier this session")
+                self.hid_ready_at = 0.0
+                self.authenticated = True
             chunk = self.read_ddj()
             if chunk:
                 if DEBUG:
