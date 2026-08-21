@@ -495,6 +495,22 @@ PioneerDDJ1000.skipBothTimeMode = function () {
 //
 // A long press hands the deck the leader role instead, which is what the
 // hardware does and what the second lamp is for.
+// The 4 BEAT LOOP button, as the manual has it: starts a four-beat loop, and
+// during loop playback -- any loop, whatever its size -- cancels it. Not a
+// size change: a running two-beat pad loop exits from here too.
+PioneerDDJ1000.beatLoopButton = function (channel, control, value, status, group) {
+    if (!value) {
+        return;
+    }
+    if (engine.getValue(group, "loop_enabled") > 0) {
+        engine.setValue(group, "reloop_toggle", 1);
+        engine.setValue(group, "reloop_toggle", 0);
+        return;
+    }
+    engine.setValue(group, "beatloop_4_activate", 1);
+    engine.setValue(group, "beatloop_4_activate", 0);
+};
+
 PioneerDDJ1000.syncPressedAt = {};
 PioneerDDJ1000.syncLongPressMs = 600;
 
