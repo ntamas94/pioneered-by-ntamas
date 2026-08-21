@@ -158,6 +158,11 @@ CMD_WAVEFORM = 0x2C
 # One lead byte and 600 columns of seven: the size every waveform this
 # builds comes out at, and the size of the empty one that clears it.
 WAVEFORM_BYTES = 1 + 600 * 7
+# Pause between screen reports. The endpoint runs at 1 kHz and paces the
+# writes on its own; asking sleep() for a millisecond gets two or three
+# from the scheduler, and across the couple of hundred reports a load
+# takes that was most of the second it spent.
+REPORT_GAP = float(os.environ.get("DDJ_REPORT_GAP", "0"))
 
 # Byte 3 of the state record, bit 0x08: set counts the time down, clear counts
 # it up. The Time Mode preference is not a MIDI setting at all -- capturing
@@ -863,6 +868,11 @@ class Bridge:
                              (minute * 60 + second) * 1000 + milli))
             if cues != screen.cues:
                 screen.cues = cues
+                if cues:
+                    syslog.syslog("jog screen %d: cues at %s (track %.1f s)"
+                                  % (deck_index + 1,
+                                     ", ".join("%d:%02d.%03d" % c[:3] for c in cues),
+                                     screen.duration_ms / 1000.0))
                 if screen.loaded and self.authenticated:
                     # Already on a deck: update the table in place.
                     key = struct.pack("<I", screen.track_id)
@@ -928,6 +938,8 @@ class Bridge:
         # is unique enough, but the counter is what makes reloading the same
         # track a different id, which is how the screen knows to redraw.
         screen = self.screens[deck_index]
+        if len(msg) >= 10:                     # the tempo comes with it
+            screen.bpm = ((msg[7] << 7) | msg[8]) / 10.0
         if screen.duration_ms != ms or not screen.track_id:
             # The id is the track's length, written the way the screen
             # writes every other time: minutes, seconds, and a 16-bit
@@ -938,6 +950,11 @@ class Bridge:
             # playhead would not travel for anything this loaded.
             seconds, milli = divmod(int(ms), 1000)
             minutes, seconds = divmod(seconds, 60)
+            # A new track starts with no cues: the mapping only sends the
+            # list when it changes, so the previous track's markers would
+            # otherwise sit on the scale until it did.
+            screen.cues = []
+            screen.cue_ms = 0
             screen.track_id = (min(255, minutes)
                                | (seconds << 8)
                                | ((milli & 0xFF) << 16)
@@ -1010,13 +1027,7 @@ class Bridge:
         deck = SCREEN_DECKS[deck_index]
         screen = self.screens[deck_index]
 
-        # The announcement arrives before the first tempo report, so a draw
-        # that starts immediately builds its beat grid from nothing and falls
-        # back to 120. The reports come every 50 ms; a moment's wait is enough.
-        for _ in range(20):
-            if screen.bpm > 0:
-                break
-            time.sleep(0.05)
+        started = time.monotonic()
 
         # rekordbox's load, in the order a capture of it shows. The unloading
         # step matters as much as the upload: it clears the deck with an
@@ -1049,8 +1060,6 @@ class Bridge:
         time.sleep(0.01)
         key = struct.pack("<I", screen.track_id)
 
-        grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
-
         # The clearing half runs before the artwork is built, not after:
         # building means decoding the whole track, and rekordbox has its own
         # ready long before it starts sending. Waiting on ours first left the
@@ -1058,6 +1067,8 @@ class Bridge:
         self.send_hid_transfer(deck, CMD_WAVEFORM, bytes(WAVEFORM_BYTES),
                                prime=False)
         self.announce_load(screen.track_id)
+
+        grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
         self.send_hid_transfer(deck, 0x2F, bytes(58), prime=False)
         self.send_hid_transfer(deck, 0x2F, grid, prime=False)
         self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
@@ -1074,7 +1085,7 @@ class Bridge:
         if CMD_ARTWORK in payloads and not NO_ARTWORK:
             self.send_hid_transfer(deck, CMD_ARTWORK, payloads[CMD_ARTWORK],
                                    prime=False)
-        time.sleep(0.27)                       # rekordbox's pause before the waveform
+        time.sleep(0.05)                       # let the artwork land first
         if waveform:
             self.send_hid_transfer(deck, CMD_WAVEFORM, waveform, prime=False)
         if screen.cues:
@@ -1082,7 +1093,9 @@ class Bridge:
             self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues),
                                    prime=False)
         screen.ready = True
-        syslog.syslog("jog screen %d: drew %s" % (deck_index + 1, os.path.basename(path)))
+        syslog.syslog("jog screen %d: drew %s in %.0f ms"
+                      % (deck_index + 1, os.path.basename(path),
+                         (time.monotonic() - started) * 1000))
 
     @staticmethod
     def cache_tag(path):
@@ -1154,7 +1167,8 @@ class Bridge:
                 syslog.syslog("hid %02x deck%02x chunk %d/%d: %s"
                               % (cmd, deck, index, total, packet.hex()))
             self.to_ddj_hid(packet)
-            time.sleep(0.0012)
+            if REPORT_GAP:
+                time.sleep(REPORT_GAP)
 
         # The short records are led by a copy of their last chunk; artwork
         # and the waveform are sent straight through. Lead only: a capture of

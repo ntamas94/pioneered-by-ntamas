@@ -93,9 +93,9 @@ PioneerDDJ1000.lastSent = {};
 // screen has ten slots; hot cues fill them in pad order. Sent as minutes,
 // seconds and milliseconds because that is how the table wants them.
 //
-// Positions divide by the sample rate alone. Treating them as interleaved
-// stereo samples and halving them again put a cue set at the end of a track
-// squarely in the middle of the display.
+// Positions are interleaved stereo samples, two per frame, so they divide by
+// twice the sample rate. A cue set at exactly one minute arrives as two
+// without the halving.
 PioneerDDJ1000.sentCues = {};
 
 PioneerDDJ1000.sendCues = function (deck) {
@@ -107,7 +107,7 @@ PioneerDDJ1000.sendCues = function (deck) {
         if (position < 0) {
             continue;
         }
-        var ms = Math.max(0, Math.round(position / rate * 1000));
+        var ms = Math.max(0, Math.round(position / (rate * 2) * 1000));
         entries.push([Math.min(127, Math.floor(ms / 60000)),
             Math.floor(ms / 1000) % 60, ms % 1000]);
     }
@@ -146,8 +146,14 @@ PioneerDDJ1000.announceIfChanged = function (deck) {
     }
     PioneerDDJ1000.announcedMs[deck] = ms;
     PioneerDDJ1000.announcedAt[deck] = now;
+    // The tempo rides along. The bridge needs it to build the beat grid, and
+    // waiting for the first playhead report to carry one held every load up
+    // by half a second with the old track still on the screen.
+    var tenths = Math.max(0, Math.min(0x3FFF,
+        Math.round((engine.getValue(group, "bpm") || 0) * 10)));
     midi.sendSysexMsg([0xF0, 0x7D, deck - 1,
-        (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F, 0xF7], 8);
+        (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F,
+        (tenths >> 7) & 0x7F, tenths & 0x7F, 0xF7], 10);
 };
 
 // The jog screens want the playhead to the millisecond, but the display notes
@@ -169,10 +175,10 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     var firstBeat = 0;
     if (bpm > 0 && beat >= 0) {
         var interval = 60000 / bpm;
-        // Sample positions here are frames, not interleaved stereo samples:
-        // halving them again put a cue set at the end of a track in the
-        // middle of the jog display.
-        var beatMs = beat / rate * 1000;
+        // Sample positions are interleaved stereo: two per frame. Measured
+        // against a cue set at a known minute, dividing by the rate alone
+        // puts every marker at twice its real time.
+        var beatMs = beat / (rate * 2) * 1000;
         firstBeat = Math.round(((beatMs % interval) + interval) % interval);
     }
     firstBeat = Math.min(firstBeat, 16383);
@@ -246,7 +252,7 @@ PioneerDDJ1000.sendLoop = function (deck) {
 PioneerDDJ1000.sendCuePoint = function (deck, group) {
     var rate = engine.getValue(group, "track_samplerate") || 44100;
     var point = engine.getValue(group, "cue_point");
-    var ms = point >= 0 ? Math.round(point / rate * 1000) : 0;
+    var ms = point >= 0 ? Math.round(point / (rate * 2) * 1000) : 0;
     ms = Math.max(0, Math.min(0xFFFFFFF, ms));
     if (PioneerDDJ1000.sentCuePoint[deck] === ms) {
         return;
