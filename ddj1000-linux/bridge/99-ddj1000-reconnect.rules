@@ -4,8 +4,14 @@
 # .device unit: dev-ddj1000.device. The jog screen daemon binds to that, so it
 # starts when the controller is plugged in and stops when it is pulled out,
 # without anything being enabled at boot or started by hand.
-ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0020", TEST=="descriptors", SYMLINK+="ddj1000", TAG+="systemd"
+#
+# Deliberately no ACTION match. The device emits bind events of its own once
+# the drivers attach, and a rule that only answers add and change leaves udev
+# recomputing the device without the symlink on those -- which drops the
+# .device unit a tenth of a second after it appears and takes the daemon down
+# with it, mid-start.
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0020", SYMLINK+="ddj1000", TAG+="systemd"
 
 # Bringing the DJ software back is a separate job: the controller is the sound
 # card, so a replug leaves it holding a stream that no longer exists.
-ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0020", TAG+="systemd", ENV{SYSTEMD_WANTS}+="djbox-ddj-reconnect.service"
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0020", TAG+="systemd", ENV{SYSTEMD_WANTS}+="djbox-ddj-reconnect.service"

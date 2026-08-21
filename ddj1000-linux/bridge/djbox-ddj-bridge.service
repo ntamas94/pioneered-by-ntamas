@@ -5,6 +5,10 @@ Documentation=https://github.com/ntamas94/pioneered-by-ntamas
 # stable name /dev/ddj1000, systemd turns that into dev-ddj1000.device, and
 # binding to it means this starts when the controller is plugged in and stops
 # when it is pulled out. Nothing to enable, nothing to start by hand.
+# No start-rate limit: pulling the cable a few times in quick succession is
+# a thing people do, and systemd refusing to start the service afterwards
+# looks exactly like the controller being broken.
+StartLimitIntervalSec=0
 BindsTo=dev-ddj1000.device
 After=dev-ddj1000.device sound.target
 
