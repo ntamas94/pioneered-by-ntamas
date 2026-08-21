@@ -166,9 +166,12 @@ WAVEFORM_BYTES = 1 + 600 * 7
 # from the scheduler, and across the couple of hundred reports a load
 # takes that was most of the second it spent.
 REPORT_GAP = float(os.environ.get("DDJ_REPORT_GAP", "0"))
-# Hold the unit's capture stream open so its screens never go dark for want
-# of a driver. Set DDJ_HOLD_AUDIO=0 to leave the interface alone.
-HOLD_AUDIO = os.environ.get("DDJ_HOLD_AUDIO", "1") != "0"
+# Holding the unit's capture stream open keeps its screens awake, but the two
+# directions cannot run at once here: the quirk names the input endpoint as
+# playback's implicit feedback source, so capture takes the clock playback
+# needs and the output stalls with its hardware pointer at zero. Off by
+# default; DDJ_HOLD_AUDIO=1 for a box that never plays anything.
+HOLD_AUDIO = os.environ.get("DDJ_HOLD_AUDIO", "0") != "0"
 
 # Byte 3 of the state record, bit 0x08: set counts the time down, clear counts
 # it up. The Time Mode preference is not a MIDI setting at all -- capturing
@@ -1243,7 +1246,11 @@ class Bridge:
                 time.sleep(DEVICE_POLL)
                 continue
 
-            if self.playback_in_use(card):
+            # Once the screens are up the interface has done its job here, and
+            # holding it any longer only risks the stream the DJ software is
+            # about to open. Unlocking happens against our own stream, before
+            # anyone else's exists.
+            if self.playback_in_use(card) or self.authenticated:
                 recorder = self.stop_recorder(recorder)
             elif recorder is None or recorder.poll() is not None:
                 try:
@@ -1538,7 +1545,14 @@ class Bridge:
                     # one of those repaints the screens -- which under load,
                     # when sysfs is slow, showed up as the picture flashing.
                     alt = last_alt
-                if alt == 1 and last_alt != 1:
+                # Only while the screens still need releasing. The probe is a
+                # vendor control read on the audio interface, and issuing it
+                # against a stream someone has just opened stops that stream
+                # dead: the device stays RUNNING with its hardware pointer at
+                # zero, no samples move, and the DJ software's engine never
+                # settles -- which shows up as every track sitting for ever at
+                # "loading" rather than as anything to do with audio.
+                if alt == 1 and last_alt != 1 and not self.authenticated:
                     if vendor_probe():
                         syslog.syslog("audio interface went to alt 1 -- jog displays released")
                         self.reset_time_mode()
