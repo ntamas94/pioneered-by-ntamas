@@ -929,28 +929,20 @@ class Bridge:
         # track a different id, which is how the screen knows to redraw.
         screen = self.screens[deck_index]
         if screen.duration_ms != ms or not screen.track_id:
-            # A new track gets an id the unit has never seen. Never derived
-            # from the track itself: the unit remembers what it was sent
-            # under an id, and an id it holds bad state for -- a botched
-            # upload from an earlier run -- is quietly ignored, artwork,
-            # waveform, playhead and all. Deriving the id from the track's
-            # length pinned every track to its one poisoned id forever.
-            # rekordbox's own ids are its database row numbers: arbitrary,
-            # with a small low byte, which is what this imitates.
-            # Upper three bytes are the track's length in milliseconds --
-            # the screen measures the playhead against it, and a wrong value
-            # there makes it call the track over and show END. The low byte
-            # is a small sequence number, which is all that distinguishes one
-            # load of a track from the next.
-            # The same track keeps the same id every time it is loaded. The
-            # screens only animate a track they hold an entry for, and an id
-            # that changes on every load never gets past a first sighting --
-            # the entry, whatever creates it, is never met twice.
-            screen.track_id = ((ms & 0xFFFFFF) << 8) | 0x03
+            # The id is the track's length, written the way the screen
+            # writes every other time: minutes, seconds, and a 16-bit
+            # millisecond figure, in that order. Its own firmware turns these
+            # four bytes back into a time -- (minutes * 60 + seconds) * 1000
+            # plus the milliseconds -- which is why a plain 32-bit millisecond
+            # count was never recognised as a track at all, and why the
+            # playhead would not travel for anything this loaded.
+            seconds, milli = divmod(int(ms), 1000)
+            minutes, seconds = divmod(seconds, 60)
+            screen.track_id = (min(255, minutes)
+                               | (seconds << 8)
+                               | ((milli & 0xFF) << 16)
+                               | ((milli >> 8) << 24))
             if FORCED_ID:
-                # Diagnostic: an id a capture proves the screens animate. If
-                # the playhead moves under it and under nothing else, the unit
-                # is only animating tracks it already knows.
                 screen.track_id = FORCED_ID
         screen.duration_ms = ms
         # The mapping repeats the announcement so a restarted daemon can catch
