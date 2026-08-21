@@ -1,0 +1,3966 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pioneer DDJ-1000 (4 deck)
+
+  GENERATED FILE - do not edit by hand, edit gen_mapping.py and re-run it.
+
+  Every MIDI address is taken from AlphaTheta's official
+  "DDJ-1000 List of MIDI message version 1.00".
+
+  Note that on Linux the DDJ-1000's built-in soundcard does not work: it is not
+  USB Audio Class compliant and no kernel driver exists for it. Use a separate
+  audio interface. MIDI, which is what this file covers, needs no driver.
+-->
+<MixxxControllerPreset mixxxVersion="2.4+" schemaVersion="1">
+  <info>
+    <name>Pioneer DDJ-1000 (4 deck)</name>
+    <author>generated from AlphaTheta MIDI message list v1.00</author>
+    <description>Four-deck mapping for the Pioneer DDJ-1000, including all eight performance pads with hot cue, beat loop, beat jump and sampler modes. Audio is NOT provided by this controller on Linux: its soundcard is not USB Audio Class compliant, so a separate audio interface is required.</description>
+  </info>
+  <controller id="DDJ-1000">
+    <scriptfiles>
+      <file filename="Pioneer-DDJ-1000-4deck-scripts.js" functionprefix="PioneerDDJ1000"/>
+    </scriptfiles>
+    <controls>
+      <!-- ============ DECK 1 ============ -->
+      <control>
+        <!-- Deck 1 PLAY/PAUSE -->
+        <group>[Channel1]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 CUE -->
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SYNC -->
+        <group>[Channel1]</group>
+        <key>beatsync</key>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 HEADPHONE CUE -->
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT LOOP / auto loop -->
+        <group>[Channel1]</group>
+        <key>beatloop_activate</key>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 LOOP IN -->
+        <group>[Channel1]</group>
+        <key>loop_in</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 LOOP OUT -->
+        <group>[Channel1]</group>
+        <key>loop_out</key>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 LOOP IN while looping (halve) -->
+        <group>[Channel1]</group>
+        <key>loop_halve</key>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 LOOP OUT while looping (double) -->
+        <group>[Channel1]</group>
+        <key>loop_double</key>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 CROSSFADER ASSIGN left -->
+        <group>[Channel1]</group>
+        <key>orientation_left</key>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 CROSSFADER ASSIGN center -->
+        <group>[Channel1]</group>
+        <key>orientation_center</key>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 CROSSFADER ASSIGN right -->
+        <group>[Channel1]</group>
+        <key>orientation_right</key>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 MASTER TEMPO / key lock -->
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 QUANTIZE -->
+        <group>[Channel1]</group>
+        <key>quantize</key>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SLIP -->
+        <group>[Channel1]</group>
+        <key>slip_enabled</key>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SLIP REVERSE (momentary) -->
+        <group>[Channel1]</group>
+        <key>reverseroll</key>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PLAY: back to start -->
+        <group>[Channel1]</group>
+        <key>start_stop</key>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+CUE: jump to track start -->
+        <group>[Channel1]</group>
+        <key>start</key>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+LOOP OUT: reloop / exit -->
+        <group>[Channel1]</group>
+        <key>reloop_toggle</key>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+SYNC: match key -->
+        <group>[Channel1]</group>
+        <key>sync_key</key>
+        <status>0x90</status>
+        <midino>0x5C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+KEY LOCK: reset key -->
+        <group>[Channel1]</group>
+        <key>reset_key</key>
+        <status>0x90</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+SEMITONE DOWN: match key -->
+        <group>[Channel1]</group>
+        <key>sync_key</key>
+        <status>0x90</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+SEMITONE UP: reset key -->
+        <group>[Channel1]</group>
+        <key>reset_key</key>
+        <status>0x90</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+SLIP REVERSE: reverse -->
+        <group>[Channel1]</group>
+        <key>reverse</key>
+        <status>0x90</status>
+        <midino>0x38</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT JUMP mode, left: halve the jump -->
+        <group>[Channel1]</group>
+        <key>beatjump_size_halve</key>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT JUMP mode, right: double the jump -->
+        <group>[Channel1]</group>
+        <key>beatjump_size_double</key>
+        <status>0x90</status>
+        <midino>0x2E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.loopInAdjust</key>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG touch -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogTouch</key>
+        <status>0x90</status>
+        <midino>0x36</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG platter (VINYL on) -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogScratch</key>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG platter (VINYL off) -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG outer ring -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG platter + SEARCH -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogSearch</key>
+        <status>0xB0</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG platter + SHIFT -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogGridStretch</key>
+        <status>0xB0</status>
+        <midino>0x1F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 JOG outer ring + SHIFT -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jogGridSlide</key>
+        <status>0xB0</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SEARCH backward -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SEARCH forward -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x90</status>
+        <midino>0x5F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SEARCH backward held -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x90</status>
+        <midino>0x70</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SEARCH forward held -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x90</status>
+        <midino>0x71</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 TEMPO fader MSB -->
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 TEMPO fader LSB -->
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 TRIM / gain MSB -->
+        <group>[Channel1]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x04</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 TRIM / gain LSB -->
+        <group>[Channel1]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 CHANNEL FADER MSB -->
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 CHANNEL FADER LSB -->
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 EQ HI MSB -->
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 EQ HI LSB -->
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x27</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 EQ MID MSB -->
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 EQ MID LSB -->
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x2B</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 EQ LOW MSB -->
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 EQ LOW LSB -->
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x2F</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 COLOR FX MSB -->
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x17</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 COLOR FX LSB -->
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x37</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 hot cue 1 -->
+        <group>[Channel1]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x97</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 1 clear hot cue 1 -->
+        <group>[Channel1]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x98</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 beat loop 0.25 -->
+        <group>[Channel1]</group>
+        <key>beatloop_0.25_toggle</key>
+        <status>0x97</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 beat jump 1 backward -->
+        <group>[Channel1]</group>
+        <key>beatjump_1_backward</key>
+        <status>0x97</status>
+        <midino>0x20</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 sampler 1 -->
+        <group>[Sampler1]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 1 eject sampler 1 -->
+        <group>[Sampler1]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 hot cue 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x97</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 2 clear hot cue 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x98</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 beat loop 0.5 -->
+        <group>[Channel1]</group>
+        <key>beatloop_0.5_toggle</key>
+        <status>0x97</status>
+        <midino>0x61</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 beat jump 2 backward -->
+        <group>[Channel1]</group>
+        <key>beatjump_2_backward</key>
+        <status>0x97</status>
+        <midino>0x21</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 sampler 2 -->
+        <group>[Sampler2]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 2 eject sampler 2 -->
+        <group>[Sampler2]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 hot cue 3 -->
+        <group>[Channel1]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x97</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 3 clear hot cue 3 -->
+        <group>[Channel1]</group>
+        <key>hotcue_3_clear</key>
+        <status>0x98</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 beat loop 1 -->
+        <group>[Channel1]</group>
+        <key>beatloop_1_toggle</key>
+        <status>0x97</status>
+        <midino>0x62</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 beat jump 4 backward -->
+        <group>[Channel1]</group>
+        <key>beatjump_4_backward</key>
+        <status>0x97</status>
+        <midino>0x22</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 sampler 3 -->
+        <group>[Sampler3]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 3 eject sampler 3 -->
+        <group>[Sampler3]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 hot cue 4 -->
+        <group>[Channel1]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x97</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 4 clear hot cue 4 -->
+        <group>[Channel1]</group>
+        <key>hotcue_4_clear</key>
+        <status>0x98</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 beat loop 2 -->
+        <group>[Channel1]</group>
+        <key>beatloop_2_toggle</key>
+        <status>0x97</status>
+        <midino>0x63</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 beat jump 8 backward -->
+        <group>[Channel1]</group>
+        <key>beatjump_8_backward</key>
+        <status>0x97</status>
+        <midino>0x23</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 sampler 4 -->
+        <group>[Sampler4]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 4 eject sampler 4 -->
+        <group>[Sampler4]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 hot cue 5 -->
+        <group>[Channel1]</group>
+        <key>hotcue_5_activate</key>
+        <status>0x97</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 5 clear hot cue 5 -->
+        <group>[Channel1]</group>
+        <key>hotcue_5_clear</key>
+        <status>0x98</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 beat loop 4 -->
+        <group>[Channel1]</group>
+        <key>beatloop_4_toggle</key>
+        <status>0x97</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 beat jump 1 forward -->
+        <group>[Channel1]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x97</status>
+        <midino>0x24</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 sampler 5 -->
+        <group>[Sampler5]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 5 eject sampler 5 -->
+        <group>[Sampler5]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 hot cue 6 -->
+        <group>[Channel1]</group>
+        <key>hotcue_6_activate</key>
+        <status>0x97</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 6 clear hot cue 6 -->
+        <group>[Channel1]</group>
+        <key>hotcue_6_clear</key>
+        <status>0x98</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 beat loop 8 -->
+        <group>[Channel1]</group>
+        <key>beatloop_8_toggle</key>
+        <status>0x97</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 beat jump 2 forward -->
+        <group>[Channel1]</group>
+        <key>beatjump_2_forward</key>
+        <status>0x97</status>
+        <midino>0x25</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 sampler 6 -->
+        <group>[Sampler6]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 6 eject sampler 6 -->
+        <group>[Sampler6]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 hot cue 7 -->
+        <group>[Channel1]</group>
+        <key>hotcue_7_activate</key>
+        <status>0x97</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 7 clear hot cue 7 -->
+        <group>[Channel1]</group>
+        <key>hotcue_7_clear</key>
+        <status>0x98</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 beat loop 16 -->
+        <group>[Channel1]</group>
+        <key>beatloop_16_toggle</key>
+        <status>0x97</status>
+        <midino>0x66</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 beat jump 4 forward -->
+        <group>[Channel1]</group>
+        <key>beatjump_4_forward</key>
+        <status>0x97</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 sampler 7 -->
+        <group>[Sampler7]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 7 eject sampler 7 -->
+        <group>[Sampler7]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 8 hot cue 8 -->
+        <group>[Channel1]</group>
+        <key>hotcue_8_activate</key>
+        <status>0x97</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 8 clear hot cue 8 -->
+        <group>[Channel1]</group>
+        <key>hotcue_8_clear</key>
+        <status>0x98</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 8 beat loop 32 -->
+        <group>[Channel1]</group>
+        <key>beatloop_32_toggle</key>
+        <status>0x97</status>
+        <midino>0x67</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 8 beat jump 8 forward -->
+        <group>[Channel1]</group>
+        <key>beatjump_8_forward</key>
+        <status>0x97</status>
+        <midino>0x27</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 8 sampler 8 -->
+        <group>[Sampler8]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x97</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 8 eject sampler 8 -->
+        <group>[Sampler8]</group>
+        <key>eject</key>
+        <status>0x98</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <!-- ============ DECK 2 ============ -->
+      <control>
+        <!-- Deck 2 PLAY/PAUSE -->
+        <group>[Channel2]</group>
+        <key>play</key>
+        <status>0x91</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 CUE -->
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <status>0x91</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SYNC -->
+        <group>[Channel2]</group>
+        <key>beatsync</key>
+        <status>0x91</status>
+        <midino>0x58</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 HEADPHONE CUE -->
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <status>0x91</status>
+        <midino>0x54</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT LOOP / auto loop -->
+        <group>[Channel2]</group>
+        <key>beatloop_activate</key>
+        <status>0x91</status>
+        <midino>0x14</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 LOOP IN -->
+        <group>[Channel2]</group>
+        <key>loop_in</key>
+        <status>0x91</status>
+        <midino>0x10</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 LOOP OUT -->
+        <group>[Channel2]</group>
+        <key>loop_out</key>
+        <status>0x91</status>
+        <midino>0x11</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 LOOP IN while looping (halve) -->
+        <group>[Channel2]</group>
+        <key>loop_halve</key>
+        <status>0x91</status>
+        <midino>0x12</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 LOOP OUT while looping (double) -->
+        <group>[Channel2]</group>
+        <key>loop_double</key>
+        <status>0x91</status>
+        <midino>0x13</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 CROSSFADER ASSIGN left -->
+        <group>[Channel2]</group>
+        <key>orientation_left</key>
+        <status>0x91</status>
+        <midino>0x16</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 CROSSFADER ASSIGN center -->
+        <group>[Channel2]</group>
+        <key>orientation_center</key>
+        <status>0x91</status>
+        <midino>0x1D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 CROSSFADER ASSIGN right -->
+        <group>[Channel2]</group>
+        <key>orientation_right</key>
+        <status>0x91</status>
+        <midino>0x18</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 MASTER TEMPO / key lock -->
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x91</status>
+        <midino>0x1A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 QUANTIZE -->
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <status>0x91</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SLIP -->
+        <group>[Channel2]</group>
+        <key>slip_enabled</key>
+        <status>0x91</status>
+        <midino>0x40</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SLIP REVERSE (momentary) -->
+        <group>[Channel2]</group>
+        <key>reverseroll</key>
+        <status>0x91</status>
+        <midino>0x15</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PLAY: back to start -->
+        <group>[Channel2]</group>
+        <key>start_stop</key>
+        <status>0x91</status>
+        <midino>0x47</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+CUE: jump to track start -->
+        <group>[Channel2]</group>
+        <key>start</key>
+        <status>0x91</status>
+        <midino>0x48</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+LOOP OUT: reloop / exit -->
+        <group>[Channel2]</group>
+        <key>reloop_toggle</key>
+        <status>0x91</status>
+        <midino>0x4D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+SYNC: match key -->
+        <group>[Channel2]</group>
+        <key>sync_key</key>
+        <status>0x91</status>
+        <midino>0x5C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+KEY LOCK: reset key -->
+        <group>[Channel2]</group>
+        <key>reset_key</key>
+        <status>0x91</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+SEMITONE DOWN: match key -->
+        <group>[Channel2]</group>
+        <key>sync_key</key>
+        <status>0x91</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+SEMITONE UP: reset key -->
+        <group>[Channel2]</group>
+        <key>reset_key</key>
+        <status>0x91</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+SLIP REVERSE: reverse -->
+        <group>[Channel2]</group>
+        <key>reverse</key>
+        <status>0x91</status>
+        <midino>0x38</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT JUMP mode, left: halve the jump -->
+        <group>[Channel2]</group>
+        <key>beatjump_size_halve</key>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT JUMP mode, right: double the jump -->
+        <group>[Channel2]</group>
+        <key>beatjump_size_double</key>
+        <status>0x91</status>
+        <midino>0x2E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.loopInAdjust</key>
+        <status>0x91</status>
+        <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG touch -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogTouch</key>
+        <status>0x91</status>
+        <midino>0x36</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG platter (VINYL on) -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogScratch</key>
+        <status>0xB1</status>
+        <midino>0x22</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG platter (VINYL off) -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB1</status>
+        <midino>0x23</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG outer ring -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB1</status>
+        <midino>0x21</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG platter + SEARCH -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogSearch</key>
+        <status>0xB1</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG platter + SHIFT -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogGridStretch</key>
+        <status>0xB1</status>
+        <midino>0x1F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 JOG outer ring + SHIFT -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jogGridSlide</key>
+        <status>0xB1</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SEARCH backward -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x91</status>
+        <midino>0x5E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SEARCH forward -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x91</status>
+        <midino>0x5F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SEARCH backward held -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x91</status>
+        <midino>0x70</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SEARCH forward held -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x91</status>
+        <midino>0x71</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 TEMPO fader MSB -->
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xB1</status>
+        <midino>0x00</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 TEMPO fader LSB -->
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xB1</status>
+        <midino>0x20</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 TRIM / gain MSB -->
+        <group>[Channel2]</group>
+        <key>pregain</key>
+        <status>0xB1</status>
+        <midino>0x04</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 TRIM / gain LSB -->
+        <group>[Channel2]</group>
+        <key>pregain</key>
+        <status>0xB1</status>
+        <midino>0x24</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 CHANNEL FADER MSB -->
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <status>0xB1</status>
+        <midino>0x13</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 CHANNEL FADER LSB -->
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <status>0xB1</status>
+        <midino>0x33</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 EQ HI MSB -->
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB1</status>
+        <midino>0x07</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 EQ HI LSB -->
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB1</status>
+        <midino>0x27</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 EQ MID MSB -->
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB1</status>
+        <midino>0x0B</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 EQ MID LSB -->
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB1</status>
+        <midino>0x2B</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 EQ LOW MSB -->
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB1</status>
+        <midino>0x0F</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 EQ LOW LSB -->
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB1</status>
+        <midino>0x2F</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 COLOR FX MSB -->
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x18</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 COLOR FX LSB -->
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x38</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 hot cue 1 -->
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x99</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 1 clear hot cue 1 -->
+        <group>[Channel2]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x9A</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 beat loop 0.25 -->
+        <group>[Channel2]</group>
+        <key>beatloop_0.25_toggle</key>
+        <status>0x99</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 beat jump 1 backward -->
+        <group>[Channel2]</group>
+        <key>beatjump_1_backward</key>
+        <status>0x99</status>
+        <midino>0x20</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 sampler 9 -->
+        <group>[Sampler9]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 1 eject sampler 9 -->
+        <group>[Sampler9]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 hot cue 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x99</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 2 clear hot cue 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x9A</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 beat loop 0.5 -->
+        <group>[Channel2]</group>
+        <key>beatloop_0.5_toggle</key>
+        <status>0x99</status>
+        <midino>0x61</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 beat jump 2 backward -->
+        <group>[Channel2]</group>
+        <key>beatjump_2_backward</key>
+        <status>0x99</status>
+        <midino>0x21</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 sampler 10 -->
+        <group>[Sampler10]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 2 eject sampler 10 -->
+        <group>[Sampler10]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 hot cue 3 -->
+        <group>[Channel2]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x99</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 3 clear hot cue 3 -->
+        <group>[Channel2]</group>
+        <key>hotcue_3_clear</key>
+        <status>0x9A</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 beat loop 1 -->
+        <group>[Channel2]</group>
+        <key>beatloop_1_toggle</key>
+        <status>0x99</status>
+        <midino>0x62</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 beat jump 4 backward -->
+        <group>[Channel2]</group>
+        <key>beatjump_4_backward</key>
+        <status>0x99</status>
+        <midino>0x22</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 sampler 11 -->
+        <group>[Sampler11]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 3 eject sampler 11 -->
+        <group>[Sampler11]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 hot cue 4 -->
+        <group>[Channel2]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x99</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 4 clear hot cue 4 -->
+        <group>[Channel2]</group>
+        <key>hotcue_4_clear</key>
+        <status>0x9A</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 beat loop 2 -->
+        <group>[Channel2]</group>
+        <key>beatloop_2_toggle</key>
+        <status>0x99</status>
+        <midino>0x63</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 beat jump 8 backward -->
+        <group>[Channel2]</group>
+        <key>beatjump_8_backward</key>
+        <status>0x99</status>
+        <midino>0x23</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 sampler 12 -->
+        <group>[Sampler12]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 4 eject sampler 12 -->
+        <group>[Sampler12]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 hot cue 5 -->
+        <group>[Channel2]</group>
+        <key>hotcue_5_activate</key>
+        <status>0x99</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 5 clear hot cue 5 -->
+        <group>[Channel2]</group>
+        <key>hotcue_5_clear</key>
+        <status>0x9A</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 beat loop 4 -->
+        <group>[Channel2]</group>
+        <key>beatloop_4_toggle</key>
+        <status>0x99</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 beat jump 1 forward -->
+        <group>[Channel2]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x99</status>
+        <midino>0x24</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 sampler 13 -->
+        <group>[Sampler13]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 5 eject sampler 13 -->
+        <group>[Sampler13]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 hot cue 6 -->
+        <group>[Channel2]</group>
+        <key>hotcue_6_activate</key>
+        <status>0x99</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 6 clear hot cue 6 -->
+        <group>[Channel2]</group>
+        <key>hotcue_6_clear</key>
+        <status>0x9A</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 beat loop 8 -->
+        <group>[Channel2]</group>
+        <key>beatloop_8_toggle</key>
+        <status>0x99</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 beat jump 2 forward -->
+        <group>[Channel2]</group>
+        <key>beatjump_2_forward</key>
+        <status>0x99</status>
+        <midino>0x25</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 sampler 14 -->
+        <group>[Sampler14]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 6 eject sampler 14 -->
+        <group>[Sampler14]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 hot cue 7 -->
+        <group>[Channel2]</group>
+        <key>hotcue_7_activate</key>
+        <status>0x99</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 7 clear hot cue 7 -->
+        <group>[Channel2]</group>
+        <key>hotcue_7_clear</key>
+        <status>0x9A</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 beat loop 16 -->
+        <group>[Channel2]</group>
+        <key>beatloop_16_toggle</key>
+        <status>0x99</status>
+        <midino>0x66</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 beat jump 4 forward -->
+        <group>[Channel2]</group>
+        <key>beatjump_4_forward</key>
+        <status>0x99</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 sampler 15 -->
+        <group>[Sampler15]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 7 eject sampler 15 -->
+        <group>[Sampler15]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 8 hot cue 8 -->
+        <group>[Channel2]</group>
+        <key>hotcue_8_activate</key>
+        <status>0x99</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 8 clear hot cue 8 -->
+        <group>[Channel2]</group>
+        <key>hotcue_8_clear</key>
+        <status>0x9A</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 8 beat loop 32 -->
+        <group>[Channel2]</group>
+        <key>beatloop_32_toggle</key>
+        <status>0x99</status>
+        <midino>0x67</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 8 beat jump 8 forward -->
+        <group>[Channel2]</group>
+        <key>beatjump_8_forward</key>
+        <status>0x99</status>
+        <midino>0x27</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 8 sampler 16 -->
+        <group>[Sampler16]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x99</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 8 eject sampler 16 -->
+        <group>[Sampler16]</group>
+        <key>eject</key>
+        <status>0x9A</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <!-- ============ DECK 3 ============ -->
+      <control>
+        <!-- Deck 3 PLAY/PAUSE -->
+        <group>[Channel3]</group>
+        <key>play</key>
+        <status>0x92</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 CUE -->
+        <group>[Channel3]</group>
+        <key>cue_default</key>
+        <status>0x92</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SYNC -->
+        <group>[Channel3]</group>
+        <key>beatsync</key>
+        <status>0x92</status>
+        <midino>0x58</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 HEADPHONE CUE -->
+        <group>[Channel3]</group>
+        <key>pfl</key>
+        <status>0x92</status>
+        <midino>0x54</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT LOOP / auto loop -->
+        <group>[Channel3]</group>
+        <key>beatloop_activate</key>
+        <status>0x92</status>
+        <midino>0x14</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 LOOP IN -->
+        <group>[Channel3]</group>
+        <key>loop_in</key>
+        <status>0x92</status>
+        <midino>0x10</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 LOOP OUT -->
+        <group>[Channel3]</group>
+        <key>loop_out</key>
+        <status>0x92</status>
+        <midino>0x11</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 LOOP IN while looping (halve) -->
+        <group>[Channel3]</group>
+        <key>loop_halve</key>
+        <status>0x92</status>
+        <midino>0x12</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 LOOP OUT while looping (double) -->
+        <group>[Channel3]</group>
+        <key>loop_double</key>
+        <status>0x92</status>
+        <midino>0x13</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 CROSSFADER ASSIGN left -->
+        <group>[Channel3]</group>
+        <key>orientation_left</key>
+        <status>0x92</status>
+        <midino>0x16</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 CROSSFADER ASSIGN center -->
+        <group>[Channel3]</group>
+        <key>orientation_center</key>
+        <status>0x92</status>
+        <midino>0x1D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 CROSSFADER ASSIGN right -->
+        <group>[Channel3]</group>
+        <key>orientation_right</key>
+        <status>0x92</status>
+        <midino>0x18</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 MASTER TEMPO / key lock -->
+        <group>[Channel3]</group>
+        <key>keylock</key>
+        <status>0x92</status>
+        <midino>0x1A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 QUANTIZE -->
+        <group>[Channel3]</group>
+        <key>quantize</key>
+        <status>0x92</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SLIP -->
+        <group>[Channel3]</group>
+        <key>slip_enabled</key>
+        <status>0x92</status>
+        <midino>0x40</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SLIP REVERSE (momentary) -->
+        <group>[Channel3]</group>
+        <key>reverseroll</key>
+        <status>0x92</status>
+        <midino>0x15</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PLAY: back to start -->
+        <group>[Channel3]</group>
+        <key>start_stop</key>
+        <status>0x92</status>
+        <midino>0x47</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+CUE: jump to track start -->
+        <group>[Channel3]</group>
+        <key>start</key>
+        <status>0x92</status>
+        <midino>0x48</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+LOOP OUT: reloop / exit -->
+        <group>[Channel3]</group>
+        <key>reloop_toggle</key>
+        <status>0x92</status>
+        <midino>0x4D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+SYNC: match key -->
+        <group>[Channel3]</group>
+        <key>sync_key</key>
+        <status>0x92</status>
+        <midino>0x5C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+KEY LOCK: reset key -->
+        <group>[Channel3]</group>
+        <key>reset_key</key>
+        <status>0x92</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+SEMITONE DOWN: match key -->
+        <group>[Channel3]</group>
+        <key>sync_key</key>
+        <status>0x92</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+SEMITONE UP: reset key -->
+        <group>[Channel3]</group>
+        <key>reset_key</key>
+        <status>0x92</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+SLIP REVERSE: reverse -->
+        <group>[Channel3]</group>
+        <key>reverse</key>
+        <status>0x92</status>
+        <midino>0x38</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT JUMP mode, left: halve the jump -->
+        <group>[Channel3]</group>
+        <key>beatjump_size_halve</key>
+        <status>0x92</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT JUMP mode, right: double the jump -->
+        <group>[Channel3]</group>
+        <key>beatjump_size_double</key>
+        <status>0x92</status>
+        <midino>0x2E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.loopInAdjust</key>
+        <status>0x92</status>
+        <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG touch -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogTouch</key>
+        <status>0x92</status>
+        <midino>0x36</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG platter (VINYL on) -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogScratch</key>
+        <status>0xB2</status>
+        <midino>0x22</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG platter (VINYL off) -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB2</status>
+        <midino>0x23</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG outer ring -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB2</status>
+        <midino>0x21</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG platter + SEARCH -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogSearch</key>
+        <status>0xB2</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG platter + SHIFT -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogGridStretch</key>
+        <status>0xB2</status>
+        <midino>0x1F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 JOG outer ring + SHIFT -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jogGridSlide</key>
+        <status>0xB2</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SEARCH backward -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x92</status>
+        <midino>0x5E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SEARCH forward -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x92</status>
+        <midino>0x5F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SEARCH backward held -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x92</status>
+        <midino>0x70</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SEARCH forward held -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x92</status>
+        <midino>0x71</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 TEMPO fader MSB -->
+        <group>[Channel3]</group>
+        <key>rate</key>
+        <status>0xB2</status>
+        <midino>0x00</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 TEMPO fader LSB -->
+        <group>[Channel3]</group>
+        <key>rate</key>
+        <status>0xB2</status>
+        <midino>0x20</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 TRIM / gain MSB -->
+        <group>[Channel3]</group>
+        <key>pregain</key>
+        <status>0xB2</status>
+        <midino>0x04</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 TRIM / gain LSB -->
+        <group>[Channel3]</group>
+        <key>pregain</key>
+        <status>0xB2</status>
+        <midino>0x24</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 CHANNEL FADER MSB -->
+        <group>[Channel3]</group>
+        <key>volume</key>
+        <status>0xB2</status>
+        <midino>0x13</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 CHANNEL FADER LSB -->
+        <group>[Channel3]</group>
+        <key>volume</key>
+        <status>0xB2</status>
+        <midino>0x33</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 EQ HI MSB -->
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB2</status>
+        <midino>0x07</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 EQ HI LSB -->
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB2</status>
+        <midino>0x27</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 EQ MID MSB -->
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB2</status>
+        <midino>0x0B</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 EQ MID LSB -->
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB2</status>
+        <midino>0x2B</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 EQ LOW MSB -->
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB2</status>
+        <midino>0x0F</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 EQ LOW LSB -->
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB2</status>
+        <midino>0x2F</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 COLOR FX MSB -->
+        <group>[QuickEffectRack1_[Channel3]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x19</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 COLOR FX LSB -->
+        <group>[QuickEffectRack1_[Channel3]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x39</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 hot cue 1 -->
+        <group>[Channel3]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x9B</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 1 clear hot cue 1 -->
+        <group>[Channel3]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x9C</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 beat loop 0.25 -->
+        <group>[Channel3]</group>
+        <key>beatloop_0.25_toggle</key>
+        <status>0x9B</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 beat jump 1 backward -->
+        <group>[Channel3]</group>
+        <key>beatjump_1_backward</key>
+        <status>0x9B</status>
+        <midino>0x20</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 sampler 17 -->
+        <group>[Sampler17]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 1 eject sampler 17 -->
+        <group>[Sampler17]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 hot cue 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x9B</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 2 clear hot cue 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x9C</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 beat loop 0.5 -->
+        <group>[Channel3]</group>
+        <key>beatloop_0.5_toggle</key>
+        <status>0x9B</status>
+        <midino>0x61</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 beat jump 2 backward -->
+        <group>[Channel3]</group>
+        <key>beatjump_2_backward</key>
+        <status>0x9B</status>
+        <midino>0x21</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 sampler 18 -->
+        <group>[Sampler18]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 2 eject sampler 18 -->
+        <group>[Sampler18]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 hot cue 3 -->
+        <group>[Channel3]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x9B</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 3 clear hot cue 3 -->
+        <group>[Channel3]</group>
+        <key>hotcue_3_clear</key>
+        <status>0x9C</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 beat loop 1 -->
+        <group>[Channel3]</group>
+        <key>beatloop_1_toggle</key>
+        <status>0x9B</status>
+        <midino>0x62</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 beat jump 4 backward -->
+        <group>[Channel3]</group>
+        <key>beatjump_4_backward</key>
+        <status>0x9B</status>
+        <midino>0x22</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 sampler 19 -->
+        <group>[Sampler19]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 3 eject sampler 19 -->
+        <group>[Sampler19]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 hot cue 4 -->
+        <group>[Channel3]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x9B</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 4 clear hot cue 4 -->
+        <group>[Channel3]</group>
+        <key>hotcue_4_clear</key>
+        <status>0x9C</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 beat loop 2 -->
+        <group>[Channel3]</group>
+        <key>beatloop_2_toggle</key>
+        <status>0x9B</status>
+        <midino>0x63</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 beat jump 8 backward -->
+        <group>[Channel3]</group>
+        <key>beatjump_8_backward</key>
+        <status>0x9B</status>
+        <midino>0x23</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 sampler 20 -->
+        <group>[Sampler20]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 4 eject sampler 20 -->
+        <group>[Sampler20]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 hot cue 5 -->
+        <group>[Channel3]</group>
+        <key>hotcue_5_activate</key>
+        <status>0x9B</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 5 clear hot cue 5 -->
+        <group>[Channel3]</group>
+        <key>hotcue_5_clear</key>
+        <status>0x9C</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 beat loop 4 -->
+        <group>[Channel3]</group>
+        <key>beatloop_4_toggle</key>
+        <status>0x9B</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 beat jump 1 forward -->
+        <group>[Channel3]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x9B</status>
+        <midino>0x24</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 sampler 21 -->
+        <group>[Sampler21]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 5 eject sampler 21 -->
+        <group>[Sampler21]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 hot cue 6 -->
+        <group>[Channel3]</group>
+        <key>hotcue_6_activate</key>
+        <status>0x9B</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 6 clear hot cue 6 -->
+        <group>[Channel3]</group>
+        <key>hotcue_6_clear</key>
+        <status>0x9C</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 beat loop 8 -->
+        <group>[Channel3]</group>
+        <key>beatloop_8_toggle</key>
+        <status>0x9B</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 beat jump 2 forward -->
+        <group>[Channel3]</group>
+        <key>beatjump_2_forward</key>
+        <status>0x9B</status>
+        <midino>0x25</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 sampler 22 -->
+        <group>[Sampler22]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 6 eject sampler 22 -->
+        <group>[Sampler22]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 hot cue 7 -->
+        <group>[Channel3]</group>
+        <key>hotcue_7_activate</key>
+        <status>0x9B</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 7 clear hot cue 7 -->
+        <group>[Channel3]</group>
+        <key>hotcue_7_clear</key>
+        <status>0x9C</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 beat loop 16 -->
+        <group>[Channel3]</group>
+        <key>beatloop_16_toggle</key>
+        <status>0x9B</status>
+        <midino>0x66</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 beat jump 4 forward -->
+        <group>[Channel3]</group>
+        <key>beatjump_4_forward</key>
+        <status>0x9B</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 sampler 23 -->
+        <group>[Sampler23]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 7 eject sampler 23 -->
+        <group>[Sampler23]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 8 hot cue 8 -->
+        <group>[Channel3]</group>
+        <key>hotcue_8_activate</key>
+        <status>0x9B</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 8 clear hot cue 8 -->
+        <group>[Channel3]</group>
+        <key>hotcue_8_clear</key>
+        <status>0x9C</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 8 beat loop 32 -->
+        <group>[Channel3]</group>
+        <key>beatloop_32_toggle</key>
+        <status>0x9B</status>
+        <midino>0x67</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 8 beat jump 8 forward -->
+        <group>[Channel3]</group>
+        <key>beatjump_8_forward</key>
+        <status>0x9B</status>
+        <midino>0x27</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 8 sampler 24 -->
+        <group>[Sampler24]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9B</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 8 eject sampler 24 -->
+        <group>[Sampler24]</group>
+        <key>eject</key>
+        <status>0x9C</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <!-- ============ DECK 4 ============ -->
+      <control>
+        <!-- Deck 4 PLAY/PAUSE -->
+        <group>[Channel4]</group>
+        <key>play</key>
+        <status>0x93</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 CUE -->
+        <group>[Channel4]</group>
+        <key>cue_default</key>
+        <status>0x93</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SYNC -->
+        <group>[Channel4]</group>
+        <key>beatsync</key>
+        <status>0x93</status>
+        <midino>0x58</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 HEADPHONE CUE -->
+        <group>[Channel4]</group>
+        <key>pfl</key>
+        <status>0x93</status>
+        <midino>0x54</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT LOOP / auto loop -->
+        <group>[Channel4]</group>
+        <key>beatloop_activate</key>
+        <status>0x93</status>
+        <midino>0x14</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 LOOP IN -->
+        <group>[Channel4]</group>
+        <key>loop_in</key>
+        <status>0x93</status>
+        <midino>0x10</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 LOOP OUT -->
+        <group>[Channel4]</group>
+        <key>loop_out</key>
+        <status>0x93</status>
+        <midino>0x11</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 LOOP IN while looping (halve) -->
+        <group>[Channel4]</group>
+        <key>loop_halve</key>
+        <status>0x93</status>
+        <midino>0x12</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 LOOP OUT while looping (double) -->
+        <group>[Channel4]</group>
+        <key>loop_double</key>
+        <status>0x93</status>
+        <midino>0x13</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 CROSSFADER ASSIGN left -->
+        <group>[Channel4]</group>
+        <key>orientation_left</key>
+        <status>0x93</status>
+        <midino>0x16</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 CROSSFADER ASSIGN center -->
+        <group>[Channel4]</group>
+        <key>orientation_center</key>
+        <status>0x93</status>
+        <midino>0x1D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 CROSSFADER ASSIGN right -->
+        <group>[Channel4]</group>
+        <key>orientation_right</key>
+        <status>0x93</status>
+        <midino>0x18</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 MASTER TEMPO / key lock -->
+        <group>[Channel4]</group>
+        <key>keylock</key>
+        <status>0x93</status>
+        <midino>0x1A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 QUANTIZE -->
+        <group>[Channel4]</group>
+        <key>quantize</key>
+        <status>0x93</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SLIP -->
+        <group>[Channel4]</group>
+        <key>slip_enabled</key>
+        <status>0x93</status>
+        <midino>0x40</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SLIP REVERSE (momentary) -->
+        <group>[Channel4]</group>
+        <key>reverseroll</key>
+        <status>0x93</status>
+        <midino>0x15</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PLAY: back to start -->
+        <group>[Channel4]</group>
+        <key>start_stop</key>
+        <status>0x93</status>
+        <midino>0x47</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+CUE: jump to track start -->
+        <group>[Channel4]</group>
+        <key>start</key>
+        <status>0x93</status>
+        <midino>0x48</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+LOOP OUT: reloop / exit -->
+        <group>[Channel4]</group>
+        <key>reloop_toggle</key>
+        <status>0x93</status>
+        <midino>0x4D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+SYNC: match key -->
+        <group>[Channel4]</group>
+        <key>sync_key</key>
+        <status>0x93</status>
+        <midino>0x5C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+KEY LOCK: reset key -->
+        <group>[Channel4]</group>
+        <key>reset_key</key>
+        <status>0x93</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+SEMITONE DOWN: match key -->
+        <group>[Channel4]</group>
+        <key>sync_key</key>
+        <status>0x93</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+SEMITONE UP: reset key -->
+        <group>[Channel4]</group>
+        <key>reset_key</key>
+        <status>0x93</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+SLIP REVERSE: reverse -->
+        <group>[Channel4]</group>
+        <key>reverse</key>
+        <status>0x93</status>
+        <midino>0x38</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT JUMP mode, left: halve the jump -->
+        <group>[Channel4]</group>
+        <key>beatjump_size_halve</key>
+        <status>0x93</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT JUMP mode, right: double the jump -->
+        <group>[Channel4]</group>
+        <key>beatjump_size_double</key>
+        <status>0x93</status>
+        <midino>0x2E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.loopInAdjust</key>
+        <status>0x93</status>
+        <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG touch -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogTouch</key>
+        <status>0x93</status>
+        <midino>0x36</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG platter (VINYL on) -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogScratch</key>
+        <status>0xB3</status>
+        <midino>0x22</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG platter (VINYL off) -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB3</status>
+        <midino>0x23</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG outer ring -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogBend</key>
+        <status>0xB3</status>
+        <midino>0x21</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG platter + SEARCH -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogSearch</key>
+        <status>0xB3</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG platter + SHIFT -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogGridStretch</key>
+        <status>0xB3</status>
+        <midino>0x1F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 JOG outer ring + SHIFT -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jogGridSlide</key>
+        <status>0xB3</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SEARCH backward -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x93</status>
+        <midino>0x5E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SEARCH forward -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x93</status>
+        <midino>0x5F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SEARCH backward held -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.searchBackward</key>
+        <status>0x93</status>
+        <midino>0x70</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SEARCH forward held -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.searchForward</key>
+        <status>0x93</status>
+        <midino>0x71</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 TEMPO fader MSB -->
+        <group>[Channel4]</group>
+        <key>rate</key>
+        <status>0xB3</status>
+        <midino>0x00</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 TEMPO fader LSB -->
+        <group>[Channel4]</group>
+        <key>rate</key>
+        <status>0xB3</status>
+        <midino>0x20</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 TRIM / gain MSB -->
+        <group>[Channel4]</group>
+        <key>pregain</key>
+        <status>0xB3</status>
+        <midino>0x04</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 TRIM / gain LSB -->
+        <group>[Channel4]</group>
+        <key>pregain</key>
+        <status>0xB3</status>
+        <midino>0x24</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 CHANNEL FADER MSB -->
+        <group>[Channel4]</group>
+        <key>volume</key>
+        <status>0xB3</status>
+        <midino>0x13</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 CHANNEL FADER LSB -->
+        <group>[Channel4]</group>
+        <key>volume</key>
+        <status>0xB3</status>
+        <midino>0x33</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 EQ HI MSB -->
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB3</status>
+        <midino>0x07</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 EQ HI LSB -->
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB3</status>
+        <midino>0x27</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 EQ MID MSB -->
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB3</status>
+        <midino>0x0B</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 EQ MID LSB -->
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB3</status>
+        <midino>0x2B</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 EQ LOW MSB -->
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB3</status>
+        <midino>0x0F</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 EQ LOW LSB -->
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB3</status>
+        <midino>0x2F</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 COLOR FX MSB -->
+        <group>[QuickEffectRack1_[Channel4]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x1A</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 COLOR FX LSB -->
+        <group>[QuickEffectRack1_[Channel4]]</group>
+        <key>super1</key>
+        <status>0xB6</status>
+        <midino>0x3A</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 hot cue 1 -->
+        <group>[Channel4]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x9D</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 1 clear hot cue 1 -->
+        <group>[Channel4]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x9E</status>
+        <midino>0x00</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 beat loop 0.25 -->
+        <group>[Channel4]</group>
+        <key>beatloop_0.25_toggle</key>
+        <status>0x9D</status>
+        <midino>0x60</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 beat jump 1 backward -->
+        <group>[Channel4]</group>
+        <key>beatjump_1_backward</key>
+        <status>0x9D</status>
+        <midino>0x20</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 sampler 25 -->
+        <group>[Sampler25]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 1 eject sampler 25 -->
+        <group>[Sampler25]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x30</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 hot cue 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x9D</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 2 clear hot cue 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x9E</status>
+        <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 beat loop 0.5 -->
+        <group>[Channel4]</group>
+        <key>beatloop_0.5_toggle</key>
+        <status>0x9D</status>
+        <midino>0x61</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 beat jump 2 backward -->
+        <group>[Channel4]</group>
+        <key>beatjump_2_backward</key>
+        <status>0x9D</status>
+        <midino>0x21</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 sampler 26 -->
+        <group>[Sampler26]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 2 eject sampler 26 -->
+        <group>[Sampler26]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x31</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 hot cue 3 -->
+        <group>[Channel4]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x9D</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 3 clear hot cue 3 -->
+        <group>[Channel4]</group>
+        <key>hotcue_3_clear</key>
+        <status>0x9E</status>
+        <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 beat loop 1 -->
+        <group>[Channel4]</group>
+        <key>beatloop_1_toggle</key>
+        <status>0x9D</status>
+        <midino>0x62</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 beat jump 4 backward -->
+        <group>[Channel4]</group>
+        <key>beatjump_4_backward</key>
+        <status>0x9D</status>
+        <midino>0x22</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 sampler 27 -->
+        <group>[Sampler27]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 3 eject sampler 27 -->
+        <group>[Sampler27]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x32</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 hot cue 4 -->
+        <group>[Channel4]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x9D</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 4 clear hot cue 4 -->
+        <group>[Channel4]</group>
+        <key>hotcue_4_clear</key>
+        <status>0x9E</status>
+        <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 beat loop 2 -->
+        <group>[Channel4]</group>
+        <key>beatloop_2_toggle</key>
+        <status>0x9D</status>
+        <midino>0x63</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 beat jump 8 backward -->
+        <group>[Channel4]</group>
+        <key>beatjump_8_backward</key>
+        <status>0x9D</status>
+        <midino>0x23</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 sampler 28 -->
+        <group>[Sampler28]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 4 eject sampler 28 -->
+        <group>[Sampler28]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x33</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 hot cue 5 -->
+        <group>[Channel4]</group>
+        <key>hotcue_5_activate</key>
+        <status>0x9D</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 5 clear hot cue 5 -->
+        <group>[Channel4]</group>
+        <key>hotcue_5_clear</key>
+        <status>0x9E</status>
+        <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 beat loop 4 -->
+        <group>[Channel4]</group>
+        <key>beatloop_4_toggle</key>
+        <status>0x9D</status>
+        <midino>0x64</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 beat jump 1 forward -->
+        <group>[Channel4]</group>
+        <key>beatjump_1_forward</key>
+        <status>0x9D</status>
+        <midino>0x24</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 sampler 29 -->
+        <group>[Sampler29]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 5 eject sampler 29 -->
+        <group>[Sampler29]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x34</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 hot cue 6 -->
+        <group>[Channel4]</group>
+        <key>hotcue_6_activate</key>
+        <status>0x9D</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 6 clear hot cue 6 -->
+        <group>[Channel4]</group>
+        <key>hotcue_6_clear</key>
+        <status>0x9E</status>
+        <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 beat loop 8 -->
+        <group>[Channel4]</group>
+        <key>beatloop_8_toggle</key>
+        <status>0x9D</status>
+        <midino>0x65</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 beat jump 2 forward -->
+        <group>[Channel4]</group>
+        <key>beatjump_2_forward</key>
+        <status>0x9D</status>
+        <midino>0x25</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 sampler 30 -->
+        <group>[Sampler30]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 6 eject sampler 30 -->
+        <group>[Sampler30]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x35</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 hot cue 7 -->
+        <group>[Channel4]</group>
+        <key>hotcue_7_activate</key>
+        <status>0x9D</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 7 clear hot cue 7 -->
+        <group>[Channel4]</group>
+        <key>hotcue_7_clear</key>
+        <status>0x9E</status>
+        <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 beat loop 16 -->
+        <group>[Channel4]</group>
+        <key>beatloop_16_toggle</key>
+        <status>0x9D</status>
+        <midino>0x66</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 beat jump 4 forward -->
+        <group>[Channel4]</group>
+        <key>beatjump_4_forward</key>
+        <status>0x9D</status>
+        <midino>0x26</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 sampler 31 -->
+        <group>[Sampler31]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 7 eject sampler 31 -->
+        <group>[Sampler31]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x36</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 8 hot cue 8 -->
+        <group>[Channel4]</group>
+        <key>hotcue_8_activate</key>
+        <status>0x9D</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 8 clear hot cue 8 -->
+        <group>[Channel4]</group>
+        <key>hotcue_8_clear</key>
+        <status>0x9E</status>
+        <midino>0x07</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 8 beat loop 32 -->
+        <group>[Channel4]</group>
+        <key>beatloop_32_toggle</key>
+        <status>0x9D</status>
+        <midino>0x67</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 8 beat jump 8 forward -->
+        <group>[Channel4]</group>
+        <key>beatjump_8_forward</key>
+        <status>0x9D</status>
+        <midino>0x27</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 8 sampler 32 -->
+        <group>[Sampler32]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x9D</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 8 eject sampler 32 -->
+        <group>[Sampler32]</group>
+        <key>eject</key>
+        <status>0x9E</status>
+        <midino>0x37</midino>
+        <options><normal/></options>
+      </control>
+      <!-- ============ MIXER ============ -->
+      <control>
+        <!-- CROSSFADER MSB -->
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <status>0xB6</status>
+        <midino>0x1F</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- CROSSFADER LSB -->
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <status>0xB6</status>
+        <midino>0x3F</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- MASTER LEVEL MSB -->
+        <group>[Master]</group>
+        <key>gain</key>
+        <status>0xB6</status>
+        <midino>0x08</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- MASTER LEVEL LSB -->
+        <group>[Master]</group>
+        <key>gain</key>
+        <status>0xB6</status>
+        <midino>0x28</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- HEADPHONE LEVEL MSB -->
+        <group>[Master]</group>
+        <key>headGain</key>
+        <status>0xB6</status>
+        <midino>0x0D</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- HEADPHONE LEVEL LSB -->
+        <group>[Master]</group>
+        <key>headGain</key>
+        <status>0xB6</status>
+        <midino>0x2D</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- HEADPHONE MIXING MSB -->
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xB6</status>
+        <midino>0x0C</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- HEADPHONE MIXING LSB -->
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xB6</status>
+        <midino>0x2C</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- SAMPLER VOLUME MSB -->
+        <group>[Master]</group>
+        <key>gain</key>
+        <status>0xB6</status>
+        <midino>0x03</midino>
+        <options><fourteen-bit-msb/></options>
+      </control>
+      <control>
+        <!-- SAMPLER VOLUME LSB -->
+        <group>[Master]</group>
+        <key>gain</key>
+        <status>0xB6</status>
+        <midino>0x23</midino>
+        <options><fourteen-bit-lsb/></options>
+      </control>
+      <control>
+        <!-- TRAX encoder turn -->
+        <group>[Library]</group>
+        <key>PioneerDDJ1000.browse</key>
+        <status>0xB6</status>
+        <midino>0x40</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- SHIFT+TRAX encoder turn -->
+        <group>[Library]</group>
+        <key>PioneerDDJ1000.browseFast</key>
+        <status>0xB6</status>
+        <midino>0x64</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- TRAX encoder press -->
+        <group>[Library]</group>
+        <key>PioneerDDJ1000.browsePress</key>
+        <status>0x96</status>
+        <midino>0x41</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- VIEW button -->
+        <group>[Library]</group>
+        <key>PioneerDDJ1000.viewButton</key>
+        <status>0x96</status>
+        <midino>0x7A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- BACK button -->
+        <group>[Sidebar]</group>
+        <key>PioneerDDJ1000.backButton</key>
+        <status>0x96</status>
+        <midino>0x65</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- bridge: controller reconnected -->
+        <group>[SoundManager]</group>
+        <key>reopen_devices</key>
+        <status>0x9F</status>
+        <midino>0x7F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- SHIFT+BACK: leave the library -->
+        <group>[Library]</group>
+        <key>PioneerDDJ1000.backToOverview</key>
+        <status>0x96</status>
+        <midino>0x66</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- LOAD deck 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.loadDeck1</key>
+        <status>0x96</status>
+        <midino>0x46</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- LOAD deck 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.loadDeck2</key>
+        <status>0x96</status>
+        <midino>0x47</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- LOAD deck 3 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.loadDeck3</key>
+        <status>0x96</status>
+        <midino>0x48</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- LOAD deck 4 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.loadDeck4</key>
+        <status>0x96</status>
+        <midino>0x49</midino>
+        <options><script-binding/></options>
+      </control>
+    </controls>
+    <outputs>
+      <!-- ============ DECK 1 LEDs ============ -->
+      <output>
+        <!-- Deck 1 PLAY lamp -->
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 CUE lamp -->
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 SYNC lamp -->
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 HEADPHONE CUE lamp -->
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 LOOP lamp -->
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 KEY LOCK lamp -->
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 1 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x97</status>
+        <midino>0x00</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 2 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x97</status>
+        <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 3 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x97</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 4 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x97</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 5 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_5_enabled</key>
+        <status>0x97</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 6 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_6_enabled</key>
+        <status>0x97</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 7 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_7_enabled</key>
+        <status>0x97</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 8 hot cue lamp -->
+        <group>[Channel1]</group>
+        <key>hotcue_8_enabled</key>
+        <status>0x97</status>
+        <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- ============ DECK 2 LEDs ============ -->
+      <output>
+        <!-- Deck 2 PLAY lamp -->
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x91</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 CUE lamp -->
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <status>0x91</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 SYNC lamp -->
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <status>0x91</status>
+        <midino>0x58</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 HEADPHONE CUE lamp -->
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <status>0x91</status>
+        <midino>0x54</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 LOOP lamp -->
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <status>0x91</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 KEY LOCK lamp -->
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x91</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 1 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x99</status>
+        <midino>0x00</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 2 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x99</status>
+        <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 3 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x99</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 4 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x99</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 5 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_5_enabled</key>
+        <status>0x99</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 6 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_6_enabled</key>
+        <status>0x99</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 7 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_7_enabled</key>
+        <status>0x99</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 8 hot cue lamp -->
+        <group>[Channel2]</group>
+        <key>hotcue_8_enabled</key>
+        <status>0x99</status>
+        <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- ============ DECK 3 LEDs ============ -->
+      <output>
+        <!-- Deck 3 PLAY lamp -->
+        <group>[Channel3]</group>
+        <key>play_indicator</key>
+        <status>0x92</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 CUE lamp -->
+        <group>[Channel3]</group>
+        <key>cue_indicator</key>
+        <status>0x92</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 SYNC lamp -->
+        <group>[Channel3]</group>
+        <key>sync_enabled</key>
+        <status>0x92</status>
+        <midino>0x58</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 HEADPHONE CUE lamp -->
+        <group>[Channel3]</group>
+        <key>pfl</key>
+        <status>0x92</status>
+        <midino>0x54</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 LOOP lamp -->
+        <group>[Channel3]</group>
+        <key>loop_enabled</key>
+        <status>0x92</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 KEY LOCK lamp -->
+        <group>[Channel3]</group>
+        <key>keylock</key>
+        <status>0x92</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 1 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x9B</status>
+        <midino>0x00</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 2 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x9B</status>
+        <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 3 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x9B</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 4 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x9B</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 5 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_5_enabled</key>
+        <status>0x9B</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 6 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_6_enabled</key>
+        <status>0x9B</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 7 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_7_enabled</key>
+        <status>0x9B</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 8 hot cue lamp -->
+        <group>[Channel3]</group>
+        <key>hotcue_8_enabled</key>
+        <status>0x9B</status>
+        <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- ============ DECK 4 LEDs ============ -->
+      <output>
+        <!-- Deck 4 PLAY lamp -->
+        <group>[Channel4]</group>
+        <key>play_indicator</key>
+        <status>0x93</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 CUE lamp -->
+        <group>[Channel4]</group>
+        <key>cue_indicator</key>
+        <status>0x93</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 SYNC lamp -->
+        <group>[Channel4]</group>
+        <key>sync_enabled</key>
+        <status>0x93</status>
+        <midino>0x58</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 HEADPHONE CUE lamp -->
+        <group>[Channel4]</group>
+        <key>pfl</key>
+        <status>0x93</status>
+        <midino>0x54</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 LOOP lamp -->
+        <group>[Channel4]</group>
+        <key>loop_enabled</key>
+        <status>0x93</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 KEY LOCK lamp -->
+        <group>[Channel4]</group>
+        <key>keylock</key>
+        <status>0x93</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 1 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x9D</status>
+        <midino>0x00</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 2 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x9D</status>
+        <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 3 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x9D</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 4 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x9D</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 5 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_5_enabled</key>
+        <status>0x9D</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 6 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_6_enabled</key>
+        <status>0x9D</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 7 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_7_enabled</key>
+        <status>0x9D</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 8 hot cue lamp -->
+        <group>[Channel4]</group>
+        <key>hotcue_8_enabled</key>
+        <status>0x9D</status>
+        <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+    </outputs>
+  </controller>
+</MixxxControllerPreset>

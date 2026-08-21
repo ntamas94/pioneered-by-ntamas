@@ -1,0 +1,6 @@
+# Bring Mixxx's audio back when the DDJ-1000 is plugged in or power-cycled.
+#
+# Handed to a service rather than run from the rule: udev kills whatever a
+# RUN+= started once the event is done, and this has to wait for the ALSA card,
+# the bridge and the kiosk -- which takes far longer than that.
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0020",   TAG+="systemd", ENV{SYSTEMD_WANTS}="djbox-ddj-reconnect.service"

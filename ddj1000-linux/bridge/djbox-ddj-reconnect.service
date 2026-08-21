@@ -1,0 +1,8 @@
+[Unit]
+Description=Bring Mixxx's audio back after the DDJ-1000 is plugged in
+After=djbox-ddj-bridge.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/djbox-ddj-reconnect.sh
+TimeoutStartSec=180
