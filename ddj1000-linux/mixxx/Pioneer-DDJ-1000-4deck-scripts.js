@@ -285,7 +285,25 @@ PioneerDDJ1000.sendLoop = function (deck) {
         on = false;
     }
 
-    var packed = (on ? 1 : 0) + ":" + startMs + ":" + endMs;
+    // The size that was asked for, not the span that resulted. A loop the
+    // track is too short to hold comes back clipped -- 512 beats near the end
+    // of a track measures as four hundred and something -- and rekordbox
+    // still names it 512 on the screen. Measuring the span back into a size
+    // is what wrote two dashes there instead.
+    // As a rung on the ladder rather than a number. The ladder starts at
+    // 1/64, which is a size Mixxx does not have, so rung 1 is its smallest:
+    // 1 is 1/32 and 15 is 512. 0x7F means the loop is not on the ladder.
+    var size = engine.getValue(group, "beatloop_size");
+    var rung = 0x7F;
+    if (size > 0) {
+        var steps = Math.round(Math.log(size) / Math.LN2) + 6;
+        if (steps >= 0 && steps <= 15
+                && Math.abs(size - Math.pow(2, steps - 6)) < size * 0.01) {
+            rung = steps;
+        }
+    }
+
+    var packed = (on ? 1 : 0) + ":" + startMs + ":" + endMs + ":" + rung;
     if (PioneerDDJ1000.loopState[deck] === packed) {
         return;
     }
@@ -293,7 +311,7 @@ PioneerDDJ1000.sendLoop = function (deck) {
     midi.sendSysexMsg([0xF0, 0x7D, 0x40 | (deck - 1), on ? 0x01 : 0x00,
         (startMs >> 21) & 0x7F, (startMs >> 14) & 0x7F, (startMs >> 7) & 0x7F, startMs & 0x7F,
         (endMs >> 21) & 0x7F, (endMs >> 14) & 0x7F, (endMs >> 7) & 0x7F, endMs & 0x7F,
-        0xF7], 13);
+        rung, 0xF7], 14);
 };
 
 PioneerDDJ1000.sendCuePoint = function (deck, group) {

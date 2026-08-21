@@ -280,6 +280,8 @@ class DeckScreen:
         self.first_beat_ms = 0
         self.key_code = 0
         self.loop_in = -1
+        # Which rung of the size ladder the mapping asked for, -1 if none.
+        self.loop_rung = -1
         self.loop_out = -1
         self.last_seen = 0.0
         self.base_ms = -1
@@ -355,6 +357,13 @@ class DeckScreen:
         while the BPM on the record is the pitched figure, and counting
         against that one puts every loop a few percent off its step.
         """
+        # The size the DJ asked for, when the mapping knows it. A loop the
+        # track is too short to hold comes back clipped -- 512 beats near the
+        # end measures as four hundred and something -- and rekordbox still
+        # names it 512. Measuring the span back into a size wrote two dashes
+        # for exactly those.
+        if 0 <= self.loop_rung < len(self.LOOP_CODES):
+            return self.LOOP_CODES[self.loop_rung][1]
         bpm = self.file_bpm or self.bpm
         if bpm <= 0 or self.loop_out <= self.loop_in:
             return 0x01
@@ -1087,9 +1096,12 @@ class Bridge:
             screen = self.screens[deck_index]
             if len(msg) < 13 or not msg[3]:
                 screen.loop_in = screen.loop_out = -1
+                screen.loop_rung = -1
             else:
                 screen.loop_in = (msg[4] << 21) | (msg[5] << 14) | (msg[6] << 7) | msg[7]
                 screen.loop_out = (msg[8] << 21) | (msg[9] << 14) | (msg[10] << 7) | msg[11]
+                # Older mappings stop here; -1 falls back to measuring.
+                screen.loop_rung = msg[12] if len(msg) >= 14 and msg[12] < 0x7F else -1
             return True
         if msg[2] & 0x20:                      # grid start, key, on air
             screen = self.screens[deck_index]
