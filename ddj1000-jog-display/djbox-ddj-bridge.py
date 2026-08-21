@@ -167,7 +167,11 @@ WAVEFORM_BYTES = 1 + 600 * 7
 TIME_REMAINING_BIT = 0x08
 DISPLAY_FLAGS = int(os.environ.get("DDJ_DISPLAY_FLAGS", "0x18"), 16)
 # Where rekordbox's library row numbers sat in every capture.
-LIBRARY_ROW_BASE = 8439680
+# rekordbox's own values here always begin with 3 in the top seven-bit group
+# -- 03 08 0a 04, 03 06 0b 00, 03 0a 09 08 across every capture -- which puts
+# them between 6.29 and 8.38 million. A number outside that band starts with a
+# different group, and the group looks like what says which kind of id this is.
+LIBRARY_ROW_BASE = 6400000
 FORCED_ID = int(os.environ.get("DDJ_FORCE_ID", "0"), 16)
 
 
@@ -1232,11 +1236,9 @@ class Bridge:
         # and terminator these already carry.
         self.to_ddj(bytes.fromhex("f00040050000020000000b2b6800000000f7"))
         time.sleep(0.002)
-        # Not the display id: rekordbox puts its own library row number here,
-        # and every one seen sits within a few hundred of 8.44 million while
-        # the display id swings with the track's length. Kept in the same
-        # narrow band and stepped once per load, in case the unit files it
-        # somewhere that cares.
+        # Not the display id: rekordbox puts its own library row number
+        # here. Kept inside the band its own values sit in and stepped once
+        # per load, so the top seven-bit group reads 3 the way theirs does.
         self.library_row += 1
         value = (LIBRARY_ROW_BASE + self.library_row) & 0x0FFFFFFF
         self.to_ddj(bytes((0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02,
