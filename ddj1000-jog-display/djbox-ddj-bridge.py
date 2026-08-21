@@ -420,9 +420,13 @@ def track_record(key, cues):
     the track is handed over and again once its waveform is up.
     """
     body = bytearray(key)
-    for _minute, _second, _ms, ms in cues[:16]:
-        body += bytes((0x01, 0x16, 0x00))
-        body += bytes((ms & 0xFF, (ms >> 8) & 0xFF, (ms >> 16) & 0xFF))
+    for minute, second, milli, _total in cues[:16]:
+        # A marker byte, a colour, then the position in the same shape as
+        # every other time here: minutes, seconds, and a 16-bit millisecond
+        # figure. Written as a 24-bit millisecond count instead, as this did,
+        # the seconds land in the milliseconds and every cue sits wrong.
+        body += bytes((0x01, 0x16, minute & 0xFF, second % 60,
+                       milli & 0xFF, (milli >> 8) & 0xFF))
     return bytes(body) + bytes(max(0, 116 - len(body)))
 
 
@@ -874,12 +878,12 @@ class Bridge:
                                      ", ".join("%d:%02d.%03d" % c[:3] for c in cues),
                                      screen.duration_ms / 1000.0))
                 if screen.loaded and self.authenticated:
-                    # Already on a deck: update the table in place.
+                    # Already on a deck: update the record in place.
                     key = struct.pack("<I", screen.track_id)
                     threading.Thread(
                         target=self.send_hid_transfer,
-                        args=(SCREEN_DECKS[deck_index], 0x2D,
-                              cue_table(key, cues)),
+                        args=(SCREEN_DECKS[deck_index], 0x30,
+                              track_record(key, cues)),
                         daemon=True).start()
             return True
         if deck_index <= 3 and (msg[2] & 0x30) == 0x30:
@@ -1088,10 +1092,12 @@ class Bridge:
         time.sleep(0.05)                       # let the artwork land first
         if waveform:
             self.send_hid_transfer(deck, CMD_WAVEFORM, waveform, prime=False)
+        # The hot cues ride in the track record; the 0x2D table is the memory
+        # cue list, which is why hot cues put there came up on the scale
+        # wearing the wrong marker. Mixxx has no memory cues, so that table
+        # stays as its ten empty slots.
         if screen.cues:
-            # The markers along the beat scale, once the track itself is up.
-            self.send_hid_transfer(deck, 0x2D, cue_table(key, screen.cues),
-                                   prime=False)
+            self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
         screen.ready = True
         syslog.syslog("jog screen %d: drew %s in %.0f ms"
                       % (deck_index + 1, os.path.basename(path),
