@@ -370,6 +370,13 @@ class DeckScreen:
         # for exactly those.
         if 0 <= self.loop_rung < len(self.LOOP_CODES):
             return self.LOOP_CODES[self.loop_rung][1]
+        if self.loop_rung == 0x7F:
+            # The mapping looked and says this loop was not made by an
+            # auto-loop control. Nothing to name: the code says how a loop was
+            # made rather than how long it is, and rekordbox sends "unnamed"
+            # for a hand-set loop even when it lands exactly on two or four
+            # beats. Measuring the span would name it anyway.
+            return 0x01
         bpm = self.file_bpm or self.bpm
         if bpm <= 0 or self.loop_out <= self.loop_in:
             return 0x01
@@ -1108,7 +1115,10 @@ class Bridge:
                 screen.loop_in = (msg[4] << 21) | (msg[5] << 14) | (msg[6] << 7) | msg[7]
                 screen.loop_out = (msg[8] << 21) | (msg[9] << 14) | (msg[10] << 7) | msg[11]
                 # Older mappings stop here; -1 falls back to measuring.
-                screen.loop_rung = msg[12] if len(msg) >= 14 and msg[12] < 0x7F else -1
+                # 0x7F means the mapping looked and found no auto-loop size;
+                # a message too short to carry the byte at all is an older
+                # mapping, and there the span is all there is to go on.
+                screen.loop_rung = msg[12] if len(msg) >= 14 else -1
             return True
         if msg[2] & 0x20:                      # grid start, key, on air
             screen = self.screens[deck_index]

@@ -293,8 +293,23 @@ PioneerDDJ1000.sendLoop = function (deck) {
     // As a rung on the ladder rather than a number. The ladder starts at
     // 1/64, which is a size Mixxx does not have, so rung 1 is its smallest:
     // 1 is 1/32 and 15 is 512. 0x7F means the loop is not on the ladder.
+    // Only a loop that an auto-loop control actually made gets a name. The
+    // code says how the loop was made, not how long it is: rekordbox sends
+    // "unnamed" for a hand-set loop even when it lands exactly on two or four
+    // beats. beatloop_size keeps its last value after a hand-set loop, so it
+    // is checked against the loop that is really there.
     var size = PioneerDDJ1000.padLoopWanted[deck]
         || engine.getValue(group, "beatloop_size");
+    if (!PioneerDDJ1000.padLoopWanted[deck] && on && size > 0) {
+        var refBpm = engine.getValue(group, "file_bpm")
+            || engine.getValue(group, "bpm");
+        if (refBpm > 0) {
+            var spanBeats = (endMs - startMs) / (60000 / refBpm);
+            if (Math.abs(spanBeats - size) > size * 0.02) {
+                size = 0;
+            }
+        }
+    }
     var rung = 0x7F;
     if (size > 0) {
         var steps = Math.round(Math.log(size) / Math.LN2) + 6;
@@ -541,6 +556,24 @@ PioneerDDJ1000.beatLoopButton = function (channel, control, value, status, group
 // Pressing the pad of a running loop leaves it, whatever its size.
 // The size a pad asked for when the track was too short to hold it, so the
 // screen can name it rather than measuring the clipped span back.
+// Buttons the hardware sends as momentary but which stand for a state: the
+// unit sends 7F on the press and 00 on the release, and rekordbox toggles on
+// each press. Bound straight through, they were only on while held.
+PioneerDDJ1000.latchingButtons = {
+    0x35: "quantize",
+    0x40: "slip_enabled",
+};
+
+PioneerDDJ1000.latchPress = function (channel, control, value, status, group) {
+    if (!value) {
+        return;
+    }
+    var key = PioneerDDJ1000.latchingButtons[control];
+    if (key) {
+        engine.setValue(group, key, engine.getValue(group, key) ? 0 : 1);
+    }
+};
+
 PioneerDDJ1000.padLoopWanted = {};
 
 PioneerDDJ1000.padLoopSizes = {

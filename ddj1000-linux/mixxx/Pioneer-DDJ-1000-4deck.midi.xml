@@ -130,18 +130,18 @@
       <control>
         <!-- Deck 1 QUANTIZE -->
         <group>[Channel1]</group>
-        <key>quantize</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x90</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 SLIP -->
         <group>[Channel1]</group>
-        <key>slip_enabled</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x90</status>
         <midino>0x40</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 SLIP REVERSE (momentary) -->
@@ -987,18 +987,18 @@
       <control>
         <!-- Deck 2 QUANTIZE -->
         <group>[Channel2]</group>
-        <key>quantize</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x91</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 SLIP -->
         <group>[Channel2]</group>
-        <key>slip_enabled</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x91</status>
         <midino>0x40</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 SLIP REVERSE (momentary) -->
@@ -1844,18 +1844,18 @@
       <control>
         <!-- Deck 3 QUANTIZE -->
         <group>[Channel3]</group>
-        <key>quantize</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x92</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 SLIP -->
         <group>[Channel3]</group>
-        <key>slip_enabled</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x92</status>
         <midino>0x40</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 SLIP REVERSE (momentary) -->
@@ -2701,18 +2701,18 @@
       <control>
         <!-- Deck 4 QUANTIZE -->
         <group>[Channel4]</group>
-        <key>quantize</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x93</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 SLIP -->
         <group>[Channel4]</group>
-        <key>slip_enabled</key>
+        <key>PioneerDDJ1000.latchPress</key>
         <status>0x93</status>
         <midino>0x40</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 SLIP REVERSE (momentary) -->
@@ -3927,6 +3927,26 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 1 QUANTIZE lamp -->
+        <group>[Channel1]</group>
+        <key>quantize</key>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 SLIP lamp -->
+        <group>[Channel1]</group>
+        <key>slip_enabled</key>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 1 PAD 1 hot cue lamp -->
         <group>[Channel1]</group>
         <key>hotcue_1_enabled</key>
@@ -4063,6 +4083,26 @@
         <key>keylock</key>
         <status>0x91</status>
         <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 QUANTIZE lamp -->
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <status>0x91</status>
+        <midino>0x35</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 SLIP lamp -->
+        <group>[Channel2]</group>
+        <key>slip_enabled</key>
+        <status>0x91</status>
+        <midino>0x40</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4209,6 +4249,26 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 3 QUANTIZE lamp -->
+        <group>[Channel3]</group>
+        <key>quantize</key>
+        <status>0x92</status>
+        <midino>0x35</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 SLIP lamp -->
+        <group>[Channel3]</group>
+        <key>slip_enabled</key>
+        <status>0x92</status>
+        <midino>0x40</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 3 PAD 1 hot cue lamp -->
         <group>[Channel3]</group>
         <key>hotcue_1_enabled</key>
@@ -4345,6 +4405,26 @@
         <key>keylock</key>
         <status>0x93</status>
         <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 QUANTIZE lamp -->
+        <group>[Channel4]</group>
+        <key>quantize</key>
+        <status>0x93</status>
+        <midino>0x35</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 SLIP lamp -->
+        <group>[Channel4]</group>
+        <key>slip_enabled</key>
+        <status>0x93</status>
+        <midino>0x40</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>

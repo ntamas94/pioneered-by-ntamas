@@ -89,8 +89,12 @@ DECK_BUTTONS = [
     (0x1D, "orientation_center", "CROSSFADER ASSIGN center"),
     (0x18, "orientation_right", "CROSSFADER ASSIGN right"),
     (0x1A, "keylock", "MASTER TEMPO / key lock"),
-    (0x35, "quantize", "QUANTIZE"),
-    (0x40, "slip_enabled", "SLIP"),
+    # Latching, not momentary. The button itself is momentary -- a capture of
+    # rekordbox has the unit sending 7F on the press and 00 on the release --
+    # and the host toggles the state and the lamp on each press. Bound plainly
+    # these were on only while held down.
+    (0x35, f"{SCRIPT_PREFIX}.latchPress", "QUANTIZE", ("script-binding",)),
+    (0x40, f"{SCRIPT_PREFIX}.latchPress", "SLIP", ("script-binding",)),
     (0x15, "reverseroll", "SLIP REVERSE (momentary)"),
 ]
 
@@ -378,6 +382,8 @@ def build_outputs() -> str:
         out.append(output(note_status, 0x54, g, "pfl", f"Deck {deck} HEADPHONE CUE lamp"))
         out.append(output(note_status, 0x14, g, "loop_enabled", f"Deck {deck} LOOP lamp"))
         out.append(output(note_status, 0x1A, g, "keylock", f"Deck {deck} KEY LOCK lamp"))
+        out.append(output(note_status, 0x35, g, "quantize", f"Deck {deck} QUANTIZE lamp"))
+        out.append(output(note_status, 0x40, g, "slip_enabled", f"Deck {deck} SLIP lamp"))
 
         for pad in range(8):
             n = pad + 1
