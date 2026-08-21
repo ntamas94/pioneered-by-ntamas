@@ -148,18 +148,22 @@ PioneerDDJ1000.announceIfChanged = function (deck) {
     var now = Date.now();
     var due = !PioneerDDJ1000.announcedAt[deck]
         || now - PioneerDDJ1000.announcedAt[deck] > PioneerDDJ1000.announceRepeatMs;
-    if (PioneerDDJ1000.announcedMs[deck] === ms && !due) {
-        return;
-    }
-    PioneerDDJ1000.announcedMs[deck] = ms;
-    PioneerDDJ1000.announcedAt[deck] = now;
-    // The track's own tempo, not the one the fader is asking for. The screen
-    // works the playing speed out for itself, from the beat grid against the
-    // BPM it is being shown, so a grid built at the adjusted tempo makes the
-    // two agree and the readout sits at 0.0% however far the fader travels.
+    // The track's own tempo, not the one the fader is asking for: the beat
+    // grid is laid out against it, and a grid built at the adjusted tempo
+    // drifts away from the music as soon as the fader moves.
     var tenths = Math.max(0, Math.min(0x3FFF,
         Math.round((engine.getValue(group, "file_bpm")
             || engine.getValue(group, "bpm") || 0) * 10)));
+    // Keyed on the tempo as well as the length. A track that has not been
+    // analysed yet loads with no BPM at all, the daemon lays its grid out at a
+    // guessed 120, and when the analysis finishes nothing would otherwise ever
+    // tell it the real figure.
+    var packed = ms + ":" + tenths;
+    if (PioneerDDJ1000.announcedMs[deck] === packed && !due) {
+        return;
+    }
+    PioneerDDJ1000.announcedMs[deck] = packed;
+    PioneerDDJ1000.announcedAt[deck] = now;
     midi.sendSysexMsg([0xF0, 0x7D, deck - 1,
         (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F,
         (tenths >> 7) & 0x7F, tenths & 0x7F, 0xF7], 10);

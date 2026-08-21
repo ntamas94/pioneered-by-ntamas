@@ -272,6 +272,8 @@ class DeckScreen:
         # The track's own tempo, unpitched: the loop ends are measured
         # against it, while the BPM above is whatever the fader is asking for.
         self.file_bpm = 0
+        # What the beat grid on the screen was laid out against.
+        self.grid_bpm = 0
         self.track_id = 0
         self.first_beat_ms = 0
         self.key_code = 0
@@ -1134,6 +1136,16 @@ class Bridge:
         # The mapping repeats the announcement so a restarted daemon can catch
         # up; only redraw when it is actually a different track.
         if self.drawn.get(deck_index) == ms:
+            # Unless the tempo arrived late. A track the DJ software has not
+            # analysed loads with no BPM, the grid below gets laid out at a
+            # guessed 120, and the analysis finishing is the first and only
+            # word of the real figure -- so relay the grid on it rather than
+            # redrawing everything, which would blank the deck for a second.
+            if screen.file_bpm and screen.file_bpm != screen.grid_bpm:
+                syslog.syslog("jog screen %d: tempo arrived late (%.1f), "
+                              "relaying the grid" % (deck_index + 1,
+                                                     screen.file_bpm))
+                self.send_grid(deck_index)
             return True
         self.drawn[deck_index] = ms
         threading.Thread(target=self._load_artwork_guarded,
@@ -1238,6 +1250,7 @@ class Bridge:
         self.announce_load(screen.track_id)
 
         grid = beat_grid(screen.bpm, screen.first_beat_ms, seconds)
+        screen.grid_bpm = screen.file_bpm or screen.bpm
         self.send_hid_transfer(deck, 0x2F, bytes(58), prime=False)
         self.send_hid_transfer(deck, 0x2F, grid, prime=False)
         self.send_hid_transfer(deck, 0x30, track_record(key, screen.cues))
@@ -1321,6 +1334,19 @@ class Bridge:
             except OSError:
                 pass
         return payloads
+
+    def send_grid(self, deck_index):
+        """Lay the beat grid out again, without disturbing anything else."""
+        screen = self.screens[deck_index]
+        bpm = screen.file_bpm or screen.bpm
+        if bpm <= 0 or not screen.duration_ms:
+            return
+        screen.grid_bpm = bpm
+        grid = beat_grid(bpm, screen.first_beat_ms,
+                         screen.duration_ms / 1000.0)
+        deck = SCREEN_DECKS[deck_index]
+        self.send_hid_transfer(deck, 0x2F, bytes(58), prime=False)
+        self.send_hid_transfer(deck, 0x2F, grid, prime=False)
 
     def send_hid_transfer(self, deck, cmd, payload, prime=True):
         """Upload one chunked transfer to the screen, one report per ms."""
