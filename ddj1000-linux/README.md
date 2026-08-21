@@ -120,6 +120,12 @@ running when it was plugged in, unplug and replug it — or:
 
 `authenticated -- jog displays unlocked` means it worked.
 
+## What is not wired yet
+
+`ROADMAP.md` lists it, from Pioneer's own List of MIDI Messages read against
+both halves of the mapping: the pad modes that are still dark, the lamps the
+host is supposed to drive, and four bugs worth fixing before any of it.
+
 ## How this was worked out
 
 Captured traffic from rekordbox on Windows (USBPcap) and from this bridge on
