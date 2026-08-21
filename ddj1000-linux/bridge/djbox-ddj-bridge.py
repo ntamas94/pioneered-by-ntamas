@@ -36,6 +36,7 @@ import ctypes.util
 import errno
 import fcntl
 import glob
+import math
 import os
 import shutil
 import sqlite3
@@ -121,11 +122,12 @@ SEED_A = bytes([0x06, 0x08, 0x07, 0x02, 0x0B, 0x0A, 0x03, 0x02,
 
 # Sent once before the handshake: the unit expects the display state to be
 # initialised before it will accept an authentication response.
+# The order is the capture's: 0B, then 0C, then 0A, sent only after the unit
+# has accepted the authentication -- rekordbox never sends these cold.
 PRELUDE = [
     bytes.fromhex("000b2b68000000"),
-    bytes.fromhex("000a00280026000a394a742853202014152205" + "00" * 21),
-    bytes.fromhex("000b2b68000000"),
     bytes.fromhex("000c0000020e0e000000"),
+    bytes.fromhex("000a00280026000a394a742853202014152205" + "00" * 21),
 ]
 JOGSCREEN_ENABLE = [
     bytes.fromhex("000a002800260024153255481421" + "00" * 26),
@@ -179,6 +181,11 @@ HOLD_AUDIO = os.environ.get("DDJ_HOLD_AUDIO", "0") != "0"
 # flipping -- so a fixed 0x0A here is what left every screen on remaining, with
 # no track length behind it to count down from.
 TIME_REMAINING_BIT = 0x08
+# How long before the end the screen starts flashing, and where it speeds up.
+# rekordbox drops bit 0 of byte 4 every 0.9 s from thirty seconds left and
+# every 0.2 s from fifteen.
+END_WARNING_MS = 30000
+END_HURRY_MS = 15000
 DISPLAY_FLAGS = int(os.environ.get("DDJ_DISPLAY_FLAGS", "0x18"), 16)
 # Where rekordbox's library row numbers sat in every capture.
 # rekordbox's own values here always begin with 3 in the top seven-bit group
@@ -242,10 +249,15 @@ class DeckScreen:
         self.suspend = False
         self.duration_ms = 0
         self.remaining = False
+        self.on_air = True
+        self.tempo_percent = 0.0
         self.cues = []
         self.cue_ms = 0
         self.ready = False
         self.bpm = 0
+        # The track's own tempo, unpitched: the loop ends are measured
+        # against it, while the BPM above is whatever the fader is asking for.
+        self.file_bpm = 0
         self.track_id = 0
         self.first_beat_ms = 0
         self.key_code = 0
@@ -299,6 +311,28 @@ class DeckScreen:
             position = min(position, self.duration_ms)
         return position
 
+    def loop_code(self):
+        """The screen's own name for how long the loop is: 12 + log2(beats).
+
+        One beat is 12 and 64 beats is 18, the whole auto-loop ladder in
+        between, and 1 means a length that is not on it -- a hand-set loop,
+        which the screen writes as two dashes. The beats have to be counted
+        against the track's own tempo: the loop ends are original-time
+        milliseconds while the BPM on the record is the pitched figure, and
+        counting against that one puts every loop a few percent off its step.
+        """
+        bpm = self.file_bpm or self.bpm
+        if bpm <= 0 or self.loop_out <= self.loop_in:
+            return 0x01
+        beats = (self.loop_out - self.loop_in) / (60000.0 / bpm)
+        if beats <= 0:
+            return 0x01
+        steps = math.log2(beats)
+        nearest = int(round(steps))
+        if abs(steps - nearest) > 0.05 or not -5 <= nearest <= 6:
+            return 0x01
+        return 12 + nearest
+
     def record(self, deck):
         b = bytearray(64)
         b[0] = deck
@@ -308,8 +342,23 @@ class DeckScreen:
         # not, and CUE SCOPE is a waveform view in its own right -- switchable
         # here so the pair can be tried against the playhead.
         b[2] = DISPLAY_FLAGS
-        b[3] = 0x02 | (TIME_REMAINING_BIT if self.remaining else 0)
+        # Bit 0x02 is on air: the screen greys the deck out without it. Every
+        # capture of someone actually playing has it set from end to end,
+        # which is why it read as a constant for so long -- it only drops when
+        # the mixer shuts the channel out.
+        b[3] = ((0x02 if self.on_air else 0x00)
+                | (TIME_REMAINING_BIT if self.remaining else 0))
+        # The track-end warning. The screen flashes for the last thirty
+        # seconds and it is the host that flashes it, twice over: rekordbox
+        # drops bit 0 of this byte and puts it back every 0.9 s from 30.0 s
+        # left, then every 0.2 s from 15 s -- the same warning, hurrying.
         b[4] = 0x11
+        if self.loaded and self.duration_ms:
+            left = self.duration_ms - self.position_ms()
+            if 0 < left <= END_WARNING_MS:
+                period = 0.9 if left > END_HURRY_MS else 0.2
+                if int(time.monotonic() / period) & 1:
+                    b[4] = 0x10
         b[5] = 0x81
         if self.suspend:
             # The unloading frame of a load: no track at all, whatever the
@@ -322,7 +371,7 @@ class DeckScreen:
             return bytes(b)
         looping = self.loaded and self.loop_out > self.loop_in >= 0
         b[9] = (0xBC if looping else 0xB4) if self.loaded else 0x10
-        b[10] = 0x01 if looping else 0x00
+        b[10] = self.loop_code() if looping else 0x00
         # The playhead is minutes and seconds, not a 16-bit second count: the
         # second byte never goes past 59 in a capture, and feeding it 60 is
         # what made the screen call the track over a minute in. Always the
@@ -345,6 +394,15 @@ class DeckScreen:
         # as 8D 80. Anything in the low nibble and the screen gives up and
         # shows 999.9.
         whole = min(255, int(self.bpm))
+        # The playing speed, hundredths of a percent, signed 16-bit LE. It
+        # reads zero in every capture taken before this one, because they were
+        # all taken with the fader centred; sweeping it end to end in
+        # rekordbox runs this pair from -1000 to 1000 over a +-10% range, and
+        # the BPM alongside divides back to the track's own 145.000 at every
+        # point along the way.
+        speed = max(-32768, min(32767, int(round(self.tempo_percent * 100))))
+        b[23] = speed & 0xFF
+        b[24] = (speed >> 8) & 0xFF
         b[21] = b[38] = whole
         b[22] = b[39] = (int(round((self.bpm - whole) * 10)) % 10) << 4
         # The loop ends are 24-bit millisecond figures; with no loop the in
@@ -771,6 +829,9 @@ class Bridge:
         self.library_row = 0
         self.screens_woken = False
         self.mixxx_seen = 0.0
+        # Whether the screens have already been handed back to the unit, so
+        # the release goes out once rather than sixty times a second.
+        self.released = False
         self.paused = False
         self.time_mode_reset = False
         self.state_logged = 0.0
@@ -860,12 +921,37 @@ class Bridge:
     def sysex(self, payload):
         self.to_ddj(HDR + payload + bytes([0xF7]))
 
+    @staticmethod
+    def press_preferences():
+        """Press Ctrl+P at whatever has the keyboard on the desktop.
+
+        Mixxx exposes no way to open its preferences from a skin or a mapping;
+        the dialog is bound to the shortcut and to the menu, and a skin button
+        pointed at a made-up control key just creates a control nothing
+        listens to. Reaching in from outside is the only route there is.
+        """
+        try:
+            subprocess.Popen(
+                ["xdotool", "key", "--clearmodifiers", "ctrl+p"],
+                env=dict(os.environ, DISPLAY=os.environ.get("DISPLAY", ":0")),
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError as exc:
+            syslog.syslog("cannot open preferences: %s" % exc)
+
     def announce_track(self, msg):
         """Handle the mapping's private track announcement (F0 7D deck ms F7)."""
         if len(msg) < 5 or msg[1] != 0x7D:
             return False
         self.mixxx_seen = time.monotonic()
         deck_index = msg[2] & 0x0F
+        if (msg[2] & 0x70) == 0x70:
+            # Open Mixxx's preferences. It has no control for that -- the
+            # window is on a keyboard shortcut and nothing else -- so a skin
+            # button asking for it can only be answered from outside, by
+            # pressing the key at it. Tested before every other branch
+            # because 0x70 also satisfies the 0x30 and 0x60 tests below.
+            self.press_preferences()
+            return True
         if deck_index <= 3 and (msg[2] & 0x60) == 0x60:
             # The cue point. This is the marker the screen draws across the
             # waveform: left at zero it sits against the very start of the
@@ -922,10 +1008,14 @@ class Bridge:
                 screen.loop_in = (msg[4] << 21) | (msg[5] << 14) | (msg[6] << 7) | msg[7]
                 screen.loop_out = (msg[8] << 21) | (msg[9] << 14) | (msg[10] << 7) | msg[11]
             return True
-        if msg[2] & 0x20:                      # grid start and key
+        if msg[2] & 0x20:                      # grid start, key, on air
             screen = self.screens[deck_index]
             screen.first_beat_ms = (msg[3] << 7) | msg[4]
             screen.key_code = msg[5]
+            # Older mappings do not send it; a deck nothing says otherwise
+            # about is on air, which is what every capture of a DJ actually
+            # playing looks like.
+            screen.on_air = bool(msg[7]) if len(msg) >= 9 else True
             return True
         if msg[2] & 0x10:                      # a playhead report, not a load
             screen = self.screens[deck_index]
@@ -939,6 +1029,9 @@ class Bridge:
             screen.loaded = screen.track_id != 0
             if len(msg) >= 10:                 # the tempo rides along with it
                 screen.bpm = ((msg[7] << 7) | msg[8]) / 10.0
+            if len(msg) >= 12:                 # and the speed the fader asks for
+                raw = (msg[9] << 7) | msg[10]
+                screen.tempo_percent = (raw - 5000) / 100.0
             return True
         if ms <= 0:                            # the deck was emptied
             screen = self.screens[deck_index]
@@ -948,6 +1041,7 @@ class Bridge:
             screen.ready = False
             screen.duration_ms = 0
             screen.bpm = 0
+            screen.file_bpm = 0
             screen.cue_ms = 0
             screen.cues = []
             return True
@@ -958,7 +1052,7 @@ class Bridge:
         # track a different id, which is how the screen knows to redraw.
         screen = self.screens[deck_index]
         if len(msg) >= 10:                     # the tempo comes with it
-            screen.bpm = ((msg[7] << 7) | msg[8]) / 10.0
+            screen.bpm = screen.file_bpm = ((msg[7] << 7) | msg[8]) / 10.0
         if screen.duration_ms != ms or not screen.track_id:
             # The id is the track's length, written the way the screen
             # writes every other time: minutes, seconds, and a 16-bit
@@ -1307,7 +1401,23 @@ class Bridge:
         # replaces it with an empty deck. Once the software is talking the
         # decks are its to draw, track or no track.
         if now - self.mixxx_seen > MIXXX_QUIET:
+            # Handing them back rather than just falling silent, which is what
+            # rekordbox does when it lets go: an all-zero record and an empty
+            # artwork per deck, after which the unit puts its own screen back
+            # up. Going quiet alone leaves whatever was last drawn frozen
+            # there, so a track sits on the wheel long after Mixxx has gone.
+            # Only ever after Mixxx has actually been here: at start-up this
+            # branch is reached before the unit is authenticated, and rekordbox
+            # never writes HID to a locked unit -- doing so is what left the
+            # screens on NO AUDIO DRIVER with every other condition met.
+            if not self.released and self.authenticated and self.mixxx_seen:
+                self.released = True
+                syslog.syslog("no word from Mixxx -- handing the screens back")
+                for deck in SCREEN_DECKS:
+                    self.to_ddj_hid(bytes((deck, 0x21)) + bytes(62))
+                    self.send_hid_transfer(deck, 0x2B, bytes(58), prime=False)
             return
+        self.released = False
 
         for i, deck in enumerate(SCREEN_DECKS):
             screen = self.screens[i]
@@ -1332,6 +1442,16 @@ class Bridge:
             except OSError:
                 pass
         if self.hid is None:
+            return
+        # Not one byte before the unit has said yes. rekordbox's first HID
+        # write comes over a second after the authentication answer, and
+        # writing earlier is what kept the screens on NO AUDIO DRIVER with
+        # every other condition met. Every write funnels through here -- the
+        # state loop, the uploads, the hand-back -- so this is the one gate.
+        # A restarted bridge is not locked out: the unit answers the opening
+        # exchange with its "accepted" message again even mid-session, so
+        # this flag comes back on its own.
+        if not self.authenticated:
             return
         try:
             os.write(self.hid, bytes([0x00]) + bytes(report).ljust(64, bytes([0x00])))
@@ -1426,6 +1546,10 @@ class Bridge:
         sends its own). Faithfully reproducing the whole burst is what takes the
         decks out of the locked screen; a hand-picked subset did not.
         """
+        # The 0B/0A/0C block, exactly where the capture has it: first thing
+        # after the acceptance, 0B then 0C then 0A.
+        for payload in PRELUDE:
+            self.sysex(payload)
         self.unit_settings()
         if POST_AUTH:
             for msg in POST_AUTH:
@@ -1508,8 +1632,12 @@ class Bridge:
         return False
 
     def run(self):
-        for payload in PRELUDE:
-            self.sysex(payload)
+        # Nothing but the keepalive until the unit has answered. A capture of
+        # rekordbox meeting a freshly powered unit opens with the 50 01 ping
+        # alone, every 0.2 s, and the whole 0B/0A/0C block goes out only after
+        # the unit's acceptance -- sending it cold, before the handshake, is a
+        # sequence rekordbox never produces. The keepalive loop below is the
+        # ping; the block moved to display_bringup, behind the acceptance.
         last_ka = 0.0
         last_check = 0.0
         # None, not the current value: if the interface is already in alt 1 when

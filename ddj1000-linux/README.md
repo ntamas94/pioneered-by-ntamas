@@ -17,15 +17,20 @@ Three parts, each usable on its own:
 
 ## What each part is
 
-**audio** — a DKMS build of `snd-usb-audio` with a quirk for this unit. Its
-descriptor claims 1024-byte packets every 250 µs. The hardware delivers 432
-bytes every 500 µs, and taking the descriptor at its word makes the host
-overrun the device: everything plays at double speed. The quirk also asks for
-the sample rate on the input endpoint the way the DJM mixers need, without
-which capture is silent.
+**audio** — a DKMS build of `snd-usb-audio` with a quirk for this unit.
+Interface 0 is vendor specific and carries no audio descriptors at all, so the
+host has to be told the format outright: 44.1 kHz, 24-bit, six channels out and
+**twelve** in. The input endpoint is also the playback stream's clock, by
+implicit feedback, and the quirk asks for the sample rate on it the way the DJM
+mixers need, without which capture is silent.
 
 Built against the running kernel and rebuilt automatically on kernel updates.
 Needs `dkms`, `build-essential` and the kernel headers.
+
+`audio/DRIVER.md` documents the quirk in full, measured against a capture of
+rekordbox driving the same hardware -- including a standing error in it: the
+capture endpoint is twelve channels, not six, and the packet-size overrides in
+the entry are compensations for that.
 
 **bridge** — a daemon sitting between the controller and the DJ software. It:
 
@@ -57,18 +62,22 @@ anything written for it:
 The MIDI side is class compliant and has always worked; nothing here touches
 it. The audio side is not: interface 0 is vendor specific and carries no audio
 descriptors at all — no channel count, no sample rate, no bit depth — so the
-host has to know the format, which is what the quirk supplies. Six channels
-each way at 24-bit 44.1 kHz.
+host has to know the format, which is what the quirk supplies. 24-bit
+44.1 kHz, six channels out on `0x01` and twelve in on `0x82`; the asymmetry is
+real and measured, and the same shape the in-tree DJM-900NXS2 entry describes.
 
 The screens live on the HID interface. Authentication, decoding artwork and
 talking to the DJ software are all user-space work, so they stay in the
 bridge; there is nothing a kernel driver would do for them except make them
 harder to debug.
 
-The bridge also holds the capture stream open. The unit reads an idle audio
-interface as "no driver present" and locks its screens — which is what happens
-every time the DJ software closes. Capture is the side nothing else wants, so
-holding it keeps the screens awake while leaving playback free.
+The bridge can hold a capture stream open to keep the interface at alternate
+setting 1, which is one of the things the unit reads as "a driver is present".
+It is off by default: capture and playback share the interface through implicit
+feedback, so a holder stream takes the clock the output needs and leaves the DJ
+software's playback running with its hardware pointer at zero — every track it
+is asked to load then sits at "loading" for ever. Set `DDJ_HOLD_AUDIO=1` only
+when nothing else is going to open the card.
 
 ## Requirements
 
@@ -82,6 +91,20 @@ On Raspberry Pi OS the headers package is `raspberrypi-kernel-headers`.
 Plug the controller in and start Mixxx. In **Preferences → Controllers**, pick
 the DDJ-1000's MIDI port, choose **Pioneer DDJ-1000 (4 deck)** and enable it.
 Set the sound output to the DDJ-1000 in **Preferences → Sound Hardware**.
+
+Six output channels, in pairs:
+
+| pair | Mixxx output |
+|---|---|
+| 1-2 | Master |
+| 3-4 | Headphones |
+| 5-6 | unused |
+
+**Set the Headphones output as well as the Master one.** With rekordbox the
+cueing is done by the unit's own mixer and the computer never sends a
+headphone feed, so it is easy to configure Master alone and think the job is
+done — and then the CUE buttons do nothing at all, silently, because Mixxx
+mixes in software and has nowhere to send what it mixed.
 
 The screens come up a few seconds after the audio does. The first load of a
 track decodes it to build the picture; the library is built ahead of time in

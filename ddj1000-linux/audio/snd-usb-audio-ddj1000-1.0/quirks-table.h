@@ -3084,12 +3084,15 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 {
 	/*
 	 * PIONEER DJ DDJ-1000
-	 * PCM is 6 channels out, 6 channels in @ 44.1 fixed
-	 * The Feedback for the output is the input
-	 * Playback sends 198 bytes every 250 us; the capture/feedback endpoint
-	 * delivers 432-byte packets every 500 us, so it needs its own
-	 * maxpacksize and datainterval (the descriptor claims 1024/250 us,
-	 * which makes the host overrun the device and run at double speed).
+	 * 6 channels playback & 12 channels capture @ 44.1 fixed, and the
+	 * capture endpoint is also the playback stream's implicit feedback
+	 * clock. The channel counts are asymmetric on the wire and measured:
+	 * playback packets are 198/216 bytes and capture packets 396/432, both
+	 * every 250 us, which is 18 and 36 bytes per frame. Declaring capture
+	 * as 6 channels halves its stride, so the feedback conversion reads
+	 * every packet as twice the frames it holds -- the same shape as the
+	 * in-tree DJM-900NXS2 entry, which likewise needs no packet-size
+	 * overrides once the counts are right.
 	 * Needs the DJM-style SET_CUR sample rate on the IN endpoint (quirks.c).
 	 */
 	USB_DEVICE_VENDOR_SPEC(0x2b73, 0x0020),
@@ -3105,7 +3108,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 					.endpoint = 0x01,
 					.ep_attr = USB_ENDPOINT_XFER_ISOC|
 						USB_ENDPOINT_SYNC_ASYNC,
-					.maxpacksize = 0x00c6,
 					.rates = SNDRV_PCM_RATE_44100,
 					.rate_min = 44100,
 					.rate_max = 44100,
@@ -3116,7 +3118,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 			{
 				QUIRK_DATA_AUDIOFORMAT(0) {
 					.formats = SNDRV_PCM_FMTBIT_S24_3LE,
-					.channels = 6,
+					.channels = 12,
 					.iface = 0,
 					.altsetting = 1,
 					.altset_idx = 1,
@@ -3125,8 +3127,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 					.ep_attr = USB_ENDPOINT_XFER_ISOC|
 						USB_ENDPOINT_SYNC_ASYNC|
 					USB_ENDPOINT_USAGE_IMPLICIT_FB,
-					.maxpacksize = 0x01b0,
-					.datainterval = 2,
 					.rates = SNDRV_PCM_RATE_44100,
 					.rate_min = 44100,
 					.rate_max = 44100,

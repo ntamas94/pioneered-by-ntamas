@@ -1768,12 +1768,23 @@ static int pioneer_djm_set_format_quirk(struct snd_usb_substream *subs,
 					u16 windex)
 {
 	unsigned int cur_rate = subs->data_endpoint->cur_rate;
+	struct usb_interface *iface;
 	u8 sr[3];
 	// Convert to little endian
 	sr[0] = cur_rate & 0xff;
 	sr[1] = (cur_rate >> 8) & 0xff;
 	sr[2] = (cur_rate >> 16) & 0xff;
-	usb_set_interface(subs->dev, 0, 1);
+	/*
+	 * Only if it is not already there. The endpoint setup selects alt 1
+	 * before this runs, so this call is normally a repeat, and the USB core
+	 * has no short circuit for one: it disables and re-enables every
+	 * endpoint on the interface either way. The DDJ-1000 reads that as the
+	 * driver leaving and coming back, and takes its jog screens down.
+	 * rekordbox issues exactly one SET_INTERFACE for a whole session.
+	 */
+	iface = usb_ifnum_to_if(subs->dev, 0);
+	if (!iface || iface->cur_altsetting->desc.bAlternateSetting != 1)
+		usb_set_interface(subs->dev, 0, 1);
 	// we should derive windex from fmt-sync_ep but it's not set
 	snd_usb_ctl_msg(subs->stream->chip->dev,
 		usb_sndctrlpipe(subs->stream->chip->dev, 0),
@@ -2393,6 +2404,15 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
 		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
 	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
 		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+	/*
+	 * The DDJ-1000 watches its own audio interface to decide whether a
+	 * driver is present, and puts NO AUDIO DRIVER on its jog wheel screens
+	 * when it decides one is not. Dropping the interface back to alt 0 on
+	 * the last close, or letting it runtime suspend, both read that way
+	 * from the far side of the cable.
+	 */
+	DEVICE_FLG(0x2b73, 0x0020, /* Pioneer DJ DDJ-1000 */
+		   QUIRK_FLAG_IFACE_SKIP_CLOSE | QUIRK_FLAG_DISABLE_AUTOSUSPEND),
 	DEVICE_FLG(0x2d95, 0x8011, /* VIVO USB-C HEADSET */
 		   QUIRK_FLAG_CTL_MSG_DELAY_1M),
 	DEVICE_FLG(0x2d95, 0x8021, /* VIVO USB-C-XE710 HEADSET */

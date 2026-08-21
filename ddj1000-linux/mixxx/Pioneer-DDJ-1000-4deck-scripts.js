@@ -153,11 +153,13 @@ PioneerDDJ1000.announceIfChanged = function (deck) {
     }
     PioneerDDJ1000.announcedMs[deck] = ms;
     PioneerDDJ1000.announcedAt[deck] = now;
-    // The tempo rides along. The bridge needs it to build the beat grid, and
-    // waiting for the first playhead report to carry one held every load up
-    // by half a second with the old track still on the screen.
+    // The track's own tempo, not the one the fader is asking for. The screen
+    // works the playing speed out for itself, from the beat grid against the
+    // BPM it is being shown, so a grid built at the adjusted tempo makes the
+    // two agree and the readout sits at 0.0% however far the fader travels.
     var tenths = Math.max(0, Math.min(0x3FFF,
-        Math.round((engine.getValue(group, "bpm") || 0) * 10)));
+        Math.round((engine.getValue(group, "file_bpm")
+            || engine.getValue(group, "bpm") || 0) * 10)));
     midi.sendSysexMsg([0xF0, 0x7D, deck - 1,
         (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F,
         (tenths >> 7) & 0x7F, tenths & 0x7F, 0xF7], 10);
@@ -173,6 +175,29 @@ PioneerDDJ1000.announceIfChanged = function (deck) {
 // "first beat" control, but any beat modulo the beat interval is the same
 // thing on a constant grid. Bit 0x20 of the deck byte marks the message.
 PioneerDDJ1000.gridInfo = {};
+
+// Whether anything this deck plays is actually reaching the master. The jog
+// screen greys itself out for a deck that is not, which is what makes a fader
+// move show up on the wheel, and it is the host that decides -- rekordbox
+// clears the bit whenever the channel is shut out and sets it the moment it
+// is let back in.
+PioneerDDJ1000.isOnAir = function (group) {
+    if (engine.getValue(group, "mute") || engine.getValue(group, "volume") <= 0) {
+        return 0;
+    }
+    // A channel assigned to one side of the crossfader is shut out only when
+    // the crossfader is all the way to the other side; one left in the middle
+    // is never shut out by it at all.
+    var orientation = engine.getValue(group, "orientation");
+    var crossfader = engine.getValue("[Master]", "crossfader");
+    if (orientation === 0 && crossfader >= 1) {
+        return 0;
+    }
+    if (orientation === 2 && crossfader <= -1) {
+        return 0;
+    }
+    return 1;
+};
 
 PioneerDDJ1000.sendGridInfo = function (deck) {
     var group = "[Channel" + deck + "]";
@@ -197,13 +222,14 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     // is what the bridge needs to put on the wire.
     var remaining = engine.getValue("[Controls]", "ShowDurationRemaining")
         === PioneerDDJ1000.timeModeRemaining ? 1 : 0;
-    var packed = firstBeat + ":" + key + ":" + remaining;
+    var onAir = PioneerDDJ1000.isOnAir(group);
+    var packed = firstBeat + ":" + key + ":" + remaining + ":" + onAir;
     if (PioneerDDJ1000.gridInfo[deck] === packed) {
         return;
     }
     PioneerDDJ1000.gridInfo[deck] = packed;
     midi.sendSysexMsg([0xF0, 0x7D, 0x20 | (deck - 1),
-        (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, remaining, 0xF7], 8);
+        (firstBeat >> 7) & 0x7F, firstBeat & 0x7F, key, remaining, onAir, 0xF7], 9);
     // The jog always shows elapsed time. Switching it to remaining is possible
     // -- the mode note and BF 45 both put the minus sign up -- but the unit
     // then counts down from a track length it computes itself and does not
@@ -277,9 +303,15 @@ PioneerDDJ1000.sendPosition = function (deck, elapsedMs, bpm) {
     // screens are drawn over HID, and the unit takes the MIDI display messages
     // as a second, competing source for the same picture.
     var tenths = Math.max(0, Math.min(0x3FFF, Math.round(bpm * 10)));
+    // The speed the fader is asking for, as hundredths of a percent offset by
+    // 5000 so it survives as an unsigned pair: 5000 is dead centre.
+    var ratio = engine.getValue("[Channel" + deck + "]", "rate_ratio") || 1;
+    var speed = Math.max(0, Math.min(9999,
+        Math.round((ratio - 1) * 100 * 100) + 5000));
     midi.sendSysexMsg([0xF0, 0x7D, 0x10 | (deck - 1),
         (ms >> 21) & 0x7F, (ms >> 14) & 0x7F, (ms >> 7) & 0x7F, ms & 0x7F,
-        (tenths >> 7) & 0x7F, tenths & 0x7F, 0xF7], 10);
+        (tenths >> 7) & 0x7F, tenths & 0x7F,
+        (speed >> 7) & 0x7F, speed & 0x7F, 0xF7], 12);
 };
 
 PioneerDDJ1000.init = function () {
@@ -302,6 +334,7 @@ PioneerDDJ1000.init = function () {
     });
 
     PioneerDDJ1000.skipBothTimeMode();
+    PioneerDDJ1000.watchPreferencesButton();
 
     PioneerDDJ1000.displayTimer = engine.beginTimer(
         PioneerDDJ1000.displayIntervalMs,
@@ -399,6 +432,22 @@ PioneerDDJ1000.skipBothTimeMode = function () {
             engine.setValue("[Controls]", "ShowDurationRemaining", PioneerDDJ1000.timeModeElapsed);
         }
         PioneerDDJ1000.sendTimeMode();
+    }
+};
+
+// The skin's Mixxx logo is a button pointed at [Pioneered],prefs_btn, and
+// Mixxx has no control that opens its preferences -- the dialog is reachable
+// from the menu and from Ctrl+P and nowhere else, so a skin button asking for
+// it silently creates a control with nobody on the other end. This puts
+// somebody there: the daemon presses the shortcut at the desktop.
+PioneerDDJ1000.watchPreferencesButton = function () {
+    var connection = engine.makeConnection("[Pioneered]", "prefs_btn", function (value) {
+        if (value) {
+            midi.sendSysexMsg([0xF0, 0x7D, 0x70, 0x01, 0xF7], 5);
+        }
+    });
+    if (connection) {
+        PioneerDDJ1000.connections.push(connection);
     }
 };
 
