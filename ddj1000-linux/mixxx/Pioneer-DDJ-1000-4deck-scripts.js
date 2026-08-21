@@ -354,6 +354,8 @@ PioneerDDJ1000.init = function () {
         PioneerDDJ1000.displayIntervalMs,
         PioneerDDJ1000.updateDisplays
     );
+    PioneerDDJ1000.loopLampTimer = engine.beginTimer(300,
+        PioneerDDJ1000.updateLoopLamps);
 
     // Once the panel has answered, arm soft takeover
     // so the knobs stay honest later too -- a section switched to another deck
@@ -375,6 +377,37 @@ PioneerDDJ1000.connectLoopState = function (deck) {
         PioneerDDJ1000.connections.push(connection);
         connection.trigger();
     }
+};
+
+// The LOOP IN and LOOP OUT button lamps blink rather than hold, and the host
+// does the blinking: rekordbox toggles them at a 0.3 s half period, LOOP IN
+// alone while an in point is set waiting for its out, both together while the
+// loop runs. Driven from one timer over all four decks so they stay in step,
+// the way the capture has them.
+PioneerDDJ1000.loopLampPhase = 0;
+
+PioneerDDJ1000.updateLoopLamps = function () {
+    PioneerDDJ1000.loopLampPhase ^= 1;
+    var on = PioneerDDJ1000.loopLampPhase ? 0x7F : 0x00;
+    PioneerDDJ1000.decks.forEach(function (deck) {
+        var group = "[Channel" + deck + "]";
+        var status = 0x90 | (deck - 1);
+        var looping = engine.getValue(group, "loop_enabled") > 0;
+        var inSet = engine.getValue(group, "loop_start_position") >= 0;
+        var outSet = engine.getValue(group, "loop_end_position") >= 0;
+        // Lit is the resting state, not dark: the unit's own bring-up burst
+        // lights both lamps on every deck and rekordbox never turns them off.
+        // Blinking is the activity on top -- IN alone while an in point waits
+        // for its out, both while the loop runs.
+        var inLamp = 0x7F, outLamp = 0x7F;
+        if (looping) {
+            inLamp = on; outLamp = on;
+        } else if (inSet && !outSet) {
+            inLamp = on;
+        }
+        midi.sendShortMsg(status, 0x10, inLamp);
+        midi.sendShortMsg(status, 0x11, outLamp);
+    });
 };
 
 PioneerDDJ1000.armSoftTakeover = function () {
@@ -495,6 +528,10 @@ PioneerDDJ1000.shutdown = function () {
     if (PioneerDDJ1000.displayTimer) {
         engine.stopTimer(PioneerDDJ1000.displayTimer);
         PioneerDDJ1000.displayTimer = 0;
+    }
+    if (PioneerDDJ1000.loopLampTimer) {
+        engine.stopTimer(PioneerDDJ1000.loopLampTimer);
+        PioneerDDJ1000.loopLampTimer = 0;
     }
 
     PioneerDDJ1000.connections.forEach(function (connection) {
