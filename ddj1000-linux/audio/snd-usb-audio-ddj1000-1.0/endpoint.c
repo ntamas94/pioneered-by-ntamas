@@ -1477,8 +1477,17 @@ int snd_usb_endpoint_prepare(struct snd_usb_audio *chip,
 		goto done;
 	}
 
-	/* Need to deselect altsetting at first */
-	endpoint_set_interface(chip, ep, false);
+	/* Need to deselect altsetting at first.
+	 *
+	 * Not on devices that watch the interface to decide whether a driver
+	 * is there: the DDJ-1000 puts "NO AUDIO DRIVER" on its jog wheel
+	 * screens when it sees SET_INTERFACE(0,0), and rekordbox never sends
+	 * one -- one SET_INTERFACE(0,1) and the sample rate, for the life of
+	 * the session. The same flag already keeps the last close from taking
+	 * the interface down; this is the other place it gets taken down.
+	 */
+	if (!(chip->quirk_flags & QUIRK_FLAG_IFACE_SKIP_CLOSE))
+		endpoint_set_interface(chip, ep, false);
 
 	/* Some UAC1 devices (e.g. Yamaha THR10) need the host interface
 	 * to be set up before parameter setups

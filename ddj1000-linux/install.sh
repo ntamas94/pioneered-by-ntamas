@@ -113,21 +113,31 @@ install_bridge() {
     install_file "$HERE/bridge/99-ddj1000-reconnect.rules"  "$RULES/99-ddj1000-reconnect.rules"  644
 
     # The daemon needs a virtual MIDI port to meet the DJ software on, and one
-    # ALSA sequencer client per port.
+    # ALSA sequencer client per port. Four of them, not one: the daemon uses
+    # VirMIDI 5-1, so a single-port card leaves it with nowhere to go -- and a
+    # one-port setting here does nothing until the next reboot reloads the
+    # module, which makes it look like the reboot broke something else.
     if ! lsmod | grep -q '^snd_virmidi'; then
-        sudo modprobe snd-virmidi midi_devs=1 2>/dev/null || true
+        sudo modprobe snd-virmidi midi_devs=4 2>/dev/null || true
     fi
     grep -q '^snd-virmidi' /etc/modules 2>/dev/null || \
         echo 'snd-virmidi' | sudo tee -a /etc/modules >/dev/null
     [ -f /etc/modprobe.d/djbox-virmidi.conf ] || \
-        echo 'options snd-virmidi midi_devs=1' | \
+        echo 'options snd-virmidi midi_devs=4' | \
             sudo tee /etc/modprobe.d/djbox-virmidi.conf >/dev/null
+    sudo sed -i 's/midi_devs=1$/midi_devs=4/' /etc/modprobe.d/djbox-virmidi.conf
 
     sudo mkdir -p /var/cache/djbox-art
     sudo systemctl daemon-reload
     sudo udevadm control --reload-rules
-    sudo systemctl enable --now djbox-ddj-bridge.service
-    echo "  running as djbox-ddj-bridge.service"
+    # Enabled against the controller's own device unit rather than against
+    # boot: the udev rule names the USB device /dev/ddj1000, systemd turns
+    # that into dev-ddj1000.device, and the service is bound to it. Plugging
+    # the controller in starts it, pulling it out stops it, and there is
+    # nothing for anyone to start by hand.
+    sudo systemctl enable djbox-ddj-bridge.service
+    sudo udevadm trigger --subsystem-match=usb --action=add
+    echo "  bound to the controller as djbox-ddj-bridge.service"
 }
 
 install_mixxx() {

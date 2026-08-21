@@ -1,21 +1,22 @@
 [Unit]
-Description=DDJ-1000 MIDI bridge and jog display unlock
-After=sound.target
-Wants=sound.target
+Description=DDJ-1000 jog displays and control bridge
+Documentation=https://github.com/ntamas94/pioneered-by-ntamas
+# Tied to the controller itself, not to boot: udev gives the USB device the
+# stable name /dev/ddj1000, systemd turns that into dev-ddj1000.device, and
+# binding to it means this starts when the controller is plugged in and stops
+# when it is pulled out. Nothing to enable, nothing to start by hand.
+BindsTo=dev-ddj1000.device
+After=dev-ddj1000.device sound.target
 
 [Service]
-# Long-lived on purpose: the controller accepts an authentication response only
-# once per USB session, so losing the heartbeat means the jog displays cannot be
-# unlocked again until the device is re-enumerated. Running independently of the
-# Mixxx session keeps that from happening on every restart of the UI.
 Type=simple
 # Refuse to start on a damaged copy rather than fail in a way that reads, from
 # the controller, as the screens simply not working: a copy interrupted midway
 # leaves a file that exists and is executable and does nothing.
-ExecStartPre=/usr/bin/python3 -c "import ast,sys; ast.parse(open('/usr/local/bin/djbox-ddj-bridge.py').read())"
+ExecStartPre=/usr/bin/python3 -c "import ast,sys; ast.parse(open(\"/usr/local/bin/djbox-ddj-bridge.py\").read())"
 ExecStart=/usr/local/bin/djbox-ddj-bridge.py 1
-Restart=always
+Restart=on-failure
 RestartSec=3
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=dev-ddj1000.device
