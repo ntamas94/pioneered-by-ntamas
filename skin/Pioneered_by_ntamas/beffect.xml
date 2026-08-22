@@ -152,8 +152,22 @@
           <Number>1</Number>
           <Text>GRID</Text>
         </State>
+        <!-- All four, not deck 1 alone: the lanes are read side by side and
+             a reset that leaves three of them zoomed is worse than none. -->
         <Connection>
           <ConfigKey>[Channel1],waveform_zoom_set_default</ConfigKey>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Channel2],waveform_zoom_set_default</ConfigKey>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Channel3],waveform_zoom_set_default</ConfigKey>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Channel4],waveform_zoom_set_default</ConfigKey>
           <ConnectValueToWidget>false</ConnectValueToWidget>
         </Connection>
       </PushButton>
