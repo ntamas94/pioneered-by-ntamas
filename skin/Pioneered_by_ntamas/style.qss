@@ -1449,6 +1449,7 @@ WLabel {
 #TopStatusAudioBtn { margin-left: 6px; padding: 0 2px; min-width: 40px; }
 
 /* ---- the three stems, one stack per waveform lane ---- */
+
 /* rekordbox's own words and its own colours, read out of rekordbox.exe rather
    than matched by eye. The four juce::Colour values its STEMS strip is built
    from are one array at 0x145D3B950, filled by the static initialiser at file
@@ -1459,8 +1460,10 @@ WLabel {
    Centred, which is also the only alignment worth having here: WPushButton
    paints its own text into its own rect, so a stylesheet text-align never
    reaches it and the XML's left alignment took the vertical centring with it.
-   `color` does reach it -- that one comes off the palette -- and black is what
-   a fill this saturated wants. */
+   `color` does reach it -- that one comes off the palette. Black there is the
+   reference picture's choice and not the binary's: rekordbox puts the stem
+   colour into the text and outline slots over a background it resolves at
+   runtime, so the fills above are the only part of this taken from it. */
 #StemStack {
   margin: 1px 4px 1px 0;
 }
