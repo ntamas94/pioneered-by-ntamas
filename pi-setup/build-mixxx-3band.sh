@@ -1,18 +1,96 @@
 #!/bin/bash
-# Rebuild Mixxx so the three-band waveform is coloured the way rekordbox's
-# 3Band mode colours it, and so the numbers that decide that live in the skin
-# instead of in the binary.
+# Rebuild Mixxx with the three-band waveform's gain, curve and mix read out of
+# the skin instead of compiled into the binary.
 #
-# Both programs work the same way in outline. At analysis time each one splits
-# the track into a low, a mid and a high band and stores one level per band per
-# waveform column; at draw time each one mixes three colours by those levels.
-# Picking three skin colours therefore gets the hues right and the character
-# wrong, because the character is not in the colours. It is in three other
-# things: where the bands are split, what curve each band's level goes through
-# before it becomes colour, and what happens to brightness and saturation when
-# the level is low or when all three bands are strong at once.
+# READ THIS FIRST: THE PREMISE THIS WAS WRITTEN ON IS WRONG
 #
-# What Mixxx 2.5.6 does, read out of the source:
+# This script was written to close what looked like the gap between Mixxx's
+# three-band waveform and rekordbox's 3Band mode. The reasoning was that both
+# programs store a low, a mid and a high level per column and mix three colours
+# by those levels at draw time, so the difference in character had to be in the
+# mix -- and Mixxx's mix ends by dividing the colour by its own largest
+# component, which throws the level away. That reasoning was sound about Mixxx
+# and wrong about rekordbox.
+#
+# rekordbox has no colour mix at all. Static analysis of rekordbox 6.8.7 --
+# ntamas94/ddj1000-linux, docs/rekordbox-recon/waveform-3band-colour.md, commit
+# c76237e -- found the detail waveform drawing each band as its own bar
+# symmetric about the centre line, sorting the three by height, painting them
+# largest first with no blending, and carrying a hand-written colour for each of
+# the seven regions three overlapping bars can make:
+#
+#   low only #0055E1   mid only #FFA600   high only #FFFFFF
+#   low+mid  #B4690A   low+high #D2DCFA   mid+high #FFF0D7
+#   all three #F5EBD7
+#
+# Seven literals, seven mov instructions, no arithmetic. The pair colour depends
+# only on which two bands overlap, never on which of the two is larger, and the
+# core is a constant. So the divide-by-largest step is a fact about the renderer
+# the box happened to be using, not the thing that separates Mixxx from
+# rekordbox.
+#
+# THE CHEAP ROUTE COMES FIRST
+#
+# Mixxx already owns rekordbox's geometry. allshader::WaveformRendererFiltered
+# draws one unblended bar per band, all centred on the lane, low then mid then
+# high -- three nested rings, the same picture. Its paint order is fixed where
+# rekordbox sorts by height, but over 15 423 044 analysed columns the low band
+# is tallest in 78.8 per cent of them and high is tallest in under 3, so the two
+# put the same rings in the same places nearly always. That makes Mixxx's three
+# rings regions rather than bands, and the fix is three lines of skin XML
+# against WaveformType 19 -- no C++:
+#
+#   <SignalLowColor>#0055e1</SignalLowColor>    outer rim, low alone
+#   <SignalMidColor>#b4690a</SignalMidColor>    middle ring, low and mid
+#   <SignalHighColor>#f5ebd7</SignalHighColor>  core, all three
+#
+# Pixel-exact in 78.8 per cent of columns. It reverses the skin's white-rim,
+# blue-core assignment, which was arrived at by eye and is a defensible look in
+# its own right, so it is a decision and not an obvious edit. Try that, look at
+# it beside the reference, and only then decide whether anything below is worth
+# an hour of Pi.
+#
+# WHAT THE CHEAP ROUTE LEAVES, AND WHICH OF IT THIS SCRIPT ACTUALLY FIXES
+#
+# Three differences survive it. Only one of them is close to what is written
+# here, and none of them is in the renderer this script patches -- so if the
+# rebuild is judged worth it, the target moves from waveformrendererrgb.cpp to
+# waveformrendererfiltered.cpp and part of this has to be written, not just run.
+#
+#   The pair colours. rekordbox has three and Mixxx's middle ring has one slot,
+#   so the pale blue #D2DCFA never appears. About 5 per cent of columns. Fixing
+#   it means giving WaveformRendererFiltered a seven-entry region table and
+#   sorting the three bars by height before painting -- new code, not a knob.
+#
+#   The high-band curve. rekordbox pushes the high band through
+#   0.5 - 0.5*cos(pi*level/128) and leaves low and mid linear, which keeps the
+#   cream core thin on quiet hi-hats and opens it abruptly on transients. This
+#   is the one the mixer below nearly covers: it already gives every band its
+#   own 256-entry table, and a raised cosine is one more table shape beside the
+#   gamma. It would still have to be wired into the Filtered renderer, which
+#   today does not go through the mixer at all.
+#
+#   Normalisation. rekordbox scales every waveform by the loudest column of that
+#   track. Mixxx's Filtered renderer scales by a fixed 255 through VisualGain_0,
+#   so a quiet track stays small. The overview already works around this with
+#   OverviewNormalized 1; the scrolling lane has no equivalent.
+#
+# THE ONE THAT COLOUR CANNOT FIX
+#
+# The band edges. rekordbox's three bands overlap and are not a complementary
+# crossover: a 435 Hz sine reads 42 in both low and mid, both at essentially
+# unity, where a complementary pair would give each of them half. Mixxx splits
+# at 600 Hz and 4000 Hz with fourth-order Bessel filters, which is much closer
+# to complementary. Where the two disagree the colours will be right and the
+# shapes will not, and no amount of colour tuning reaches it. The BAND3_LOW_HZ
+# and BAND3_HIGH_HZ hooks at the bottom of this script move the two corners but
+# cannot make the bands overlap, so they are only half of what matching would
+# need. What settles the question is local and needs no capture: build a WAV of
+# stepped sine tones at one fixed amplitude, three per octave from 20 Hz to
+# 16 kHz, let rekordbox analyse it, and read the PWV7 back -- that gives both
+# magnitude responses directly. Until someone runs it, 600 and 4000 stay.
+#
+# WHAT MIXXX 2.5.6 DOES, read out of the source:
 #
 #   The split is at 600 Hz and 4000 Hz -- kLowMidFreqHz and kMidHighFreqHz in
 #   src/analyzer/analyzerwaveform.cpp -- with fourth-order Bessel filters, a
@@ -28,22 +106,23 @@
 #   under the deck card is WOverview::drawNextPixmapPartRGB in
 #   src/widget/woverview.cpp. Both do the same arithmetic: multiply each band
 #   level by its base colour, add the three, then divide all three components
-#   by the largest of them. That last step is the whole difference in
-#   character. Dividing by the largest component throws the level away and
-#   keeps only the ratio, so a column ten decibels down is drawn at exactly the
-#   same brightness as the loudest column in the track, and no column is ever
-#   white, because white needs all three components at once and only the
-#   largest survives. Column height comes from a fourth stored value, the
-#   overall level, not from the three bands.
+#   by the largest of them. That division throws the level away and keeps only
+#   the ratio, so a column ten decibels down is drawn at exactly the same
+#   brightness as the loudest column in the track, and no column is ever white,
+#   because white needs all three components at once and only the largest
+#   survives. Column height comes from a fourth stored value, the overall
+#   level, not from the three bands.
 #
-# So the mix Mixxx ships is "additive, then normalised to full brightness".
-# rekordbox's is additive without that normalisation, which is why quiet
-# passages there stay dark and dense ones go white. This patch does not hard
-# code the alternative. It puts the mix behind three named choices, gives every
-# band a gain and a curve, and reads all of it out of the skin's signal-colour
-# block, with defaults that reproduce today's Mixxx exactly. Nothing changes
-# until the skin says so. When the measurement of rekordbox's own function is
-# finished, the numbers go into skin XML and nothing has to be rebuilt.
+# That last paragraph is why WaveformType 17 washes a normal music column into
+# one pale blue, and it is a real defect against rekordbox -- just not the one
+# that had to be fixed, because the answer was to stop using that renderer.
+# What this script leaves behind is the mechanism rather than the match: one
+# shared mixer for both RGB paths, with the three base colours, a gain and a
+# curve per band, the choice of mix and the height rule all read out of the
+# skin's signal-colour block, and every default reproducing today's Mixxx
+# exactly. Nothing changes until the skin says so. It is worth keeping because
+# it is written, it compiles, and its per-band table is the natural home for
+# rekordbox's raised cosine if the Filtered route turns out to need it.
 #
 # What the skin may now set inside <Waveform>, alongside SignalColor and the
 # rest -- every one of them optional:
@@ -64,23 +143,23 @@
 #
 # The mix modes, exactly: normalized divides the three components by the
 # largest, additive clips each at 1, preserve divides by the largest only when
-# it exceeds 1. Additive is the one that behaves like rekordbox -- brightness
-# follows level and a column with all three bands strong comes out white.
+# it exceeds 1. Additive and preserve let brightness follow level, which is
+# what the RGB renderer is missing; neither of them is what rekordbox does,
+# because rekordbox does not mix.
 #
 # Band levels arrive here as the bytes the analyzer stored, so gain and curve
 # are 256-entry lookup tables built once at skin load, not pow() in the
 # per-pixel loop. Four decks of scrolling waveform at 60 Hz on a Pi 4 cannot
 # afford the pow().
 #
-# The crossovers are left alone by default. rekordbox's are not known yet, and
-# changing them means every track in the library is re-analysed, which also
-# changes what the DDJ-1000 jog screens draw. When they are measured, set
-# BAND3_LOW_HZ and BAND3_HIGH_HZ and this script will move them and bump the
-# stored-waveform version string so Mixxx re-analyses instead of drawing stale
-# data with the new colours. The filter shape is a separate question again:
-# fourth-order Bessel is what Mixxx uses, upstream leaves eighth-order
-# Butterworth in place commented out one line above, and which of the two is
-# closer to rekordbox is unmeasured.
+# The crossovers are left alone by default, for the reason given at the top and
+# for one more: changing them re-analyses every track in the library, which
+# also changes what the DDJ-1000 jog screens draw. Set BAND3_LOW_HZ and
+# BAND3_HIGH_HZ and this script moves them and bumps the stored-waveform
+# version string, so Mixxx re-analyses instead of drawing stale data through
+# new filters. That only moves two corners; making the bands overlap the way
+# rekordbox's do would mean replacing the low-pass, band-pass and high-pass
+# triple itself, which is a different patch against createFilters.
 #
 # This stacks on the tree in ~/build/mixxx-2.5.6, which already carries the
 # minute ruler, the drop hover, the marquee, the staggered GL resize, the

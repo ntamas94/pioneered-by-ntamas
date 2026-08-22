@@ -149,9 +149,9 @@ sudo install -m755 pi-setup/djbox-cpu-midi.sh /usr/local/bin/
 
 Recommended `mixxx.cfg` values: `WaveformType 19` and `WaveformOverviewType 0`
 on a stock Mixxx, which are the filtered renderers the skin's palette is tuned
-for; `17` and `2`, the RGB pair, once the three-band build below is installed
-and the mix stops normalising itself. [`docs/the-skin.md`](docs/the-skin.md)
-has the measurements. Also `TimeFormat 1`, `PositionDisplay 1`.
+for; the RGB pair `17` and `2` is what the box shipped with and is being
+moved off, because the filtered renderer is the one that matches rekordbox's
+geometry. [`docs/the-skin.md`](docs/the-skin.md) has the measurements. Also `TimeFormat 1`, `PositionDisplay 1`.
 
 ## Patched Mixxx
 
@@ -176,29 +176,39 @@ the first six):
 - the three-band waveform mix moved out of the binary and into the skin
   (`pi-setup/build-mixxx-3band.sh`)
 
-Mixxx and rekordbox draw a three-band waveform the same way in outline: split
-the track at two crossovers, keep one level per band per column, mix three
-colours by those levels. Picking the three colours in the skin therefore gets
-the hues right and the character wrong, because the character is not in the
-colours. Mixxx splits at 600 Hz and 4 kHz with fourth-order Bessel filters,
-and then, in `WaveformRendererRGB` and in `WOverview::drawNextPixmapPartRGB`,
-divides the mixed colour by its own largest component. That throws the level
-away and keeps only the ratio: a column ten decibels down is drawn as bright
-as the loudest one in the track, and nothing is ever white, because white
-needs all three components at once and only the largest survives. rekordbox
-adds without that step, which is why its quiet passages stay dark and its
-dense ones go white.
+Both programs split a track into three bands and keep one level per band per
+column, but they do not draw them the same way, and the difference turned out
+not to be a colour function at all. Static analysis of rekordbox 6.8.7 —
+`docs/rekordbox-recon/waveform-3band-colour.md` in the private DDJ-1000
+repository — found no mixing anywhere in it: rekordbox draws each band as its
+own bar about the centre line, sorts the three by height, paints them largest
+first with no blending, and carries a hand-written colour for each of the
+seven regions three overlapping bars can make. Seven literals, no arithmetic.
 
-The patch does not swap one hard-coded rule for another. It gives both
-renderers one shared mixer whose numbers — the three base colours, a gain and
-a curve per band, the choice between `normalized`, `additive` and `preserve`,
-and where the column height comes from — are read out of the skin's
-signal-colour block, with defaults that reproduce today's Mixxx exactly. The
-band levels arrive as the bytes the analyzer stored, so gain and curve are
-256-entry tables built at skin load rather than `pow()` in the per-pixel loop.
-The crossovers are left where they are until rekordbox's own are measured;
-moving them means re-analysing every track, so the script does that only when
-asked and bumps the stored-waveform version string when it does.
+Mixxx already owns that geometry in its Filtered renderer, which paints one
+unblended bar per band on the same centre line. Its three rings are therefore
+*regions* rather than bands, and giving them the region colours — `#0055e1`
+for the rim where only the low band reaches, `#b4690a` for the ring where low
+and mid overlap, `#f5ebd7` for the core where all three do — is pixel-exact
+in 78.8 % of columns, measured over fifteen million of them. That is three
+lines of skin XML and no build, and it reverses the skin's white-rim,
+blue-core assignment, so it is a decision rather than an obvious edit.
+
+`build-mixxx-3band.sh` was written against the earlier and wrong premise that
+Mixxx's RGB renderer normalising every colour to full brightness was the
+difference. That is a real defect — it is why `WaveformType 17` washes a
+normal column into one pale blue — but the answer to it was to stop using
+that renderer. What the script leaves behind is a mechanism rather than a
+match: one shared mixer for both RGB paths whose three base colours, per-band
+gain and curve, mix rule and height rule are read out of the skin, every
+default reproducing stock Mixxx. It is kept because three differences survive
+the cheap route — rekordbox's three pair colours collapsing into Mixxx's one
+middle-ring slot, the raised cosine it applies to the high band alone, and its
+per-track normalisation — and the script's per-band table is where that curve
+would go. Its header says what each of them would cost. The band edges are the
+one thing colour cannot reach: rekordbox's bands overlap where Mixxx's 600 Hz
+and 4 kHz Bessel split does not, and only the stepped-sine experiment named in
+the recon document settles it.
 
 Install: `sudo dpkg -i mixxx-data_*.deb mixxx_*.deb`. A clean build on a Pi 4
 is hours, so the later scripts stack on the tree the earlier ones left behind
