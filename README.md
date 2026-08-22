@@ -225,8 +225,7 @@ fetches source and builds from nothing, against Debian's 2.5.0; the 2.5.6
 tree the shipped packages come from was made by copying that `debian/`
 directory onto the upstream 2.5.6 tarball, turning `BUILD_BENCH` and
 `ENGINEPRIME` off in `debian/rules` and applying `pioneered-mixxx.patch`, and
-`build-mixxx-3band.sh` patches that tree in place. The version string sorts
-above the distro package, so `apt upgrade` will not replace it.
+`build-mixxx-3band.sh` patches that tree in place. Stacking has one trap worth knowing: `dpkg-buildpackage -nc` keeps the object files, but it also keeps `debian/*.debhelper.log`, and `dh` reads that log and skips `dh_auto_build` entirely — you get a package with a new version number around the previous run's binary, silently. The scripts delete the log before building and check the result with `strings` afterwards. The version string sorts above the distro package, so `apt upgrade` will not replace it.
 
 ## Why it is built this way
 

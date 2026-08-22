@@ -903,7 +903,26 @@ fi
 dch --local "" --distribution unstable "Skin-driven three-band waveform mix" || true
 sed -i "1s/^mixxx (.*)/mixxx ($VERSION)/" debian/changelog
 
+# -nc keeps the object files, which is the whole point on a Pi where a clean
+# build is hours -- but it also keeps debian/*.debhelper.log, and dh reads that
+# log to decide which steps of the sequence it has already run. Left in place it
+# makes dh skip dh_auto_build outright: the tree gets patched, a package gets
+# built, the version gets bumped, and the binary inside it is the one from the
+# previous run. Nothing warns you, and the version number says otherwise. This
+# is how 2.5.6-0pioneered4 was first built, and it took a strings(1) check on
+# the installed binary to notice. Deleting the log makes dh walk the sequence
+# again; cmake still builds incrementally, because -nc left obj-*/ alone.
+rm -f debian/*.debhelper.log
+
 dpkg-buildpackage -us -uc -b -nc -j4
+
+# Assert the new code actually reached the binary rather than trusting that a
+# package came out. The failure above is silent and this is what catches it.
+OBJDIR="obj-$(dpkg-architecture -qDEB_HOST_GNU_TYPE)"
+if ! strings -a -el "$OBJDIR/mixxx" | grep -q Signal3BandMix; then
+    echo "the built binary does not contain the patch -- refusing to install" >&2
+    exit 1
+fi
 
 cd ~/build
 sudo apt-get install -y --allow-downgrades \

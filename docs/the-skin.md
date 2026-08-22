@@ -316,7 +316,17 @@ drawn at the equal gains that put cream over 70 % of the lane, and measuring
 the pixels of a card confirms it: **89 % to 99.8 % of the coloured pixels in a
 deck card's overview are the cream**, before and after the lane gains changed.
 That is a solid pale block where rekordbox shows a blue-rimmed waveform, and no
-setting in `mixxx.cfg` or the skin can move it. It needs code.
+setting in `mixxx.cfg` or the skin can move it.
+
+That is what `2.5.6-0pioneered4` is for. `pi-setup/build-mixxx-3band.sh` routes
+those three lines through the same per-band tables the three-band mixer already
+builds, and the gains come from the skin as `Signal3BandLowGain`,
+`Signal3BandMidGain` and `Signal3BandHighGain` in the `<Overview>` block of
+`deck.xml` — the same `1.15 / 0.69 / 0.06` the lane uses. With gains of 1 the
+patch is an arithmetic no-op, so the build changes nothing until the skin asks.
+Measured on the same track before and after, off the screen: the deck card went
+from 3.8 % blue, 7.0 amber, **89.2 cream** to 50.4 % blue, 43.8 amber, **5.9
+cream**, against rekordbox's own 47.8 / 41.7 / 10.5.
 
 **The centre line is Mixxx's, not rekordbox's.** The filtered renderer paints
 an axis over the bands after all three, and with `AxesColor` unset it defaults

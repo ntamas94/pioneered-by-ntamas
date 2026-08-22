@@ -54,7 +54,7 @@
               </Label>
             </Children>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channel"/>],play_indicator</ConfigKey>
+              <ConfigKey>[Pioneered],onair<Variable name="channel"/></ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -206,6 +206,20 @@
                 <Signal3BandMidColor>#ffa600</Signal3BandMidColor>
                 <Signal3BandHighColor>#ffffff</Signal3BandHighColor>
                 <Signal3BandMix>additive</Signal3BandMix>
+                <!-- The card overview draws the three bands as nested lines and, in
+                     stock Mixxx, reads no per-band gain at all: WOverview asks only
+                     for getVisualGain(All) and drawNextPixmapPartLMH goes straight
+                     from the stored bytes. So the card sat at equal gains, where
+                     Mixxx's gamma-lifted high band covers about 70% of the lane and
+                     89 to 99.8% of a card's coloured pixels came out cream. The
+                     pioneered4 build routes those three lines through the same
+                     per-band tables as the mixer; these are the gains it reads.
+                     Same triple as VisualGain_1/2/3 on the scrolling lane, fitted
+                     against rekordbox's own 47.8 / 41.7 / 10.5 rather than by eye.
+                     See docs/the-skin.md. -->
+                <Signal3BandLowGain>1.15</Signal3BandLowGain>
+                <Signal3BandMidGain>0.69</Signal3BandMidGain>
+                <Signal3BandHighGain>0.06</Signal3BandHighGain>
                 <PlayedOverlayColor>#40ffffff</PlayedOverlayColor>
              <Mark>
               <Control>cue_point</Control>
