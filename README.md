@@ -105,15 +105,17 @@ All four decks loaded and on air:
 - `2 DECK | 2/4 DECK | 4 DECK` view selector — pressing the active button
   again flips between deck pairs (1-2 ↔ 3-4)
 - Waveform sidebar: USB1 + eject, KEY, ON AIR column with large deck number
-- Pioneer-style cyclic ZOOM (zooms in, wraps back to widest) on all four
-  decks at once
+- ZOOM IN / ZOOM OUT step all four decks together along a fixed ladder,
+  and GRID puts all four back to the default zoom
+- Three stem buttons in every waveform lane, DRUMS / VOCAL / INST in
+  rekordbox's own colours, wired to `[Pioneered],stem<N>_*`
 - Top status box: LOAD (audio engine %), CPU %, SoC °C, clock, and an
   `OUT` button that flips the master output between HDMI and the 3.5 mm
   jack (`pi-setup/djbox-audio.sh hdmi|jack|usb`). HDMI on the Pi only takes
   IEC958-framed audio, so a raw `hw:` open fails in Mixxx — the script sets
   up a named ALSA plug device (`hdmi_out`) that PortAudio lists and Mixxx
   can pick; a USB sound card is picked up by `usb`
-- SINGLE/CONTINUE (AutoDJ), X-PAD strip, ZOOM/GRID, LOW/MID/HI kills
+- SINGLE/CONTINUE (AutoDJ)
 - Minute ruler under the card waveform (`-4:00 -3:00 …`) — requires the
   patched Mixxx built by `pi-setup/build-mixxx-ruler.sh`
 - Whole deck card is a track drop target; with the patched build the card
@@ -125,6 +127,7 @@ All four decks loaded and on air:
 | Path | What it is |
 |---|---|
 | `skin/Pioneered_by_ntamas/` | the finished skin — copy into `~/.mixxx/skins/` |
+| [`docs/the-skin.md`](docs/the-skin.md) | what each skin file draws, the `[Pioneered]` control namespace and who is on each end of it, the deck and time modes, and the waveform palette |
 | `patch-skin-xz.py` | idempotent builder: produces the skin from the `Pioneered_4_deck` base, step by step |
 | `controllers/Time-Clamp.midi.xml` + `-scripts.js` | mapping attached to a VirMIDI port: two-state time, view-selector radio, cyclic zoom, CPU input, plus play (CC `0x11-0x14`) and LoadSelectedTrack (CC `0x15-0x18`) bindings for decks 1-4 so the box can be driven headless via `amidi` — loads without any hardware controller |
 | `controllers/pioneer-ddj1000.midi.xml` + JS | custom 4-deck DDJ-1000 mapping (351 controls, 56 outputs), generated from the official AlphaTheta MIDI list |
@@ -144,10 +147,11 @@ sudo install -m755 pi-setup/djbox-cpu-midi.sh /usr/local/bin/
 # mixxx.cfg: [Controller] VirMIDI_5-0 1, [ControllerPreset] VirMIDI_5-0 Time-Clamp.midi.xml
 ```
 
-Recommended `mixxx.cfg` values: `WaveformType 17` (all-shader RGB, which is
-the one that mixes the three band colours), `WaveformOverviewType 2` (RGB
-again, so the card overview and the big waveform agree), `TimeFormat 1`,
-`PositionDisplay 1`.
+Recommended `mixxx.cfg` values: `WaveformType 19` and `WaveformOverviewType 0`
+on a stock Mixxx, which are the filtered renderers the skin's palette is tuned
+for; `17` and `2`, the RGB pair, once the three-band build below is installed
+and the mix stops normalising itself. [`docs/the-skin.md`](docs/the-skin.md)
+has the measurements. Also `TimeFormat 1`, `PositionDisplay 1`.
 
 ## Patched Mixxx
 
