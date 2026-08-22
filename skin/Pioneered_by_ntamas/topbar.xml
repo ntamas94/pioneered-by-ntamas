@@ -50,56 +50,166 @@
             <Layout>horizontal</Layout>
             <SizePolicy>max,max</SizePolicy>
             <Children>
-          <PushButton>
-            <ObjectName>DeckModeBtn2</ObjectName>
-            <Size>132f,76f</Size>
-            <NumberStates>1</NumberStates>
-            <State><Number>0</Number>
-<Text>2 DECK</Text></State>
-            <Connection>
-              <ConfigKey>[Pioneered],mode2</ConfigKey>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Pioneered],disp2</ConfigKey>
-            </Connection>
-          </PushButton>
-          <PushButton>
-            <ObjectName>DeckModeBtn24</ObjectName>
-            <Size>152f,76f</Size>
-            <NumberStates>1</NumberStates>
-            <State><Number>0</Number><Text>2/4 DECK</Text></State>
-            <Connection>
-              <ConfigKey>[Pioneered],mode24</ConfigKey>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Pioneered],disp24</ConfigKey>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Pioneered],profile2</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
-            </Connection>
-          </PushButton>
-          <PushButton>
-            <ObjectName>DeckModeBtn4</ObjectName>
-            <Size>132f,76f</Size>
-            <NumberStates>1</NumberStates>
-            <State><Number>0</Number><Text>4 DECK</Text></State>
-            <Connection>
-              <ConfigKey>[Pioneered],mode4</ConfigKey>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Pioneered],disp4</ConfigKey>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Pioneered],profile2</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
-            </Connection>
-          </PushButton>
+              <!-- The three deck modes. A connection carries one control and a
+                   press sends the same value to every one of them, so a button
+                   that has to leave several flags in a particular combination
+                   needs one connection each, with <Not/> on the ones that have
+                   to land at zero: nothing in a legacy skin fans one value out
+                   to many controls, so the button itself is the fan-out. Each
+                   button raises its own mode flag last, because the last
+                   connection that reads back is the display connection, and
+                   that is what the white highlight in style.qss keys off.
+                   2/4 DECK is the middle setting in the Pioneer sense: all four
+                   decks stay on screen as cards, but only the mixing pair gets
+                   a waveform lane, so those two lanes run full height. -->
+              <PushButton>
+                <ObjectName>DeckModeBtn2</ObjectName>
+                <Size>132f,76f</Size>
+                <NumberStates>1</NumberStates>
+                <State><Number>0</Number><Text>2 DECK</Text></State>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_wf3</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_wf4</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_smalltop</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_smallbot</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_bigtop</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_cardbot</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode24</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode4</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode2</ConfigKey>
+                </Connection>
+              </PushButton>
+              <PushButton>
+                <ObjectName>DeckModeBtn24</ObjectName>
+                <Size>152f,76f</Size>
+                <NumberStates>1</NumberStates>
+                <State><Number>0</Number><Text>2/4 DECK</Text></State>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_wf3</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_wf4</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_smalltop</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_smallbot</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_bigtop</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_cardbot</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode2</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode4</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode24</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],profile2</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </PushButton>
+              <PushButton>
+                <ObjectName>DeckModeBtn4</ObjectName>
+                <Size>132f,76f</Size>
+                <NumberStates>1</NumberStates>
+                <State><Number>0</Number><Text>4 DECK</Text></State>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_wf3</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_wf4</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_smalltop</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_smallbot</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],card_bigtop</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],show_cardbot</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode2</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode24</ConfigKey>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                  <Transform><Not/></Transform>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],mode4</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Pioneered],profile2</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup>
           <Template src="skin:tab.xml">

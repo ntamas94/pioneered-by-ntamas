@@ -9,12 +9,14 @@
 		<attributes>
 			<attribute config_key="[Master],num_decks">4</attribute>
 			<attribute config_key="[Pioneered],cpu">0</attribute>
+			<!-- The box boots in 4 DECK. These three and the show_wf/card flags
+			     below are one row of the deck-mode table in topbar.xml, and they
+			     have to stay that row: a mode button rewrites all of them at
+			     once, so a default that mixed two modes would show a layout no
+			     button can produce until one is pressed. -->
 			<attribute config_key="[Pioneered],mode2">0</attribute>
 			<attribute config_key="[Pioneered],mode24">0</attribute>
-			<attribute config_key="[Pioneered],mode4">0</attribute>
-			<attribute config_key="[Pioneered],disp2">0</attribute>
-			<attribute config_key="[Pioneered],disp24">0</attribute>
-			<attribute config_key="[Pioneered],disp4">1</attribute>
+			<attribute config_key="[Pioneered],mode4">1</attribute>
 			<attribute config_key="[Pioneered],show_wf1">1</attribute>
 			<attribute config_key="[Pioneered],show_wf2">1</attribute>
 			<attribute config_key="[Pioneered],show_wf3">1</attribute>
