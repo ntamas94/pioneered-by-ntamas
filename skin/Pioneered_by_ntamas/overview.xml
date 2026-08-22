@@ -28,58 +28,14 @@
             </Children>
           </WidgetGroup>
           <WidgetGroup>
-            <ObjectName>BeatFX_Container</ObjectName>
+            <ObjectName>SidePanel_Container</ObjectName>
             <Layout>vertical</Layout>
-            <Size>150max,0me</Size>
+            <!-- Fixed, and wide enough for the widest word in it: while the
+                 panel held an effect selector its own minimum kept it open,
+                 and without that it collapsed onto the labels. -->
+            <Size>200f,0me</Size>
             <Children>
-              <WidgetGroup>
-                <ObjectName>BeatFX_Header</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>0me,10p</Size>
-                <Children>
-                  <Label>
-                    <ObjectName>BeatFX_Title</ObjectName>
-                    <Text>Color FX L</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-               <Template src="skin:ceffectl.xml">
-                <SetVariable name="rack">1</SetVariable>
-                <SetVariable name="unit">1</SetVariable>
-                <SetVariable name="effect">1</SetVariable>
-              </Template>
-              <WidgetGroup>
-                <ObjectName>BeatFX_Header</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>0me,10p</Size>
-                <Children>
-                  <Label>
-                    <ObjectName>BeatFX_Title</ObjectName>
-                    <Text>Color FX R</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-               <Template src="skin:ceffectr.xml">
-                <SetVariable name="rack">1</SetVariable>
-                <SetVariable name="unit">1</SetVariable>
-                <SetVariable name="effect">1</SetVariable>
-              </Template>
- 	            <WidgetGroup>
-                <ObjectName>BeatFX_Header</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>20me,10p</Size>
-                <Children>
-                  <Label>
-                    <ObjectName>BeatFX_Title</ObjectName>
-                    <Text>Beat FX</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-              <Template src="skin:beffect.xml">
-                <SetVariable name="rack">1</SetVariable>
-                <SetVariable name="unit">1</SetVariable>
-                <SetVariable name="effect">1</SetVariable>
-              </Template>
+              <Template src="skin:beffect.xml"/>
             </Children>
           </WidgetGroup>
         </Children>

@@ -1,139 +1,105 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>FxBpmRow</ObjectName>
-    <Layout>horizontal</Layout>
-    <Size>0me,42f</Size>
-    <Children>
-      <Number>
-        <ObjectName>FxBpm</ObjectName>
-        <NumberOfDigits>1</NumberOfDigits>
-        <Connection>
-          <ConfigKey>[InternalClock],bpm</ConfigKey>
-        </Connection>
-      </Number>
-      <Label>
-        <ObjectName>FxBpmChip</ObjectName>
-        <Text>AUTO&#10;BPM</Text>
-      </Label>
-      <Label>
-        <ObjectName>FxBpmFill</ObjectName>
-        <Size>0me,0me</Size>
-      </Label>
-    </Children>
-  </WidgetGroup>
-  <WidgetGroup>
+    <ObjectName>SidePanelBody</ObjectName>
     <Layout>vertical</Layout>
-     <Children>
-                  <EffectChainPresetSelector>
-                    <ObjectName>EffectUnit1_kEffectSelectorLeft</ObjectName>
-                    <EffectUnitGroup>[EffectRack1_EffectUnit1]</EffectUnitGroup>
-                  </EffectChainPresetSelector>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-<PushButton>
-        <ObjectName>EffectToggle</ObjectName>
-        <Size>0me,50max</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>Off</Text>
-        </State>
-        <State>
-          <Number>
-                  <NumberOfDigits>0</NumberOfDigits>1</Number>
-          <Text>Active</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[EffectRack<Variable name="rack"/>_EffectUnit<Variable name="unit"/>_Effect2],enabled</ConfigKey>
-          <ConnectValueToWidget>true</ConnectValueToWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey>EffectRack<Variable name="rack"/>_EffectUnit<Variable name="unit"/>],group_[Master]_enable</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Pioneered],fxlen</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-</PushButton>
-<WidgetGroup>
-                <ObjectName>Param</ObjectName>
-                <Size>0me,50max</Size>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Label>
-                    <ObjectName>text</ObjectName>
-                    <Text>LENGTH </Text>
-                  </Label>
-                  <Number>
-     		   <TooltipId>parameter1</TooltipId>
-   		     <Connection>
-    		        <ConfigKey>[EffectRack1_EffectUnit1_Effect2],parameter1</ConfigKey>
-   		     </Connection>
-   		 </Number>
-                <Label>
-                  <ObjectName>FxLenPct</ObjectName>
-                  <Text>%</Text>
-                </Label>
-                </Children>
-              </WidgetGroup>
-<WidgetGroup>
-    <ObjectName>ZoomGridRow</ObjectName>
-    <Layout>horizontal</Layout>
-    <Size>0me,26max</Size>
+    <Size>0me,0me</Size>
     <Children>
-      <PushButton>
-        <ObjectName>ZoomButton</ObjectName>
-        <Size>0me,24max</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>ZOOM</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>ZOOM</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Pioneered],zoomcycle</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-      </PushButton>
-      <PushButton>
-        <ObjectName>GridButton</ObjectName>
-        <Size>0me,24max</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>GRID</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>GRID</Text>
-        </State>
-        <!-- All four, not deck 1 alone: the lanes are read side by side and
-             a reset that leaves three of them zoomed is worse than none. -->
-        <Connection>
-          <ConfigKey>[Channel1],waveform_zoom_set_default</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Channel2],waveform_zoom_set_default</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Channel3],waveform_zoom_set_default</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Channel4],waveform_zoom_set_default</ConfigKey>
-          <ConnectValueToWidget>false</ConnectValueToWidget>
-        </Connection>
-      </PushButton>
-    </Children>
-  </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>SidePanel_Header</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>0me,10p</Size>
+        <Children>
+          <Label>
+            <ObjectName>SidePanel_Title</ObjectName>
+            <Text>View</Text>
+          </Label>
+        </Children>
+      </WidgetGroup>
+      <!-- GRID is a thin bar over a pair of square steppers, which is how the
+           sketch has it: the reset is pressed rarely and the zoom often, and
+           the sizes say so. -->
+      <WidgetGroup>
+        <ObjectName>GridRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>0me,56max</Size>
+        <Children>
+          <PushButton>
+            <ObjectName>GridButton</ObjectName>
+            <Size>0me,52max</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>Grid</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>Grid</Text>
+            </State>
+            <!-- All four, not deck 1 alone: the lanes are read side by side and
+                 a reset that leaves three of them zoomed is worse than none. -->
+            <Connection>
+              <ConfigKey>[Channel1],waveform_zoom_set_default</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel2],waveform_zoom_set_default</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel3],waveform_zoom_set_default</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel4],waveform_zoom_set_default</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>ZoomRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>0me,84max</Size>
+        <Children>
+          <!-- Two steppers rather than one cycling button: the ladder in the
+               mapping has six rungs, and reaching the rung below the current
+               one by walking all the way round is the kind of thing that goes
+               wrong in front of a crowd. One state each, so a press sends 1
+               and the release 0, and the mapping steps once per press. -->
+          <PushButton>
+            <ObjectName>ZoomInButton</ObjectName>
+            <Size>0me,80max</Size>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>ZOOM IN</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Pioneered],zoomin</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>ZoomOutButton</ObjectName>
+            <Size>0me,80max</Size>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>ZOOM OUT</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Pioneered],zoomout</ConfigKey>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>SidePanelFill</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>0me,0me</Size>
+        <Children/>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

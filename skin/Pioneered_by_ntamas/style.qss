@@ -286,20 +286,20 @@ WLabel {
 }
 
 /************************************************************************/
-/*     BeatFX                                                           */
+/*     Side panel                                                       */
 /************************************************************************/
 
-#BeatFX_Container {
+#SidePanel_Container {
   border: 2px solid #32323c;
   margin-left: 10px;
   qproperty-layoutAlignment: 'AlignCenter | AlignTop';
 }
 
-#BeatFX_Header {
+#SidePanel_Header {
   background-color: #32323c;
 }
 
-#BeatFX_Title {
+#SidePanel_Title {
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
@@ -513,7 +513,7 @@ WLabel {
 #TabButtonBrowse[value="1"],
 
 
-#BeatFX_Header, #BeatFX_Title {
+#SidePanel_Header, #SidePanel_Title {
   background-color: #0d2444;
   color: #cfe4ff;
 }
@@ -605,19 +605,25 @@ WLabel {
   qproperty-alignment: 'AlignCenter';
 }
 
-#ZoomGridRow {
-  margin: 4px 2px 2px 2px;
+#GridRow {
+  margin: 4px 2px 0 2px;
 }
 
-#ZoomButton, #GridButton {
+#ZoomRow {
+  margin: 2px 2px 4px 2px;
+}
+
+#ZoomInButton, #ZoomOutButton, #GridButton {
   background-color: #0d1a2e;
   border: 1px solid #1f4c85;
   color: #8fb4e0;
-  font-size: 10px;
   font-weight: bold;
-  margin: 0 2px;
+  margin: 2px;
   padding: 3px 0;
 }
+
+#GridButton { font-size: 13px; }
+#ZoomInButton, #ZoomOutButton { font-size: 14px; }
 
 /* ---- step 9: header badge and BPM ---- */
 
@@ -1351,67 +1357,15 @@ WLabel {
 #WaveformDeckNum1, #WaveformDeckNum2, #WaveformDeckNum3, #WaveformDeckNum4 { font-size: 30px; }
 #WaveformOnAirLabel { font-size: 10px; }
 
-/* ---- step 39: AZ Beat FX panel ---- */
-#FxBpm {
-  background-color: transparent;
-  color: #ffffff;
-  font-family: "Nimbus Sans Narrow";
-  font-size: 30px;
-  font-weight: bold;
-  qproperty-alignment: 'AlignLeft | AlignVCenter';
-  padding-left: 6px;
-}
-
-#FxBpmChip {
-  background-color: #17191d;
-  border: 1px solid #2c2f34;
-  color: #cfd6dc;
-  font-size: 8px;
-  font-weight: bold;
-  margin: 8px 0 8px 4px;
-  padding: 1px 4px;
-}
-
-/* Selected chain name reads like the AZ's big effect name. */
-WEffectChainPresetSelector {
-  color: #ffffff;
-  font-family: "DejaVu Sans";
-  font-size: 19px;
-  font-weight: bold;
-}
-
-#Param, #Param #text {
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: bold;
-}
-
 #EffectToggle { font-size: 13px; font-weight: bold; }
 
-#FxBpm { min-width: 96px; }
-
-/* ---- step 39b: Beat FX panel, AZ look ---- */
-#BeatFX_Title {
+/* ---- step 39b: side panel headings ---- */
+#SidePanel_Title {
   color: #9aa4ad;
   font-size: 11px;
   font-weight: bold;
   letter-spacing: 1px;
   qproperty-alignment: 'AlignCenter';
-}
-
-#FxBpmRow { qproperty-layoutAlignment: 'AlignCenter'; }
-
-#FxBpm {
-  font-size: 32px;
-  min-width: 100px;
-  qproperty-alignment: 'AlignRight | AlignVCenter';
-  padding: 0;
-}
-
-/* Big centred effect name. */
-WEffectChainPresetSelector {
-  font-size: 22px;
-  padding: 2px 6px;
 }
 
 /* White box, like the AZ beat-length display. */
@@ -1429,22 +1383,7 @@ WEffectChainPresetSelector {
   color: #111111;
 }
 
-#Param #text {
-  color: #cfd6dc;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-#Param {
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: bold;
-}
 
-
-
-#FxLenPct { color: #cfd6dc; font-size: 12px; font-weight: bold; qproperty-alignment: 'AlignLeft | AlignBottom'; }
-#Param Number, #Param WNumber { qproperty-alignment: 'AlignRight | AlignVCenter'; }
 
 
 /* Mixxx version badge, top-left */
@@ -1508,3 +1447,32 @@ WEffectChainPresetSelector {
 #TopStatusAudioBtn:pressed { color: #ffffff; border-color: #f5a623; }
 
 #TopStatusAudioBtn { margin-left: 6px; padding: 0 2px; min-width: 40px; }
+
+/* ---- the three stems, one stack per waveform lane ---- */
+
+/* rekordbox's own words and colours. Centred, which is also the only
+   alignment worth having here: WPushButton paints its own text into its own
+   rect, so a stylesheet text-align never reaches it and the XML's left
+   alignment loses the vertical centring with it. */
+#StemStack {
+  margin: 1px 4px 1px 0;
+}
+
+#StemDrums, #StemVocal, #StemInst {
+  border: 1px solid #0a0f18;
+  border-radius: 2px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 1px 0;
+}
+
+#StemDrums { background-color: #2e5be8; }
+#StemVocal { background-color: #1fbf4f; }
+#StemInst { background-color: #e8332e; }
+
+/* Engaged: the same colour lifted, with a white edge, so the state carries
+   from as far away as the waveform does. */
+#StemDrums[value="1"] { background-color: #6b8dff; border-color: #ffffff; }
+#StemVocal[value="1"] { background-color: #57e884; border-color: #ffffff; }
+#StemInst[value="1"] { background-color: #ff6f6a; border-color: #ffffff; }

@@ -180,9 +180,27 @@
                 <Channel><Variable name="channel"/></Channel>
                 <BgColor>#000</BgColor>
                 <SignalColor>#1d6fe0</SignalColor>
-                <SignalLowColor>#ffffff</SignalLowColor>
-                <SignalMidColor>#f2d13c</SignalMidColor>
+                <!-- rekordbox's three bands. The filtered renderer draws one bar
+                     per band from the centre out, low then mid then high with no
+                     blending, so the last one drawn owns the core and the triple is
+                     ordered by draw order rather than by frequency: blue is the
+                     body, the burnt orange the ring where the mids reach past it,
+                     and the cream the rim and the transient tips. The RGB triple
+                     below is ordered by frequency instead, because that renderer
+                     adds the three colours instead of layering them. Only one of
+                     the two is read, and WaveformType in mixxx.cfg says which. -->
+                <SignalLowColor>#f2e8d5</SignalLowColor>
+                <SignalMidColor>#c8741c</SignalMidColor>
                 <SignalHighColor>#1d6fe0</SignalHighColor>
+                <SignalRGBLowColor>#1d6fe0</SignalRGBLowColor>
+                <SignalRGBMidColor>#c8741c</SignalRGBMidColor>
+                <SignalRGBHighColor>#f2e8d5</SignalRGBHighColor>
+                <!-- Inert on the stock renderers and on the build installed today.
+                     The pioneered4 build moves the mix into the skin, and there the
+                     difference that matters is this one: Mixxx divides the mixed
+                     colour by its own largest component, which throws the level away
+                     and means nothing is ever white, while rekordbox simply adds. -->
+                <Signal3BandMix>additive</Signal3BandMix>
                 <PlayedOverlayColor>#40ffffff</PlayedOverlayColor>
              <Mark>
               <Control>cue_point</Control>

@@ -91,6 +91,51 @@
           </WidgetGroup>
         </Children>
       </WidgetGroup>
+      <!-- The deck's three stems, between its info block and its number, so
+           the lane a button belongs to is never in doubt. The words and the
+           colours are rekordbox's own row, which is also the honest naming:
+           its INST is the residual, mix minus drums minus vocals, rather than
+           a fourth thing the separation predicts. This template runs once per
+           channel, so the keys come out as [Pioneered],stem1_drums through
+           stem4_inst. Naming a control here is what creates it; nothing reads
+           them yet. -->
+      <WidgetGroup>
+        <ObjectName>StemStack</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>76f,0me</Size>
+        <Children>
+          <PushButton>
+            <ObjectName>StemDrums</ObjectName>
+            <Size>0me,0me</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>DRUMS</Text></State>
+            <State><Number>1</Number><Text>DRUMS</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],stem<Variable name="channel"/>_drums</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>StemVocal</ObjectName>
+            <Size>0me,0me</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>VOCAL</Text></State>
+            <State><Number>1</Number><Text>VOCAL</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],stem<Variable name="channel"/>_vocal</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>StemInst</ObjectName>
+            <Size>0me,0me</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>INST</Text></State>
+            <State><Number>1</Number><Text>INST</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],stem<Variable name="channel"/>_inst</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
             <WidgetGroup>
         <ObjectName>WaveformOnAirColumn<Variable name="channel"/></ObjectName>
         <Layout>vertical</Layout>
@@ -127,9 +172,27 @@
         <BeatColor>#40ffffff</BeatColor>
         <PlayPosColor>#fff</PlayPosColor>
         <SignalColor>#1d6fe0</SignalColor>
-        <SignalLowColor>#1d6fe0</SignalLowColor>
-        <SignalMidColor>#f2d13c</SignalMidColor>
-        <SignalHighColor>#ffffff</SignalHighColor>
+        <!-- rekordbox's three bands. The filtered renderer draws one bar
+             per band from the centre out, low then mid then high with no
+             blending, so the last one drawn owns the core and the triple is
+             ordered by draw order rather than by frequency: blue is the
+             body, the burnt orange the ring where the mids reach past it,
+             and the cream the rim and the transient tips. The RGB triple
+             below is ordered by frequency instead, because that renderer
+             adds the three colours instead of layering them. Only one of
+             the two is read, and WaveformType in mixxx.cfg says which. -->
+        <SignalLowColor>#f2e8d5</SignalLowColor>
+        <SignalMidColor>#c8741c</SignalMidColor>
+        <SignalHighColor>#1d6fe0</SignalHighColor>
+        <SignalRGBLowColor>#1d6fe0</SignalRGBLowColor>
+        <SignalRGBMidColor>#c8741c</SignalRGBMidColor>
+        <SignalRGBHighColor>#f2e8d5</SignalRGBHighColor>
+        <!-- Inert on the stock renderers and on the build installed today.
+             The pioneered4 build moves the mix into the skin, and there the
+             difference that matters is this one: Mixxx divides the mixed
+             colour by its own largest component, which throws the level away
+             and means nothing is ever white, while rekordbox simply adds. -->
+        <Signal3BandMix>additive</Signal3BandMix>
         <Mark>
           <Control>cue_point</Control>
           <Text>CUE</Text>
