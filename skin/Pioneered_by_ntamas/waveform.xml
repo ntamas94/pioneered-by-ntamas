@@ -139,7 +139,12 @@
             <WidgetGroup>
         <ObjectName>WaveformOnAirColumn<Variable name="channel"/></ObjectName>
         <Layout>vertical</Layout>
-        <Size>44f,0me</Size>
+        <!-- Wide enough for the badge. "ON AIR" bold at 10px measures a little
+             over 44, so at the old width it spilled past the column edge and
+             sat on the waveform. That was invisible while the column had nothing
+             but black to its right, and obvious once the stem stack moved in
+             beside it. -->
+        <Size>56f,0me</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>WaveformOnAir</ObjectName>
@@ -153,7 +158,7 @@
               </Label>
             </Children>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channel"/>],play_indicator</ConfigKey>
+              <ConfigKey>[Pioneered],onair<Variable name="channel"/></ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

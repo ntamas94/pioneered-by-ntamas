@@ -56,6 +56,10 @@
 			<attribute config_key="[Pioneered],load">0</attribute>
 			<attribute config_key="[Pioneered],audio_btn">0</attribute>
 			<attribute config_key="[Pioneered],prefs_btn">0</attribute>
+			<attribute config_key="[Pioneered],onair1">0</attribute>
+			<attribute config_key="[Pioneered],onair2">0</attribute>
+			<attribute config_key="[Pioneered],onair3">0</attribute>
+			<attribute config_key="[Pioneered],onair4">0</attribute>
 			<attribute config_key="[Master],num_samplers">16</attribute>
 			<attribute persist="true" config_key="[Master],maximize_library">0</attribute>
 			<attribute persist="true" config_key="[Master],skin_settings">0</attribute>
