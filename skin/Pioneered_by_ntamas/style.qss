@@ -485,34 +485,11 @@ WLabel {
   font-weight: bold;
 }
 
-#XPadRow {
-  margin: 1px 4px;
-}
 
-#XPadStrip {
-  background-color: #0d1116;
-  border-top: 1px solid #2b3948;
-  margin-top: 4px;
-  padding: 2px;
-}
 
-#XPadTitle {
-  color: #8fa4b8;
-  font-size: 9px;
-  letter-spacing: 1px;
-  qproperty-alignment: 'AlignCenter';
-}
 
 /* Warm at the low end, cool at the high end, mirroring the XZ strip. */
-#XPadLpf { color: #ffb340; font-size: 10px; font-weight: bold; qproperty-alignment: 'AlignLeft | AlignVCenter'; }
-#XPadMid { color: #ffffff; font-size: 10px; font-weight: bold; qproperty-alignment: 'AlignCenter'; }
-#XPadHpf { color: #4fc3f7; font-size: 10px; font-weight: bold; qproperty-alignment: 'AlignRight | AlignVCenter'; }
 
-#XPadValue {
-  color: #ffffff;
-  font-size: 12px;
-  qproperty-alignment: 'AlignCenter';
-}
 
 /* ---- step 5: XZ colour scheme ---- */
 
@@ -1025,14 +1002,7 @@ WLabel {
 /* ---- step 24: XZ touches ---- */
 
 /* Orange X-PAD band. */
-#XPadRow { background-color: #e08b2a; }
 
-#XPadLpf, #XPadMid, #XPadHpf {
-  background-color: transparent;
-  color: #10222f;
-  font-size: 10px;
-  font-weight: bold;
-}
 
 /* ---- step 26: flatter title band ---- */
 
@@ -1471,18 +1441,7 @@ WEffectChainPresetSelector {
   font-weight: bold;
 }
 
-#XPadTitle {
-  color: #9aa4ad;
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  qproperty-alignment: 'AlignCenter';
-}
 
-#XPadValue { max-height: 0px; }
-#XPadLpf { qproperty-alignment: 'AlignLeft | AlignVCenter'; padding-left: 4px; }
-#XPadMid { qproperty-alignment: 'AlignCenter'; }
-#XPadHpf { qproperty-alignment: 'AlignRight | AlignVCenter'; padding-right: 4px; }
 
 #FxLenPct { color: #cfd6dc; font-size: 12px; font-weight: bold; qproperty-alignment: 'AlignLeft | AlignBottom'; }
 #Param Number, #Param WNumber { qproperty-alignment: 'AlignRight | AlignVCenter'; }

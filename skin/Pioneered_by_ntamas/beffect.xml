@@ -80,45 +80,6 @@
                 </Children>
               </WidgetGroup>
 <WidgetGroup>
-    <ObjectName>XPadStrip</ObjectName>
-    <Layout>vertical</Layout>
-    <Size>0me,60max</Size>
-    <Children>
-      <Label>
-        <ObjectName>XPadTitle</ObjectName>
-        <Text>X-PAD PARAMETER</Text>
-      </Label>
-      <WidgetGroup>
-        <ObjectName>XPadRow</ObjectName>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Label>
-            <ObjectName>XPadLpf</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Text>LPF</Text>
-          </Label>
-          <Label>
-            <ObjectName>XPadMid</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Text>FILTER</Text>
-          </Label>
-          <Label>
-            <ObjectName>XPadHpf</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Text>HPF</Text>
-          </Label>
-        </Children>
-      </WidgetGroup>
-      <Number>
-        <ObjectName>XPadValue</ObjectName>
-        <TooltipId>super1</TooltipId>
-        <Connection>
-          <ConfigKey>[QuickEffectRack1_[Channel1]],super1</ConfigKey>
-        </Connection>
-      </Number>
-    </Children>
-  </WidgetGroup>
-<WidgetGroup>
     <ObjectName>ZoomGridRow</ObjectName>
     <Layout>horizontal</Layout>
     <Size>0me,26max</Size>
