@@ -32,7 +32,8 @@ MAPPING_NAME = "Pioneer DDJ-1000 (4 deck)"
 AUTHOR = "generated from AlphaTheta MIDI message list v1.00"
 DESCRIPTION = (
     "Four-deck mapping for the Pioneer DDJ-1000, including all eight "
-    "performance pads with hot cue, beat loop, beat jump and sampler modes. "
+    "performance pads on both pages with hot cue, beat loop, beat jump and "
+    "sampler modes. "
     "Audio is NOT provided by this controller on Linux: its soundcard is not "
     "USB Audio Class compliant, so a separate audio interface is required."
 )
@@ -108,14 +109,67 @@ DECK_BUTTONS_SHIFT = [
     (0x65, "sync_key", "SHIFT+SEMITONE DOWN: match key"),
     (0x64, "reset_key", "SHIFT+SEMITONE UP: reset key"),
     (0x38, "reverse", "SHIFT+SLIP REVERSE: reverse"),
-    (0x26, "beatjump_size_halve", "BEAT JUMP mode, left: halve the jump"),
-    (0x2E, "beatjump_size_double", "BEAT JUMP mode, right: double the jump"),
 ]
 
 # Script-driven deck buttons.
 DECK_BUTTONS_SCRIPT = [
     (0x4C, "loopInAdjust", "SHIFT+LOOP IN: fine-tune the loop in from the jog"),
 ]
+
+# --- the PAGE buttons ----------------------------------------------------
+# One pair per pad mode, all sixteen of them on the deck note channels rather
+# than on the pad channels. Footnote *1 of the MIDI list settles what they do:
+# "Press the [PAGE <] button in each pad mode to switch to PAGE 1. Press the
+# [PAGE >] button in each pad mode to switch to PAGE 2. When switching the
+# PAGE, MIDI for the pad changes", with a diagram of deck 1's hot cue pads
+# moving from 97 00..07 to 97 08..0F. The unit pages on its own and does not
+# ask the host first, so for a mode whose two note ranges are both bound there
+# is nothing here for the host to do at all:
+#
+#   pad mode     PAGE <   PAGE >   pad notes, page 1 -> page 2
+#   HOT CUE      0x24     0x2C     0x00-0x07 -> 0x08-0x0F
+#   PAD FX 1     0x25     0x2D     0x10-0x17 -> 0x18-0x1F   (mode not wired)
+#   BEAT JUMP    0x26     0x2E     0x20-0x27 -> 0x28-0x2F
+#   SAMPLER      0x27     0x2F     0x30-0x37 -> 0x38-0x3F
+#   KEYBOARD     0x28     0x30     0x40-0x47 -> 0x48-0x4F   (mode not wired)
+#   PAD FX 2     0x29     0x31     0x50-0x57 -> 0x58-0x5F   (mode not wired)
+#   BEAT LOOP    0x2A     0x32     0x60-0x67 -> 0x68-0x6F
+#   KEY SHIFT    0x2B     0x33     0x70-0x77 -> 0x78-0x7F   (mode not wired)
+#
+# The consequence that matters is the other way round: because the unit pages
+# whether or not anyone is listening, a mode that binds page 1 and not page 2
+# has a button on it that switches its own pads off. That, and not the PAGE
+# button itself, is what most of this file's new bindings are for.
+#
+# One mode gives the unshifted button a job on top of the paging: in BEAT JUMP
+# the pair is the jump range. rekordbox names the two of them "Change Jump
+# Range (1/2x)" and "(2x)", and the manual says the PAGE buttons "switch the
+# number of beats or number of bars assigned to the performance pad".
+#
+# In SAMPLER mode rekordbox puts the bank on the unshifted button as well, but
+# it can afford to: its second page of sampler pads plays the same eight slots
+# as the first, so the paging costs it nothing and the button is free. Here
+# page 2 plays the other eight slots of the bank, so one press cannot mean
+# both, and the bank goes where the manual documents it -- on the shifted
+# press. "Press the [PAGE <] button or the [PAGE >] button while pressing the
+# [SHIFT] button. The sampler bank is switched. The sampler has four banks and
+# each bank has sixteen slots."
+PAD_PAGE_BUTTONS = [
+    (0x26, "jumpRangeDown", "BEAT JUMP mode, PAGE left: halve the jump range"),
+    (0x2E, "jumpRangeUp", "BEAT JUMP mode, PAGE right: double the jump range"),
+]
+
+# Shifted, the PAGE buttons are the sampler bank whatever pad mode the section
+# is in -- all sixteen of them, which rekordbox's table shows by giving every
+# one of these notes the same name: "Parameter1Left_Sampler" with the comment
+# "Change Bank (down)", and "Parameter1Right_Sampler" with "Change Bank (up)".
+# So the bank can be reached without leaving hot cue mode to find it, which is
+# what makes it usable at all. In pad-mode order, 1 to 8; PAGE right wraps off
+# the top of the note range and comes back at 0x00.
+PAD_PAGE_SHIFT_LEFT = (0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08)
+PAD_PAGE_SHIFT_RIGHT = (0x09, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x00)
+PAD_MODE_NAMES = ("HOT CUE", "PAD FX 1", "BEAT JUMP", "SAMPLER",
+                  "KEYBOARD", "PAD FX 2", "BEAT LOOP", "KEY SHIFT")
 
 # (msb cc, lsb cc, mixxx key) — 14-bit continuous controls.
 DECK_FADERS = [
@@ -230,6 +284,18 @@ def build_controls() -> str:
         for midino, key, desc in DECK_BUTTONS_SCRIPT:
             out.append(control(note_status, midino, g, f"{SCRIPT_PREFIX}.{key}",
                                f"Deck {deck} {desc}", ("script-binding",)))
+        for midino, key, desc in PAD_PAGE_BUTTONS:
+            out.append(control(note_status, midino, g, f"{SCRIPT_PREFIX}.{key}",
+                               f"Deck {deck} {desc}", ("script-binding",)))
+        for mode, name in enumerate(PAD_MODE_NAMES):
+            out.append(control(note_status, PAD_PAGE_SHIFT_LEFT[mode], g,
+                               f"{SCRIPT_PREFIX}.samplerBankDown",
+                               f"Deck {deck} {name} mode, SHIFT+PAGE left: previous sampler bank",
+                               ("script-binding",)))
+            out.append(control(note_status, PAD_PAGE_SHIFT_RIGHT[mode], g,
+                               f"{SCRIPT_PREFIX}.samplerBankUp",
+                               f"Deck {deck} {name} mode, SHIFT+PAGE right: next sampler bank",
+                               ("script-binding",)))
 
         # Jog wheel. The platter and the outer ring are separate encoders and
         # each sends a different address depending on what is held, which
@@ -283,6 +349,18 @@ def build_controls() -> str:
             out.append(control(pad_status, base, g, f"hotcue_{n}_activate", f"Deck {deck} PAD {n} hot cue {n}"))
             out.append(control(shift_status, base, g, f"hotcue_{n}_clear", f"Deck {deck} SHIFT+PAD {n} clear hot cue {n}"))
 
+            # The same eight pads again on the second page, as hot cues 9 to
+            # 16. Mixxx keeps thirty-six of them per deck, so the page costs
+            # nothing but the addresses -- and without it the HOT CUE PAGE
+            # button turned the pads off rather than turning the page.
+            page2 = n + 8
+            out.append(control(pad_status, PAD_MODE_BASE["hotcue"] + 8 + pad, g,
+                               f"hotcue_{page2}_activate",
+                               f"Deck {deck} PAD {n} hot cue {page2}, page 2"))
+            out.append(control(shift_status, PAD_MODE_BASE["hotcue"] + 8 + pad, g,
+                               f"hotcue_{page2}_clear",
+                               f"Deck {deck} SHIFT+PAD {n} clear hot cue {page2}, page 2"))
+
             # Beat loop, both pages: the manual's fine ladder on page 1 and the
             # long sizes on page 2. Scripted rather than bound straight to
             # beatloop_N_toggle, because Mixxx will not make a loop that runs
@@ -300,15 +378,44 @@ def build_controls() -> str:
                                    f"Deck {deck} PAD {n} beat loop {big}, page 2",
                                    ("script-binding",)))
 
-            # Beat jump: backward on the top row, forward on the bottom.
-            jump = [1, 2, 4, 8][pad % 4]
-            direction = "backward" if pad < 4 else "forward"
-            out.append(control(pad_status, PAD_MODE_BASE["beatjump"] + pad, g, f"beatjump_{jump}_{direction}", f"Deck {deck} PAD {n} beat jump {jump} {direction}"))
+            # Beat jump. The manual's diagram pairs each size with its own
+            # reverse and forward pad -- 1 back, 1 forward, 2 back, 2 forward
+            # along the top row, 4 and 8 the same way along the bottom -- and
+            # spells it out underneath: "Press pad 1, pad 3, pad 5, or pad 7"
+            # to move left, "pad 2, pad 4, pad 6, or pad 8" to move right.
+            # Four sizes backwards and then the same four forwards, which is
+            # what was here, is a layout the hardware never had.
+            #
+            # Scripted rather than bound to beatjump_N_forward, because the
+            # PAGE buttons scale all eight of them at once and a fixed size in
+            # the address cannot be scaled. Both pages fire the same handler:
+            # the unit pages these pads too, and rekordbox gives its second
+            # page the same eight functions rather than eight more.
+            step = [1, 2, 4, 8][pad // 2]
+            direction = "backward" if pad % 2 == 0 else "forward"
+            for page, page_base in ((1, PAD_MODE_BASE["beatjump"]),
+                                    (2, PAD_MODE_BASE["beatjump"] + 8)):
+                out.append(control(pad_status, page_base + pad, g,
+                                   f"{SCRIPT_PREFIX}.beatJumpPad",
+                                   f"Deck {deck} PAD {n} beat jump {step} {direction}, page {page}",
+                                   ("script-binding",)))
 
-            # Sampler pads address the global sampler decks, offset per deck.
-            sampler = (deck - 1) * 8 + n
-            out.append(control(pad_status, PAD_MODE_BASE["sampler"] + pad, f"[Sampler{sampler}]", "cue_gotoandplay", f"Deck {deck} PAD {n} sampler {sampler}"))
-            out.append(control(shift_status, PAD_MODE_BASE["sampler"] + pad, f"[Sampler{sampler}]", "eject", f"Deck {deck} SHIFT+PAD {n} eject sampler {sampler}"))
+            # Sampler. Which slot a pad plays is not fixed any more, so the
+            # group cannot be either: the bank chooses sixteen of Mixxx's
+            # sixty-four samplers and the page chooses which eight of those
+            # sixteen the pads are on, exactly the four-banks-of-sixteen the
+            # manual describes. The script works the slot out from the note
+            # and the bank it is holding.
+            for page, page_base in ((1, PAD_MODE_BASE["sampler"]),
+                                    (2, PAD_MODE_BASE["sampler"] + 8)):
+                out.append(control(pad_status, page_base + pad, g,
+                                   f"{SCRIPT_PREFIX}.samplerPad",
+                                   f"Deck {deck} PAD {n} sampler slot {pad + 1 + (page - 1) * 8} of the bank, page {page}",
+                                   ("script-binding",)))
+                out.append(control(shift_status, page_base + pad, g,
+                                   f"{SCRIPT_PREFIX}.samplerPad",
+                                   f"Deck {deck} SHIFT+PAD {n} eject sampler slot {pad + 1 + (page - 1) * 8} of the bank, page {page}",
+                                   ("script-binding",)))
 
     # --- Beat FX ---
     for midino, name in BEAT_FX_SELECT:
@@ -388,6 +495,9 @@ def build_outputs() -> str:
         for pad in range(8):
             n = pad + 1
             out.append(output(pad_status, PAD_MODE_BASE["hotcue"] + pad, g, f"hotcue_{n}_enabled", f"Deck {deck} PAD {n} hot cue lamp"))
+            out.append(output(pad_status, PAD_MODE_BASE["hotcue"] + 8 + pad, g,
+                              f"hotcue_{n + 8}_enabled",
+                              f"Deck {deck} PAD {n} hot cue {n + 8} lamp, page 2"))
     return "".join(out)
 
 
@@ -436,7 +546,7 @@ def main() -> int:
     print(f"wrote {target}")
     print(f"  {controls} controls, {outputs} outputs, {len(xml)} bytes")
     print(f"  decks: {', '.join(str(d) for d in DECKS)}")
-    print(f"  pad modes wired: hotcue, beatloop, beatjump, sampler (8 pads each)")
+    print(f"  pad modes wired: hotcue, beatloop, beatjump, sampler (8 pads, both pages)")
     return 0
 
 

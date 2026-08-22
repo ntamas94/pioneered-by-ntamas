@@ -22,27 +22,55 @@ MAX_HEIGHT = 40
 MAX_ARTWORK = 4300      # rekordbox's own covers run to about this
 CORE_GAIN = 1.8         # lifts RMS into the core height the screen expects
 
-# The seven colour tokens the screen accepts. They are not shades of loudness:
-# across every captured track the token tracks the ratio between a column's
-# core and its peak -- how dense the sound is rather than how loud -- with a
+# A column's four colour bytes are not a token out of a fixed set of seven, as
+# they look. They are TWO little-endian RGB565 colours -- bytes 0-1 the outer
+# band, bytes 2-3 the inner core -- which the screen converts to its own
+# ARGB1555 with (v >> 1) & 0x7FE0 | v & 0x1F. None of the seven values
+# rekordbox uses appears anywhere in the unit's firmware; there is no table to
+# be limited by. Any colour renders, per column, per band.
+#
+# Which of the seven rekordbox picks tracks the ratio between a column's core
+# and its peak -- how dense the sound is rather than how loud -- with a
 # separate set for quiet columns. A drum hit is a tall spike with a small core
-# and gets the first of these; a bassline fills its column and gets the last.
-LOUD_COLOURS = [
-    (0.45, bytes.fromhex("4e0a1313")),   # spiky: transients, percussion
-    (0.62, bytes.fromhex("110b1714")),
-    (0.77, bytes.fromhex("77039f0c")),
-    (1.01, bytes.fromhex("550cdd15")),   # dense: bass, sustained tone
-]
-QUIET_COLOURS = [
-    (0.70, bytes.fromhex("955c1c7e")),
-    (0.85, bytes.fromhex("976c1f96")),
-    (1.01, bytes.fromhex("779d5fd7")),   # near silence
-]
+# and takes the first; a bassline fills its column and takes the last.
 QUIET_HEIGHT = 14        # columns shorter than this use the quiet set
+
+# rekordbox's own blue ramp, as (outer, inner) RGB triples. A theme replaces
+# these wholesale; see THEME below.
+STOCK_LOUD = [
+    (0.45, (8, 72, 115), (16, 97, 156)),     # spiky: transients, percussion
+    (0.62, (8, 97, 139), (16, 129, 189)),
+    (0.77, (0, 109, 189), (8, 145, 255)),
+    (1.01, (8, 137, 172), (16, 186, 238)),   # dense: bass, sustained tone
+]
+STOCK_QUIET = [
+    (0.70, (90, 145, 172), (123, 194, 230)),
+    (0.85, (106, 145, 189), (148, 194, 255)),
+    (1.01, (156, 174, 189), (213, 234, 255)),  # near silence
+]
+
+
+def rgb565(colour):
+    r, g, b = (max(0, min(255, int(c))) for c in colour)
+    return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3)
+
+
+def token(outer, inner):
+    """The four bytes a column carries: two RGB565 colours, little endian."""
+    o, i = rgb565(outer), rgb565(inner)
+    return bytes((o & 0xFF, o >> 8, i & 0xFF, i >> 8))
 
 # What goes on the 80x80 tile: the track's name over its cover ("both"),
 # the cover alone, or the name alone. The unit's own layout has nowhere to
 # put a track name, which is the thing people ask for it to show.
+# What goes on the tile: "both" the name over the cover, "cover" the picture
+# alone, "title" the name alone. A theme's "caption": false is the same as
+# "cover" and is the friendlier place to say it.
+#
+# Worth knowing before asking for a caption: the screen does not show the whole
+# tile. One of its four layouts draws it 80x80, the other three draw the top
+# 80x45 and throw the rest away -- so text along the bottom, which is where it
+# reads best over a picture, is invisible on three layouts out of four.
 TILE_MODE = os.environ.get("DDJ_JOG_TILE", "both")
 
 # A theme for the tile, since the tile is the only part of the jog screen that
@@ -77,12 +105,75 @@ except (OSError, ValueError):
     pass
 
 
+WHITE = (255, 255, 255)
+
+
+def hex_rgb(value, fallback):
+    """#rrggbb or [r, g, b] to a triple; anything else keeps the fallback."""
+    if isinstance(value, (list, tuple)) and len(value) == 3:
+        return tuple(int(c) for c in value)
+    if isinstance(value, str) and value.startswith("#") and len(value) == 7:
+        try:
+            return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+        except ValueError:
+            pass
+    return fallback
+
+
+def mix(a, b, t):
+    return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+
+
+def build_ramp():
+    """The seven (threshold, outer, inner) rows, themed or stock.
+
+    A theme names the two ends of the loud ramp and a colour for the quiet
+    columns; the steps in between are interpolated and the inner band is the
+    outer one lifted toward white, which is the relationship rekordbox's own
+    seven have. Naming all seven rows outright is also allowed, for anyone who
+    wants the exact colours rather than a gradient.
+    """
+    spec = THEME.get("waveform") or {}
+    rows = spec.get("colours")
+    if isinstance(rows, list) and len(rows) == 7:
+        limits = [r[0] for r in STOCK_LOUD] + [r[0] for r in STOCK_QUIET]
+        built = []
+        for limit, row in zip(limits, rows):
+            outer = hex_rgb(row[0] if isinstance(row, (list, tuple)) else row,
+                            (0, 0, 0))
+            inner = hex_rgb(row[1] if isinstance(row, (list, tuple))
+                            and len(row) > 1 else None, mix(outer, WHITE, 0.35))
+            built.append((limit, outer, inner))
+        return built[:4], built[4:]
+
+    low = hex_rgb(spec.get("from"), None)
+    high = hex_rgb(spec.get("to"), None)
+    if low is None or high is None:
+        return STOCK_LOUD, STOCK_QUIET
+    quiet = hex_rgb(spec.get("quiet"), mix(high, WHITE, 0.55))
+    lift = float(spec.get("lift", 0.35))
+
+    loud = []
+    for i, (limit, _o, _i) in enumerate(STOCK_LOUD):
+        outer = mix(low, high, i / (len(STOCK_LOUD) - 1.0))
+        loud.append((limit, outer, mix(outer, WHITE, lift)))
+    quiet_rows = []
+    for i, (limit, _o, _i) in enumerate(STOCK_QUIET):
+        outer = mix(mix(low, high, 0.5), quiet,
+                    0.4 + 0.3 * i / (len(STOCK_QUIET) - 1.0))
+        quiet_rows.append((limit, outer, mix(outer, WHITE, lift)))
+    return loud, quiet_rows
+
+
+LOUD_COLOURS, QUIET_COLOURS = build_ramp()
+
+
 def colour_for(outer, ratio):
     table = QUIET_COLOURS if outer < QUIET_HEIGHT else LOUD_COLOURS
-    for limit, colour in table:
+    for limit, band, core in table:
         if ratio < limit:
-            return colour
-    return table[-1][1]
+            return token(band, core)
+    return token(table[-1][1], table[-1][2])
 
 
 # Where to look when a file carries no cover of its own, in order: a picture
@@ -265,7 +356,9 @@ def artwork_payload(path):
         if len(raw) >= 80 * 80 * 3:
             cover = Image.frombytes("RGB", (80, 80), raw[:80 * 80 * 3])
 
-    if TILE_MODE == "cover" and cover is not None:
+    # A theme saying caption: false is the same as asking for the cover alone.
+    plain = THEME.get("caption") is False
+    if (plain or TILE_MODE == "cover") and cover is not None:
         image = cover
     else:
         image = label_tile(path, cover if TILE_MODE != "title" else None)

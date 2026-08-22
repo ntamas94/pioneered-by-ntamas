@@ -15,7 +15,7 @@
   <info>
     <name>Pioneer DDJ-1000 (4 deck)</name>
     <author>generated from AlphaTheta MIDI message list v1.00</author>
-    <description>Four-deck mapping for the Pioneer DDJ-1000, including all eight performance pads with hot cue, beat loop, beat jump and sampler modes. Audio is NOT provided by this controller on Linux: its soundcard is not USB Audio Class compliant, so a separate audio interface is required.</description>
+    <description>Four-deck mapping for the Pioneer DDJ-1000, including all eight performance pads on both pages with hot cue, beat loop, beat jump and sampler modes. Audio is NOT provided by this controller on Linux: its soundcard is not USB Audio Class compliant, so a separate audio interface is required.</description>
   </info>
   <controller id="DDJ-1000">
     <scriptfiles>
@@ -216,27 +216,155 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 1 BEAT JUMP mode, left: halve the jump -->
-        <group>[Channel1]</group>
-        <key>beatjump_size_halve</key>
-        <status>0x90</status>
-        <midino>0x26</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 1 BEAT JUMP mode, right: double the jump -->
-        <group>[Channel1]</group>
-        <key>beatjump_size_double</key>
-        <status>0x90</status>
-        <midino>0x2E</midino>
-        <options><normal/></options>
-      </control>
-      <control>
         <!-- Deck 1 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
         <group>[Channel1]</group>
         <key>PioneerDDJ1000.loopInAdjust</key>
         <status>0x90</status>
         <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT JUMP mode, PAGE left: halve the jump range -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jumpRangeDown</key>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT JUMP mode, PAGE right: double the jump range -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.jumpRangeUp</key>
+        <status>0x90</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 HOT CUE mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 HOT CUE mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD FX 1 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD FX 1 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x7A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT JUMP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT JUMP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x7B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SAMPLER mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SAMPLER mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x7C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 KEYBOARD mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 KEYBOARD mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD FX 2 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD FX 2 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x7E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT LOOP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 BEAT LOOP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x7F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 KEY SHIFT mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 KEY SHIFT mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x90</status>
+        <midino>0x00</midino>
         <options><script-binding/></options>
       </control>
       <control>
@@ -456,6 +584,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 1 PAD 1 hot cue 9, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_9_activate</key>
+        <status>0x97</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 1 clear hot cue 9, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_9_clear</key>
+        <status>0x98</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 1 PAD 1 beat loop 0.03125 -->
         <group>[Channel1]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -472,28 +616,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 1 beat jump 1 backward -->
+        <!-- Deck 1 PAD 1 beat jump 1 backward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_1_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x20</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 1 sampler 1 -->
-        <group>[Sampler1]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 1 beat jump 1 backward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x28</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 sampler slot 1 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 1 eject sampler 1 -->
-        <group>[Sampler1]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 1 eject sampler slot 1 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 1 sampler slot 9 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 1 eject sampler slot 9 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 2 hot cue 2 -->
@@ -509,6 +677,22 @@
         <key>hotcue_2_clear</key>
         <status>0x98</status>
         <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 hot cue 10, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_10_activate</key>
+        <status>0x97</status>
+        <midino>0x09</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 2 clear hot cue 10, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_10_clear</key>
+        <status>0x98</status>
+        <midino>0x09</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -528,28 +712,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 2 beat jump 2 backward -->
+        <!-- Deck 1 PAD 2 beat jump 1 forward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_2_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x21</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 2 sampler 2 -->
-        <group>[Sampler2]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 2 beat jump 1 forward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 sampler slot 2 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 2 eject sampler 2 -->
-        <group>[Sampler2]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 2 eject sampler slot 2 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 2 sampler slot 10 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 2 eject sampler slot 10 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 3 hot cue 3 -->
@@ -565,6 +773,22 @@
         <key>hotcue_3_clear</key>
         <status>0x98</status>
         <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 hot cue 11, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_11_activate</key>
+        <status>0x97</status>
+        <midino>0x0A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 3 clear hot cue 11, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_11_clear</key>
+        <status>0x98</status>
+        <midino>0x0A</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -584,28 +808,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 3 beat jump 4 backward -->
+        <!-- Deck 1 PAD 3 beat jump 2 backward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_4_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x22</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 3 sampler 3 -->
-        <group>[Sampler3]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 3 beat jump 2 backward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x2A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 sampler slot 3 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 3 eject sampler 3 -->
-        <group>[Sampler3]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 3 eject sampler slot 3 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 3 sampler slot 11 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 3 eject sampler slot 11 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 4 hot cue 4 -->
@@ -621,6 +869,22 @@
         <key>hotcue_4_clear</key>
         <status>0x98</status>
         <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 hot cue 12, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_12_activate</key>
+        <status>0x97</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 4 clear hot cue 12, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_12_clear</key>
+        <status>0x98</status>
+        <midino>0x0B</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -640,28 +904,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 4 beat jump 8 backward -->
+        <!-- Deck 1 PAD 4 beat jump 2 forward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_8_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x23</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 4 sampler 4 -->
-        <group>[Sampler4]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 4 beat jump 2 forward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x2B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 sampler slot 4 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 4 eject sampler 4 -->
-        <group>[Sampler4]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 4 eject sampler slot 4 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 4 sampler slot 12 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 4 eject sampler slot 12 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 5 hot cue 5 -->
@@ -677,6 +965,22 @@
         <key>hotcue_5_clear</key>
         <status>0x98</status>
         <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 hot cue 13, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_13_activate</key>
+        <status>0x97</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 5 clear hot cue 13, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_13_clear</key>
+        <status>0x98</status>
+        <midino>0x0C</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -696,28 +1000,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 5 beat jump 1 forward -->
+        <!-- Deck 1 PAD 5 beat jump 4 backward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_1_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x24</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 5 sampler 5 -->
-        <group>[Sampler5]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 5 beat jump 4 backward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x2C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 sampler slot 5 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 5 eject sampler 5 -->
-        <group>[Sampler5]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 5 eject sampler slot 5 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 5 sampler slot 13 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 5 eject sampler slot 13 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 6 hot cue 6 -->
@@ -733,6 +1061,22 @@
         <key>hotcue_6_clear</key>
         <status>0x98</status>
         <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 hot cue 14, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_14_activate</key>
+        <status>0x97</status>
+        <midino>0x0D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 6 clear hot cue 14, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_14_clear</key>
+        <status>0x98</status>
+        <midino>0x0D</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -752,28 +1096,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 6 beat jump 2 forward -->
+        <!-- Deck 1 PAD 6 beat jump 4 forward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_2_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x25</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 6 sampler 6 -->
-        <group>[Sampler6]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 6 beat jump 4 forward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x2D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 sampler slot 6 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 6 eject sampler 6 -->
-        <group>[Sampler6]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 6 eject sampler slot 6 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 6 sampler slot 14 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 6 eject sampler slot 14 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 7 hot cue 7 -->
@@ -789,6 +1157,22 @@
         <key>hotcue_7_clear</key>
         <status>0x98</status>
         <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 hot cue 15, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_15_activate</key>
+        <status>0x97</status>
+        <midino>0x0E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 7 clear hot cue 15, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_15_clear</key>
+        <status>0x98</status>
+        <midino>0x0E</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -808,28 +1192,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 7 beat jump 4 forward -->
+        <!-- Deck 1 PAD 7 beat jump 8 backward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_4_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x26</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 7 sampler 7 -->
-        <group>[Sampler7]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 7 beat jump 8 backward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 sampler slot 7 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 7 eject sampler 7 -->
-        <group>[Sampler7]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 7 eject sampler slot 7 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 7 sampler slot 15 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 7 eject sampler slot 15 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 1 PAD 8 hot cue 8 -->
@@ -848,6 +1256,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 1 PAD 8 hot cue 16, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_16_activate</key>
+        <status>0x97</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 8 clear hot cue 16, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_16_clear</key>
+        <status>0x98</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 1 PAD 8 beat loop 4 -->
         <group>[Channel1]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -856,28 +1280,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 8 beat jump 8 forward -->
+        <!-- Deck 1 PAD 8 beat jump 8 forward, page 1 -->
         <group>[Channel1]</group>
-        <key>beatjump_8_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x97</status>
         <midino>0x27</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 PAD 8 sampler 8 -->
-        <group>[Sampler8]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 1 PAD 8 beat jump 8 forward, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x97</status>
+        <midino>0x2F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 8 sampler slot 8 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x97</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 1 SHIFT+PAD 8 eject sampler 8 -->
-        <group>[Sampler8]</group>
-        <key>eject</key>
+        <!-- Deck 1 SHIFT+PAD 8 eject sampler slot 8 of the bank, page 1 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x98</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 PAD 8 sampler slot 16 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x97</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 1 SHIFT+PAD 8 eject sampler slot 16 of the bank, page 2 -->
+        <group>[Channel1]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x98</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
       </control>
       <!-- ============ DECK 2 ============ -->
       <control>
@@ -1073,27 +1521,155 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 2 BEAT JUMP mode, left: halve the jump -->
-        <group>[Channel2]</group>
-        <key>beatjump_size_halve</key>
-        <status>0x91</status>
-        <midino>0x26</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 2 BEAT JUMP mode, right: double the jump -->
-        <group>[Channel2]</group>
-        <key>beatjump_size_double</key>
-        <status>0x91</status>
-        <midino>0x2E</midino>
-        <options><normal/></options>
-      </control>
-      <control>
         <!-- Deck 2 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
         <group>[Channel2]</group>
         <key>PioneerDDJ1000.loopInAdjust</key>
         <status>0x91</status>
         <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT JUMP mode, PAGE left: halve the jump range -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jumpRangeDown</key>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT JUMP mode, PAGE right: double the jump range -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.jumpRangeUp</key>
+        <status>0x91</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 HOT CUE mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x01</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 HOT CUE mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x09</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD FX 1 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x02</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD FX 1 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x7A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT JUMP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x03</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT JUMP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x7B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SAMPLER mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x04</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SAMPLER mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x7C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 KEYBOARD mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x05</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 KEYBOARD mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD FX 2 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x06</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD FX 2 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x7E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT LOOP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x07</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 BEAT LOOP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x7F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 KEY SHIFT mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x91</status>
+        <midino>0x08</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 KEY SHIFT mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x91</status>
+        <midino>0x00</midino>
         <options><script-binding/></options>
       </control>
       <control>
@@ -1313,6 +1889,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 2 PAD 1 hot cue 9, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_9_activate</key>
+        <status>0x99</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 1 clear hot cue 9, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_9_clear</key>
+        <status>0x9A</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 2 PAD 1 beat loop 0.03125 -->
         <group>[Channel2]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -1329,28 +1921,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 1 beat jump 1 backward -->
+        <!-- Deck 2 PAD 1 beat jump 1 backward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_1_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x20</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 1 sampler 9 -->
-        <group>[Sampler9]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 1 beat jump 1 backward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x28</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 sampler slot 1 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 1 eject sampler 9 -->
-        <group>[Sampler9]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 1 eject sampler slot 1 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 1 sampler slot 9 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 1 eject sampler slot 9 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 2 hot cue 2 -->
@@ -1366,6 +1982,22 @@
         <key>hotcue_2_clear</key>
         <status>0x9A</status>
         <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 hot cue 10, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_10_activate</key>
+        <status>0x99</status>
+        <midino>0x09</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 2 clear hot cue 10, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_10_clear</key>
+        <status>0x9A</status>
+        <midino>0x09</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -1385,28 +2017,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 2 beat jump 2 backward -->
+        <!-- Deck 2 PAD 2 beat jump 1 forward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_2_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x21</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 2 sampler 10 -->
-        <group>[Sampler10]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 2 beat jump 1 forward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 sampler slot 2 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 2 eject sampler 10 -->
-        <group>[Sampler10]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 2 eject sampler slot 2 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 2 sampler slot 10 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 2 eject sampler slot 10 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 3 hot cue 3 -->
@@ -1422,6 +2078,22 @@
         <key>hotcue_3_clear</key>
         <status>0x9A</status>
         <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 hot cue 11, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_11_activate</key>
+        <status>0x99</status>
+        <midino>0x0A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 3 clear hot cue 11, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_11_clear</key>
+        <status>0x9A</status>
+        <midino>0x0A</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -1441,28 +2113,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 3 beat jump 4 backward -->
+        <!-- Deck 2 PAD 3 beat jump 2 backward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_4_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x22</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 3 sampler 11 -->
-        <group>[Sampler11]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 3 beat jump 2 backward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x2A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 sampler slot 3 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 3 eject sampler 11 -->
-        <group>[Sampler11]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 3 eject sampler slot 3 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 3 sampler slot 11 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 3 eject sampler slot 11 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 4 hot cue 4 -->
@@ -1478,6 +2174,22 @@
         <key>hotcue_4_clear</key>
         <status>0x9A</status>
         <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 hot cue 12, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_12_activate</key>
+        <status>0x99</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 4 clear hot cue 12, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_12_clear</key>
+        <status>0x9A</status>
+        <midino>0x0B</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -1497,28 +2209,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 4 beat jump 8 backward -->
+        <!-- Deck 2 PAD 4 beat jump 2 forward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_8_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x23</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 4 sampler 12 -->
-        <group>[Sampler12]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 4 beat jump 2 forward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x2B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 sampler slot 4 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 4 eject sampler 12 -->
-        <group>[Sampler12]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 4 eject sampler slot 4 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 4 sampler slot 12 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 4 eject sampler slot 12 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 5 hot cue 5 -->
@@ -1534,6 +2270,22 @@
         <key>hotcue_5_clear</key>
         <status>0x9A</status>
         <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 hot cue 13, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_13_activate</key>
+        <status>0x99</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 5 clear hot cue 13, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_13_clear</key>
+        <status>0x9A</status>
+        <midino>0x0C</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -1553,28 +2305,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 5 beat jump 1 forward -->
+        <!-- Deck 2 PAD 5 beat jump 4 backward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_1_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x24</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 5 sampler 13 -->
-        <group>[Sampler13]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 5 beat jump 4 backward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x2C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 sampler slot 5 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 5 eject sampler 13 -->
-        <group>[Sampler13]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 5 eject sampler slot 5 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 5 sampler slot 13 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 5 eject sampler slot 13 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 6 hot cue 6 -->
@@ -1590,6 +2366,22 @@
         <key>hotcue_6_clear</key>
         <status>0x9A</status>
         <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 hot cue 14, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_14_activate</key>
+        <status>0x99</status>
+        <midino>0x0D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 6 clear hot cue 14, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_14_clear</key>
+        <status>0x9A</status>
+        <midino>0x0D</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -1609,28 +2401,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 6 beat jump 2 forward -->
+        <!-- Deck 2 PAD 6 beat jump 4 forward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_2_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x25</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 6 sampler 14 -->
-        <group>[Sampler14]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 6 beat jump 4 forward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x2D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 sampler slot 6 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 6 eject sampler 14 -->
-        <group>[Sampler14]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 6 eject sampler slot 6 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 6 sampler slot 14 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 6 eject sampler slot 14 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 7 hot cue 7 -->
@@ -1646,6 +2462,22 @@
         <key>hotcue_7_clear</key>
         <status>0x9A</status>
         <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 hot cue 15, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_15_activate</key>
+        <status>0x99</status>
+        <midino>0x0E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 7 clear hot cue 15, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_15_clear</key>
+        <status>0x9A</status>
+        <midino>0x0E</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -1665,28 +2497,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 7 beat jump 4 forward -->
+        <!-- Deck 2 PAD 7 beat jump 8 backward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_4_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x26</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 7 sampler 15 -->
-        <group>[Sampler15]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 7 beat jump 8 backward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 sampler slot 7 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 7 eject sampler 15 -->
-        <group>[Sampler15]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 7 eject sampler slot 7 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 7 sampler slot 15 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 7 eject sampler slot 15 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 2 PAD 8 hot cue 8 -->
@@ -1705,6 +2561,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 2 PAD 8 hot cue 16, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_16_activate</key>
+        <status>0x99</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 8 clear hot cue 16, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_16_clear</key>
+        <status>0x9A</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 2 PAD 8 beat loop 4 -->
         <group>[Channel2]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -1713,28 +2585,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 8 beat jump 8 forward -->
+        <!-- Deck 2 PAD 8 beat jump 8 forward, page 1 -->
         <group>[Channel2]</group>
-        <key>beatjump_8_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x99</status>
         <midino>0x27</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 PAD 8 sampler 16 -->
-        <group>[Sampler16]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 2 PAD 8 beat jump 8 forward, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x99</status>
+        <midino>0x2F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 8 sampler slot 8 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x99</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 2 SHIFT+PAD 8 eject sampler 16 -->
-        <group>[Sampler16]</group>
-        <key>eject</key>
+        <!-- Deck 2 SHIFT+PAD 8 eject sampler slot 8 of the bank, page 1 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9A</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 PAD 8 sampler slot 16 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x99</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 2 SHIFT+PAD 8 eject sampler slot 16 of the bank, page 2 -->
+        <group>[Channel2]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9A</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
       </control>
       <!-- ============ DECK 3 ============ -->
       <control>
@@ -1930,27 +2826,155 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 3 BEAT JUMP mode, left: halve the jump -->
-        <group>[Channel3]</group>
-        <key>beatjump_size_halve</key>
-        <status>0x92</status>
-        <midino>0x26</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 3 BEAT JUMP mode, right: double the jump -->
-        <group>[Channel3]</group>
-        <key>beatjump_size_double</key>
-        <status>0x92</status>
-        <midino>0x2E</midino>
-        <options><normal/></options>
-      </control>
-      <control>
         <!-- Deck 3 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
         <group>[Channel3]</group>
         <key>PioneerDDJ1000.loopInAdjust</key>
         <status>0x92</status>
         <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT JUMP mode, PAGE left: halve the jump range -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jumpRangeDown</key>
+        <status>0x92</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT JUMP mode, PAGE right: double the jump range -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.jumpRangeUp</key>
+        <status>0x92</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 HOT CUE mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x01</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 HOT CUE mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x09</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD FX 1 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x02</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD FX 1 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x7A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT JUMP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x03</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT JUMP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x7B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SAMPLER mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x04</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SAMPLER mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x7C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 KEYBOARD mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x05</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 KEYBOARD mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD FX 2 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x06</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD FX 2 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x7E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT LOOP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x07</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 BEAT LOOP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x7F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 KEY SHIFT mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x92</status>
+        <midino>0x08</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 KEY SHIFT mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x92</status>
+        <midino>0x00</midino>
         <options><script-binding/></options>
       </control>
       <control>
@@ -2170,6 +3194,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 3 PAD 1 hot cue 9, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_9_activate</key>
+        <status>0x9B</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 1 clear hot cue 9, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_9_clear</key>
+        <status>0x9C</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 3 PAD 1 beat loop 0.03125 -->
         <group>[Channel3]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -2186,28 +3226,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 1 beat jump 1 backward -->
+        <!-- Deck 3 PAD 1 beat jump 1 backward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_1_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x20</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 1 sampler 17 -->
-        <group>[Sampler17]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 1 beat jump 1 backward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x28</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 sampler slot 1 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 1 eject sampler 17 -->
-        <group>[Sampler17]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 1 eject sampler slot 1 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 1 sampler slot 9 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 1 eject sampler slot 9 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 2 hot cue 2 -->
@@ -2223,6 +3287,22 @@
         <key>hotcue_2_clear</key>
         <status>0x9C</status>
         <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 hot cue 10, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_10_activate</key>
+        <status>0x9B</status>
+        <midino>0x09</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 2 clear hot cue 10, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_10_clear</key>
+        <status>0x9C</status>
+        <midino>0x09</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -2242,28 +3322,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 2 beat jump 2 backward -->
+        <!-- Deck 3 PAD 2 beat jump 1 forward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_2_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x21</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 2 sampler 18 -->
-        <group>[Sampler18]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 2 beat jump 1 forward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 sampler slot 2 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 2 eject sampler 18 -->
-        <group>[Sampler18]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 2 eject sampler slot 2 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 2 sampler slot 10 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 2 eject sampler slot 10 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 3 hot cue 3 -->
@@ -2279,6 +3383,22 @@
         <key>hotcue_3_clear</key>
         <status>0x9C</status>
         <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 hot cue 11, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_11_activate</key>
+        <status>0x9B</status>
+        <midino>0x0A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 3 clear hot cue 11, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_11_clear</key>
+        <status>0x9C</status>
+        <midino>0x0A</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -2298,28 +3418,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 3 beat jump 4 backward -->
+        <!-- Deck 3 PAD 3 beat jump 2 backward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_4_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x22</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 3 sampler 19 -->
-        <group>[Sampler19]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 3 beat jump 2 backward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x2A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 sampler slot 3 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 3 eject sampler 19 -->
-        <group>[Sampler19]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 3 eject sampler slot 3 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 3 sampler slot 11 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 3 eject sampler slot 11 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 4 hot cue 4 -->
@@ -2335,6 +3479,22 @@
         <key>hotcue_4_clear</key>
         <status>0x9C</status>
         <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 hot cue 12, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_12_activate</key>
+        <status>0x9B</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 4 clear hot cue 12, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_12_clear</key>
+        <status>0x9C</status>
+        <midino>0x0B</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -2354,28 +3514,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 4 beat jump 8 backward -->
+        <!-- Deck 3 PAD 4 beat jump 2 forward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_8_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x23</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 4 sampler 20 -->
-        <group>[Sampler20]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 4 beat jump 2 forward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x2B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 sampler slot 4 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 4 eject sampler 20 -->
-        <group>[Sampler20]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 4 eject sampler slot 4 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 4 sampler slot 12 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 4 eject sampler slot 12 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 5 hot cue 5 -->
@@ -2391,6 +3575,22 @@
         <key>hotcue_5_clear</key>
         <status>0x9C</status>
         <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 hot cue 13, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_13_activate</key>
+        <status>0x9B</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 5 clear hot cue 13, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_13_clear</key>
+        <status>0x9C</status>
+        <midino>0x0C</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -2410,28 +3610,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 5 beat jump 1 forward -->
+        <!-- Deck 3 PAD 5 beat jump 4 backward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_1_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x24</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 5 sampler 21 -->
-        <group>[Sampler21]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 5 beat jump 4 backward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x2C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 sampler slot 5 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 5 eject sampler 21 -->
-        <group>[Sampler21]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 5 eject sampler slot 5 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 5 sampler slot 13 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 5 eject sampler slot 13 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 6 hot cue 6 -->
@@ -2447,6 +3671,22 @@
         <key>hotcue_6_clear</key>
         <status>0x9C</status>
         <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 hot cue 14, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_14_activate</key>
+        <status>0x9B</status>
+        <midino>0x0D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 6 clear hot cue 14, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_14_clear</key>
+        <status>0x9C</status>
+        <midino>0x0D</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -2466,28 +3706,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 6 beat jump 2 forward -->
+        <!-- Deck 3 PAD 6 beat jump 4 forward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_2_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x25</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 6 sampler 22 -->
-        <group>[Sampler22]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 6 beat jump 4 forward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x2D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 sampler slot 6 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 6 eject sampler 22 -->
-        <group>[Sampler22]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 6 eject sampler slot 6 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 6 sampler slot 14 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 6 eject sampler slot 14 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 7 hot cue 7 -->
@@ -2503,6 +3767,22 @@
         <key>hotcue_7_clear</key>
         <status>0x9C</status>
         <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 hot cue 15, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_15_activate</key>
+        <status>0x9B</status>
+        <midino>0x0E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 7 clear hot cue 15, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_15_clear</key>
+        <status>0x9C</status>
+        <midino>0x0E</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -2522,28 +3802,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 7 beat jump 4 forward -->
+        <!-- Deck 3 PAD 7 beat jump 8 backward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_4_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x26</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 7 sampler 23 -->
-        <group>[Sampler23]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 7 beat jump 8 backward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 sampler slot 7 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 7 eject sampler 23 -->
-        <group>[Sampler23]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 7 eject sampler slot 7 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 7 sampler slot 15 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 7 eject sampler slot 15 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 3 PAD 8 hot cue 8 -->
@@ -2562,6 +3866,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 3 PAD 8 hot cue 16, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_16_activate</key>
+        <status>0x9B</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 8 clear hot cue 16, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_16_clear</key>
+        <status>0x9C</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 3 PAD 8 beat loop 4 -->
         <group>[Channel3]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -2570,28 +3890,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 8 beat jump 8 forward -->
+        <!-- Deck 3 PAD 8 beat jump 8 forward, page 1 -->
         <group>[Channel3]</group>
-        <key>beatjump_8_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9B</status>
         <midino>0x27</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 PAD 8 sampler 24 -->
-        <group>[Sampler24]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 3 PAD 8 beat jump 8 forward, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9B</status>
+        <midino>0x2F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 8 sampler slot 8 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9B</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 3 SHIFT+PAD 8 eject sampler 24 -->
-        <group>[Sampler24]</group>
-        <key>eject</key>
+        <!-- Deck 3 SHIFT+PAD 8 eject sampler slot 8 of the bank, page 1 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9C</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 PAD 8 sampler slot 16 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9B</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 3 SHIFT+PAD 8 eject sampler slot 16 of the bank, page 2 -->
+        <group>[Channel3]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9C</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
       </control>
       <!-- ============ DECK 4 ============ -->
       <control>
@@ -2787,27 +4131,155 @@
         <options><normal/></options>
       </control>
       <control>
-        <!-- Deck 4 BEAT JUMP mode, left: halve the jump -->
-        <group>[Channel4]</group>
-        <key>beatjump_size_halve</key>
-        <status>0x93</status>
-        <midino>0x26</midino>
-        <options><normal/></options>
-      </control>
-      <control>
-        <!-- Deck 4 BEAT JUMP mode, right: double the jump -->
-        <group>[Channel4]</group>
-        <key>beatjump_size_double</key>
-        <status>0x93</status>
-        <midino>0x2E</midino>
-        <options><normal/></options>
-      </control>
-      <control>
         <!-- Deck 4 SHIFT+LOOP IN: fine-tune the loop in from the jog -->
         <group>[Channel4]</group>
         <key>PioneerDDJ1000.loopInAdjust</key>
         <status>0x93</status>
         <midino>0x4C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT JUMP mode, PAGE left: halve the jump range -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jumpRangeDown</key>
+        <status>0x93</status>
+        <midino>0x26</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT JUMP mode, PAGE right: double the jump range -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.jumpRangeUp</key>
+        <status>0x93</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 HOT CUE mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x01</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 HOT CUE mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x09</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD FX 1 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x02</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD FX 1 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x7A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT JUMP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x03</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT JUMP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x7B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SAMPLER mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x04</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SAMPLER mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x7C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 KEYBOARD mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x05</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 KEYBOARD mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD FX 2 mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x06</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD FX 2 mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x7E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT LOOP mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x07</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 BEAT LOOP mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x7F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 KEY SHIFT mode, SHIFT+PAGE left: previous sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankDown</key>
+        <status>0x93</status>
+        <midino>0x08</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 KEY SHIFT mode, SHIFT+PAGE right: next sampler bank -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerBankUp</key>
+        <status>0x93</status>
+        <midino>0x00</midino>
         <options><script-binding/></options>
       </control>
       <control>
@@ -3027,6 +4499,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 4 PAD 1 hot cue 9, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_9_activate</key>
+        <status>0x9D</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 1 clear hot cue 9, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_9_clear</key>
+        <status>0x9E</status>
+        <midino>0x08</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 4 PAD 1 beat loop 0.03125 -->
         <group>[Channel4]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -3043,28 +4531,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 1 beat jump 1 backward -->
+        <!-- Deck 4 PAD 1 beat jump 1 backward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_1_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x20</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 1 sampler 25 -->
-        <group>[Sampler25]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 1 beat jump 1 backward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x28</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 sampler slot 1 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 1 eject sampler 25 -->
-        <group>[Sampler25]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 1 eject sampler slot 1 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x30</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 1 sampler slot 9 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 1 eject sampler slot 9 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 2 hot cue 2 -->
@@ -3080,6 +4592,22 @@
         <key>hotcue_2_clear</key>
         <status>0x9E</status>
         <midino>0x01</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 hot cue 10, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_10_activate</key>
+        <status>0x9D</status>
+        <midino>0x09</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 2 clear hot cue 10, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_10_clear</key>
+        <status>0x9E</status>
+        <midino>0x09</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -3099,28 +4627,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 2 beat jump 2 backward -->
+        <!-- Deck 4 PAD 2 beat jump 1 forward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_2_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x21</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 2 sampler 26 -->
-        <group>[Sampler26]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 2 beat jump 1 forward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x29</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 sampler slot 2 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 2 eject sampler 26 -->
-        <group>[Sampler26]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 2 eject sampler slot 2 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x31</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 2 sampler slot 10 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 2 eject sampler slot 10 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x39</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 3 hot cue 3 -->
@@ -3136,6 +4688,22 @@
         <key>hotcue_3_clear</key>
         <status>0x9E</status>
         <midino>0x02</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 hot cue 11, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_11_activate</key>
+        <status>0x9D</status>
+        <midino>0x0A</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 3 clear hot cue 11, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_11_clear</key>
+        <status>0x9E</status>
+        <midino>0x0A</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -3155,28 +4723,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 3 beat jump 4 backward -->
+        <!-- Deck 4 PAD 3 beat jump 2 backward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_4_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x22</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 3 sampler 27 -->
-        <group>[Sampler27]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 3 beat jump 2 backward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x2A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 sampler slot 3 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 3 eject sampler 27 -->
-        <group>[Sampler27]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 3 eject sampler slot 3 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x32</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 3 sampler slot 11 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 3 eject sampler slot 11 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x3A</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 4 hot cue 4 -->
@@ -3192,6 +4784,22 @@
         <key>hotcue_4_clear</key>
         <status>0x9E</status>
         <midino>0x03</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 hot cue 12, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_12_activate</key>
+        <status>0x9D</status>
+        <midino>0x0B</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 4 clear hot cue 12, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_12_clear</key>
+        <status>0x9E</status>
+        <midino>0x0B</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -3211,28 +4819,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 4 beat jump 8 backward -->
+        <!-- Deck 4 PAD 4 beat jump 2 forward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_8_backward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x23</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 4 sampler 28 -->
-        <group>[Sampler28]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 4 beat jump 2 forward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x2B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 sampler slot 4 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 4 eject sampler 28 -->
-        <group>[Sampler28]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 4 eject sampler slot 4 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x33</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 4 sampler slot 12 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 4 eject sampler slot 12 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x3B</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 5 hot cue 5 -->
@@ -3248,6 +4880,22 @@
         <key>hotcue_5_clear</key>
         <status>0x9E</status>
         <midino>0x04</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 hot cue 13, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_13_activate</key>
+        <status>0x9D</status>
+        <midino>0x0C</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 5 clear hot cue 13, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_13_clear</key>
+        <status>0x9E</status>
+        <midino>0x0C</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -3267,28 +4915,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 5 beat jump 1 forward -->
+        <!-- Deck 4 PAD 5 beat jump 4 backward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_1_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x24</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 5 sampler 29 -->
-        <group>[Sampler29]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 5 beat jump 4 backward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x2C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 sampler slot 5 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 5 eject sampler 29 -->
-        <group>[Sampler29]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 5 eject sampler slot 5 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x34</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 5 sampler slot 13 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 5 eject sampler slot 13 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x3C</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 6 hot cue 6 -->
@@ -3304,6 +4976,22 @@
         <key>hotcue_6_clear</key>
         <status>0x9E</status>
         <midino>0x05</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 hot cue 14, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_14_activate</key>
+        <status>0x9D</status>
+        <midino>0x0D</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 6 clear hot cue 14, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_14_clear</key>
+        <status>0x9E</status>
+        <midino>0x0D</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -3323,28 +5011,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 6 beat jump 2 forward -->
+        <!-- Deck 4 PAD 6 beat jump 4 forward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_2_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x25</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 6 sampler 30 -->
-        <group>[Sampler30]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 6 beat jump 4 forward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x2D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 sampler slot 6 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 6 eject sampler 30 -->
-        <group>[Sampler30]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 6 eject sampler slot 6 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x35</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 6 sampler slot 14 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 6 eject sampler slot 14 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x3D</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 7 hot cue 7 -->
@@ -3360,6 +5072,22 @@
         <key>hotcue_7_clear</key>
         <status>0x9E</status>
         <midino>0x06</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 hot cue 15, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_15_activate</key>
+        <status>0x9D</status>
+        <midino>0x0E</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 7 clear hot cue 15, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_15_clear</key>
+        <status>0x9E</status>
+        <midino>0x0E</midino>
         <options><normal/></options>
       </control>
       <control>
@@ -3379,28 +5107,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 7 beat jump 4 forward -->
+        <!-- Deck 4 PAD 7 beat jump 8 backward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_4_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x26</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 7 sampler 31 -->
-        <group>[Sampler31]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 7 beat jump 8 backward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x2E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 sampler slot 7 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 7 eject sampler 31 -->
-        <group>[Sampler31]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 7 eject sampler slot 7 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x36</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 7 sampler slot 15 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 7 eject sampler slot 15 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x3E</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- Deck 4 PAD 8 hot cue 8 -->
@@ -3419,6 +5171,22 @@
         <options><normal/></options>
       </control>
       <control>
+        <!-- Deck 4 PAD 8 hot cue 16, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_16_activate</key>
+        <status>0x9D</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 8 clear hot cue 16, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_16_clear</key>
+        <status>0x9E</status>
+        <midino>0x0F</midino>
+        <options><normal/></options>
+      </control>
+      <control>
         <!-- Deck 4 PAD 8 beat loop 4 -->
         <group>[Channel4]</group>
         <key>PioneerDDJ1000.beatLoopPad</key>
@@ -3427,28 +5195,52 @@
         <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 8 beat jump 8 forward -->
+        <!-- Deck 4 PAD 8 beat jump 8 forward, page 1 -->
         <group>[Channel4]</group>
-        <key>beatjump_8_forward</key>
+        <key>PioneerDDJ1000.beatJumpPad</key>
         <status>0x9D</status>
         <midino>0x27</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 PAD 8 sampler 32 -->
-        <group>[Sampler32]</group>
-        <key>cue_gotoandplay</key>
+        <!-- Deck 4 PAD 8 beat jump 8 forward, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.beatJumpPad</key>
+        <status>0x9D</status>
+        <midino>0x2F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 8 sampler slot 8 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9D</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
       </control>
       <control>
-        <!-- Deck 4 SHIFT+PAD 8 eject sampler 32 -->
-        <group>[Sampler32]</group>
-        <key>eject</key>
+        <!-- Deck 4 SHIFT+PAD 8 eject sampler slot 8 of the bank, page 1 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
         <status>0x9E</status>
         <midino>0x37</midino>
-        <options><normal/></options>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 PAD 8 sampler slot 16 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9D</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <!-- Deck 4 SHIFT+PAD 8 eject sampler slot 16 of the bank, page 2 -->
+        <group>[Channel4]</group>
+        <key>PioneerDDJ1000.samplerPad</key>
+        <status>0x9E</status>
+        <midino>0x3F</midino>
+        <options><script-binding/></options>
       </control>
       <control>
         <!-- BEAT FX select LOW CUT ECHO -->
@@ -3957,11 +5749,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 1 PAD 1 hot cue 9 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_9_enabled</key>
+        <status>0x97</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 1 PAD 2 hot cue lamp -->
         <group>[Channel1]</group>
         <key>hotcue_2_enabled</key>
         <status>0x97</status>
         <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 2 hot cue 10 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_10_enabled</key>
+        <status>0x97</status>
+        <midino>0x09</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -3977,11 +5789,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 1 PAD 3 hot cue 11 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_11_enabled</key>
+        <status>0x97</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 1 PAD 4 hot cue lamp -->
         <group>[Channel1]</group>
         <key>hotcue_4_enabled</key>
         <status>0x97</status>
         <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 4 hot cue 12 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_12_enabled</key>
+        <status>0x97</status>
+        <midino>0x0B</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -3997,11 +5829,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 1 PAD 5 hot cue 13 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_13_enabled</key>
+        <status>0x97</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 1 PAD 6 hot cue lamp -->
         <group>[Channel1]</group>
         <key>hotcue_6_enabled</key>
         <status>0x97</status>
         <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 6 hot cue 14 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_14_enabled</key>
+        <status>0x97</status>
+        <midino>0x0D</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4017,11 +5869,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 1 PAD 7 hot cue 15 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_15_enabled</key>
+        <status>0x97</status>
+        <midino>0x0E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 1 PAD 8 hot cue lamp -->
         <group>[Channel1]</group>
         <key>hotcue_8_enabled</key>
         <status>0x97</status>
         <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 1 PAD 8 hot cue 16 lamp, page 2 -->
+        <group>[Channel1]</group>
+        <key>hotcue_16_enabled</key>
+        <status>0x97</status>
+        <midino>0x0F</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4118,11 +5990,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 2 PAD 1 hot cue 9 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_9_enabled</key>
+        <status>0x99</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 2 PAD 2 hot cue lamp -->
         <group>[Channel2]</group>
         <key>hotcue_2_enabled</key>
         <status>0x99</status>
         <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 2 hot cue 10 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_10_enabled</key>
+        <status>0x99</status>
+        <midino>0x09</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4138,11 +6030,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 2 PAD 3 hot cue 11 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_11_enabled</key>
+        <status>0x99</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 2 PAD 4 hot cue lamp -->
         <group>[Channel2]</group>
         <key>hotcue_4_enabled</key>
         <status>0x99</status>
         <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 4 hot cue 12 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_12_enabled</key>
+        <status>0x99</status>
+        <midino>0x0B</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4158,11 +6070,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 2 PAD 5 hot cue 13 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_13_enabled</key>
+        <status>0x99</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 2 PAD 6 hot cue lamp -->
         <group>[Channel2]</group>
         <key>hotcue_6_enabled</key>
         <status>0x99</status>
         <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 6 hot cue 14 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_14_enabled</key>
+        <status>0x99</status>
+        <midino>0x0D</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4178,11 +6110,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 2 PAD 7 hot cue 15 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_15_enabled</key>
+        <status>0x99</status>
+        <midino>0x0E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 2 PAD 8 hot cue lamp -->
         <group>[Channel2]</group>
         <key>hotcue_8_enabled</key>
         <status>0x99</status>
         <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 2 PAD 8 hot cue 16 lamp, page 2 -->
+        <group>[Channel2]</group>
+        <key>hotcue_16_enabled</key>
+        <status>0x99</status>
+        <midino>0x0F</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4279,11 +6231,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 3 PAD 1 hot cue 9 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_9_enabled</key>
+        <status>0x9B</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 3 PAD 2 hot cue lamp -->
         <group>[Channel3]</group>
         <key>hotcue_2_enabled</key>
         <status>0x9B</status>
         <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 2 hot cue 10 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_10_enabled</key>
+        <status>0x9B</status>
+        <midino>0x09</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4299,11 +6271,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 3 PAD 3 hot cue 11 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_11_enabled</key>
+        <status>0x9B</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 3 PAD 4 hot cue lamp -->
         <group>[Channel3]</group>
         <key>hotcue_4_enabled</key>
         <status>0x9B</status>
         <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 4 hot cue 12 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_12_enabled</key>
+        <status>0x9B</status>
+        <midino>0x0B</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4319,11 +6311,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 3 PAD 5 hot cue 13 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_13_enabled</key>
+        <status>0x9B</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 3 PAD 6 hot cue lamp -->
         <group>[Channel3]</group>
         <key>hotcue_6_enabled</key>
         <status>0x9B</status>
         <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 6 hot cue 14 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_14_enabled</key>
+        <status>0x9B</status>
+        <midino>0x0D</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4339,11 +6351,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 3 PAD 7 hot cue 15 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_15_enabled</key>
+        <status>0x9B</status>
+        <midino>0x0E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 3 PAD 8 hot cue lamp -->
         <group>[Channel3]</group>
         <key>hotcue_8_enabled</key>
         <status>0x9B</status>
         <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 3 PAD 8 hot cue 16 lamp, page 2 -->
+        <group>[Channel3]</group>
+        <key>hotcue_16_enabled</key>
+        <status>0x9B</status>
+        <midino>0x0F</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4440,11 +6472,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 4 PAD 1 hot cue 9 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_9_enabled</key>
+        <status>0x9D</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 4 PAD 2 hot cue lamp -->
         <group>[Channel4]</group>
         <key>hotcue_2_enabled</key>
         <status>0x9D</status>
         <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 2 hot cue 10 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_10_enabled</key>
+        <status>0x9D</status>
+        <midino>0x09</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4460,11 +6512,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 4 PAD 3 hot cue 11 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_11_enabled</key>
+        <status>0x9D</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 4 PAD 4 hot cue lamp -->
         <group>[Channel4]</group>
         <key>hotcue_4_enabled</key>
         <status>0x9D</status>
         <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 4 hot cue 12 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_12_enabled</key>
+        <status>0x9D</status>
+        <midino>0x0B</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4480,11 +6552,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 4 PAD 5 hot cue 13 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_13_enabled</key>
+        <status>0x9D</status>
+        <midino>0x0C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 4 PAD 6 hot cue lamp -->
         <group>[Channel4]</group>
         <key>hotcue_6_enabled</key>
         <status>0x9D</status>
         <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 6 hot cue 14 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_14_enabled</key>
+        <status>0x9D</status>
+        <midino>0x0D</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>
@@ -4500,11 +6592,31 @@
         <minimum>0.5</minimum>
       </output>
       <output>
+        <!-- Deck 4 PAD 7 hot cue 15 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_15_enabled</key>
+        <status>0x9D</status>
+        <midino>0x0E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
         <!-- Deck 4 PAD 8 hot cue lamp -->
         <group>[Channel4]</group>
         <key>hotcue_8_enabled</key>
         <status>0x9D</status>
         <midino>0x07</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <!-- Deck 4 PAD 8 hot cue 16 lamp, page 2 -->
+        <group>[Channel4]</group>
+        <key>hotcue_16_enabled</key>
+        <status>0x9D</status>
+        <midino>0x0F</midino>
         <on>0x7F</on>
         <off>0x00</off>
         <minimum>0.5</minimum>

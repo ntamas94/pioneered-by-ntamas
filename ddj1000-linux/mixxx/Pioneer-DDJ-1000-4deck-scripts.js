@@ -224,8 +224,7 @@ PioneerDDJ1000.sendGridInfo = function (deck) {
     // rides along here rather than going out as a MIDI setting because there
     // is no such setting: rekordbox switches it on the state record, so this
     // is what the bridge needs to put on the wire.
-    var remaining = engine.getValue("[Controls]", "ShowDurationRemaining")
-        === PioneerDDJ1000.timeModeRemaining ? 1 : 0;
+    var remaining = PioneerDDJ1000.deckTimeMode(deck);
     var onAir = PioneerDDJ1000.isOnAir(group);
     // Beat sync shows on the jog screen too, not only on the button lamp:
     // pressing SYNC with nothing else happening moves bit 0x10 of byte 5 and
@@ -372,7 +371,11 @@ PioneerDDJ1000.init = function () {
 
         PioneerDDJ1000.lastSent[deck] = {};
 
-        for (var pad = 1; pad <= 8; pad++) {
+        // Sixteen, not eight: the pads have a second page and it holds hot
+        // cues 9 to 16, so the colour has to follow them onto it or the page
+        // would light in the flat on/off the XML outputs send and the two
+        // pages would not look alike.
+        for (var pad = 1; pad <= 16; pad++) {
             PioneerDDJ1000.connectHotcueLed(deck, pad);
         }
 
@@ -474,7 +477,9 @@ PioneerDDJ1000.lastTimeMode = -1;
 PioneerDDJ1000.timeModeSentAt = 0;
 
 PioneerDDJ1000.pollTimeMode = function () {
-    var value = engine.getValue("[Controls]", "ShowDurationRemaining");
+    var value = engine.getValue("[Controls]", "ShowDurationRemaining") + ":"
+        + PioneerDDJ1000.deckTimeMode(1) + PioneerDDJ1000.deckTimeMode(2)
+        + PioneerDDJ1000.deckTimeMode(3) + PioneerDDJ1000.deckTimeMode(4);
     var now = Date.now();
     // Repeated, not just sent on change: the bridge rebuilds itself whenever
     // the controller re-enumerates, and a setting sent once before that is
@@ -489,11 +494,33 @@ PioneerDDJ1000.pollTimeMode = function () {
     PioneerDDJ1000.sendTimeMode();
 };
 
-PioneerDDJ1000.sendTimeMode = function () {
-    var remaining = engine.getValue("[Controls]", "ShowDurationRemaining")
+// Which readout a deck is showing. The skin gives every deck its own
+// [Pioneered],timemodeN -- it is the ModeConfigKey of the time widget, which
+// is why clicking the time on a deck card flips that deck alone -- while
+// Mixxx's own [Controls],ShowDurationRemaining is one setting for the whole
+// program. Following the per-deck one is what keeps a jog screen showing the
+// same thing as the card above it.
+//
+// The per-deck control belongs to the skin, so with a skin that does not
+// define it every deck reads 0 and the global one is used instead.
+PioneerDDJ1000.deckTimeMode = function (deck) {
+    var perDeck = engine.getValue("[Pioneered]", "timemode" + deck);
+    if (perDeck === 1) {
+        return 1;
+    }
+    for (var other = 1; other <= 4; other++) {
+        if (engine.getValue("[Pioneered]", "timemode" + other) === 1) {
+            return 0;               // the skin is driving these; this deck is elapsed
+        }
+    }
+    return engine.getValue("[Controls]", "ShowDurationRemaining")
         === PioneerDDJ1000.timeModeRemaining ? 1 : 0;
+};
+
+PioneerDDJ1000.sendTimeMode = function () {
     for (var deck = 1; deck <= 4; deck++) {
-        midi.sendSysexMsg([0xF0, 0x7D, 0x30 | (deck - 1), remaining, 0xF7], 5);
+        midi.sendSysexMsg([0xF0, 0x7D, 0x30 | (deck - 1),
+            PioneerDDJ1000.deckTimeMode(deck), 0xF7], 5);
     }
 };
 
@@ -633,6 +660,138 @@ PioneerDDJ1000.beatLoopPad = function (channel, control, value, status, group) {
     engine.setValue(group, "loop_end_position", Math.round(end));
     engine.setValue(group, "reloop_toggle", 1);
     engine.setValue(group, "reloop_toggle", 0);
+};
+
+// -- beat jump ------------------------------------------------------------
+
+// The manual's diagram puts a reverse pad and a forward pad side by side for
+// each of four sizes -- 1 back, 1 forward, 2 back, 2 forward along the top,
+// 4 and 8 the same way along the bottom -- and says so again underneath:
+// "Press pad 1, pad 3, pad 5, or pad 7" to move left, "pad 2, pad 4, pad 6,
+// or pad 8" to move right.
+PioneerDDJ1000.jumpPadSteps = [1, 2, 4, 8];
+
+// What the PAGE buttons do in this mode, on top of turning the page: the
+// manual has them "switch the number of beats or number of bars assigned to
+// the performance pad", and rekordbox names the two of them "Change Jump
+// Range (1/2x)" and "(2x)". So the pad carries a multiplier and the deck
+// carries a range, and the number of beats a pad jumps is the two multiplied.
+// A range of one leaves the pads at the manual's default 1/2/4/8.
+PioneerDDJ1000.jumpRangeMin = 1 / 8;
+PioneerDDJ1000.jumpRangeMax = 64;
+PioneerDDJ1000.jumpRange = {};
+
+PioneerDDJ1000.jumpRangeFor = function (deck) {
+    return PioneerDDJ1000.jumpRange[deck] || 1;
+};
+
+PioneerDDJ1000.beatJumpPad = function (channel, control, value, status, group) {
+    if (!value) {
+        return;
+    }
+    // Pad channels are 0x97 + 2*(deck-1), so the deck is not the low nibble
+    // here the way it is everywhere else in this file.
+    var deck = Math.floor((status - 0x97) / 2) + 1;
+    // Both pages carry the same eight functions -- the unit pages these pads
+    // whatever the host thinks, and rekordbox answers that by repeating the
+    // eight rather than offering eight more -- so only the low three bits of
+    // the note say which pad was pressed.
+    var pad = control & 0x07;
+    var size = PioneerDDJ1000.jumpRangeFor(deck)
+        * PioneerDDJ1000.jumpPadSteps[pad >> 1];
+    // beatjump_size and then the plain jump, rather than one of the named
+    // beatjump_N_forward controls: Mixxx only names the powers of two from
+    // 1/32 to 64, and the largest pad at the largest range asks for 512. The
+    // skin's jump box reads this control, so it also ends up showing the size
+    // the pad just used.
+    var key = pad % 2 === 0 ? "beatjump_backward" : "beatjump_forward";
+    engine.setValue(group, "beatjump_size", size);
+    engine.setValue(group, key, 1);
+    engine.setValue(group, key, 0);
+};
+
+PioneerDDJ1000.stepJumpRange = function (deck, factor) {
+    PioneerDDJ1000.jumpRange[deck] = Math.max(PioneerDDJ1000.jumpRangeMin,
+        Math.min(PioneerDDJ1000.jumpRangeMax,
+            PioneerDDJ1000.jumpRangeFor(deck) * factor));
+    PioneerDDJ1000.updateJumpRangeLamps(deck);
+};
+
+PioneerDDJ1000.jumpRangeDown = function (channel, control, value, status) {
+    if (value) {
+        PioneerDDJ1000.stepJumpRange(PioneerDDJ1000.deckFromStatus(status), 0.5);
+    }
+};
+
+PioneerDDJ1000.jumpRangeUp = function (channel, control, value, status) {
+    if (value) {
+        PioneerDDJ1000.stepJumpRange(PioneerDDJ1000.deckFromStatus(status), 2);
+    }
+};
+
+// The pads carry no numbers and nothing lights them in this mode, so the two
+// PAGE lamps are the only sign of the range there is: lit while there is
+// still room to halve, or to double. Whether the unit lights these itself
+// when left alone is not something either document says.
+PioneerDDJ1000.jumpRangeLamps = { down: 0x26, up: 0x2E };
+
+PioneerDDJ1000.updateJumpRangeLamps = function (deck) {
+    var range = PioneerDDJ1000.jumpRangeFor(deck);
+    PioneerDDJ1000.sendNote(deck, PioneerDDJ1000.jumpRangeLamps.down,
+        range > PioneerDDJ1000.jumpRangeMin ? 0x7F : 0x00);
+    PioneerDDJ1000.sendNote(deck, PioneerDDJ1000.jumpRangeLamps.up,
+        range < PioneerDDJ1000.jumpRangeMax ? 0x7F : 0x00);
+};
+
+// -- sampler --------------------------------------------------------------
+
+// "The sampler has four banks and each bank has sixteen slots", says the
+// manual, and four sixteens is exactly the sixty-four samplers Mixxx keeps.
+// So a pad addresses bank * 16 + page * 8 + pad: the bank picks sixteen
+// slots, the unit's own paging picks which eight of them the pads are on, and
+// nothing is left unreachable.
+//
+// One bank for the whole unit rather than one per deck. Mixxx's samplers are
+// a single global rack and rekordbox's sampler is a single panel; handing
+// each deck section a private eighth of the rack was this mapping's own idea,
+// and it put three quarters of the samplers out of reach of every pad.
+PioneerDDJ1000.samplerBanks = 4;
+PioneerDDJ1000.samplerSlotsPerBank = 16;
+PioneerDDJ1000.samplerBank = 0;
+
+PioneerDDJ1000.samplerPad = function (channel, control, value, status) {
+    if (!value) {
+        return;
+    }
+    // Page 2 is the same note plus eight, so bit 3 of the note is the page and
+    // the low three bits are the pad.
+    var group = "[Sampler" + (PioneerDDJ1000.samplerBank
+        * PioneerDDJ1000.samplerSlotsPerBank
+        + (control & 0x08) + (control & 0x07) + 1) + "]";
+    // The shifted pad layer is the odd channel of each pair. What it does is
+    // unchanged from when these pads were plain bindings; the roadmap wants it
+    // to stop the slot rather than eject it, which is its own question.
+    var key = (status - 0x97) % 2 === 1 ? "eject" : "cue_gotoandplay";
+    engine.setValue(group, key, 1);
+    engine.setValue(group, key, 0);
+};
+
+PioneerDDJ1000.stepSamplerBank = function (direction) {
+    PioneerDDJ1000.samplerBank = Math.max(0,
+        Math.min(PioneerDDJ1000.samplerBanks - 1,
+            PioneerDDJ1000.samplerBank + direction));
+};
+
+PioneerDDJ1000.samplerBankDown = function (channel, control, value) {
+    if (value) {
+        PioneerDDJ1000.stepSamplerBank(-1);
+    }
+};
+
+PioneerDDJ1000.samplerBankUp = function (channel, control, value) {
+    if (value) {
+        PioneerDDJ1000.stepSamplerBank(1);
+    }
 };
 
 PioneerDDJ1000.syncPressedAt = {};
@@ -1235,7 +1394,9 @@ PioneerDDJ1000.connectHotcueLed = function (deck, pad) {
     var group = "[Channel" + deck + "]";
     var key = "hotcue_" + pad + "_enabled";
     var status = PioneerDDJ1000.padStatusForDeck(deck);
-    var note = pad - 1; // hot cue mode occupies notes 0x00..0x07
+    // Hot cue mode occupies notes 0x00..0x07 on page 1 and 0x08..0x0F on page
+    // 2, which is hot cues 1 to 16 in one unbroken run.
+    var note = pad - 1;
 
     var connection = engine.makeConnection(group, key, function (value) {
         midi.sendShortMsg(
@@ -1283,6 +1444,10 @@ PioneerDDJ1000.sendOpeningState = function () {
         PioneerDDJ1000.sendNote(deck, PioneerDDJ1000.display.showInfo, 0x00);
         PioneerDDJ1000.sendNote(deck, PioneerDDJ1000.display.ringLed, 0x01);
         PioneerDDJ1000.sendNote(deck, PioneerDDJ1000.display.timeMode, 0x00);
+
+        // The beat jump range starts at one on every deck, so the PAGE lamps
+        // start showing room in both directions.
+        PioneerDDJ1000.updateJumpRangeLamps(deck);
 
         // Ask where the knobs and faders are sitting: the unit reports a
         // position only when something moves, so without this Mixxx disagrees

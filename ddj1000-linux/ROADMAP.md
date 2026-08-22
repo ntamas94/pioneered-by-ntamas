@@ -46,11 +46,15 @@ brightness. While there, read `hotcue_N_color` instead of the fixed blue.
 `0x18`, which makes `0x17` the obvious place for centre and `0x1D` a
 transcription slip worth checking against the hardware.
 
-## Worth wiring, most useful first
+**Six `<output>` blocks are inside `<controls>`.** The generator appends the
+five BEAT FX assign lamps and the BEAT FX ON/OFF lamp while it is building the
+controls list, so they land in the wrong element and Mixxx never reads them.
+That is the whole of why the effect section is dark, and it is a three-line
+move in `build_controls` rather than anything that needs new addresses. The
+count gives it away: the XML holds 102 `<output>` blocks but only 96 of them
+are where an output belongs.
 
-**Hot cue page 2** — pad notes `0x08`-`0x0F` on both layers, hot cues 9 to 16.
-Mixxx has them; the controller has the page; nothing joins the two. Doubles the
-cue capacity for the cost of eight lines in the generator.
+## Worth wiring, most useful first
 
 **Instant doubles on SHIFT+LOAD** — `0x96` notes `0x5D`, `0x5E`, `0x6D`, `0x6F`
 for decks 1-4 → `CloneFromDeck`. The manual's press-the-encoder-twice feature,
@@ -78,8 +82,9 @@ is laid out for.
 scratch with vinyl off, which the jog code already distinguishes by CC.
 
 **Sampler polish** — SHIFT+pad should stop the playing slot rather than eject
-the sample, the pads want lamps from `track_loaded` and `play`, and page 2 and
-the SHIFT+PAGE bank switch are both unwired.
+the sample, and the pads want lamps from `track_loaded` and `play`. The lamps
+matter more than they did: the bank now moves under the pads and nothing on
+the unit says which of the four it is on.
 
 **KEYBOARD mode** — pad notes `0x40`-`0x4F`, a hot cue played at pitches. The
 hardest of the pad modes and the least missed; last.
@@ -91,10 +96,16 @@ drive Mixxx's routing.
 ## Feedback the documents say the host must send
 
 Channels `0x94` and `0x96` have no outputs at all — every effect button, every
-browse button is dark. Specifically missing: BEAT FX ON/OFF now that its
-address is right, the five FX assign lamps, the fourteen effect-select lamps,
-the BEAT ◀/▶ lamps, the pad-mode buttons and PAGE buttons, and pad lamps for
+browse button is dark. Specifically missing: BEAT FX ON/OFF and the five FX
+assign lamps, both of which the generator does write but into the wrong
+element (above); the fourteen effect-select lamps, the BEAT ◀/▶ lamps, the
+pad-mode buttons, fourteen of the sixteen PAGE buttons, and pad lamps for
 every mode except hot cue.
+
+The two exceptions are the BEAT JUMP PAGE pair, `0x26` and `0x2E`, which the
+script lights to show whether the jump range can still be halved or doubled.
+Whether the unit would have lit them itself is still unmeasured, so if they
+end up fighting something, that pair is where to look.
 
 MASTER CUE is documented as lighting itself *or* by MIDI; it is currently left
 to the hardware, which is probably right.
@@ -110,6 +121,19 @@ two sync lamps still go out over MIDI.
 Beat loop page 1 starts at 1/32 rather than the manual's 1/64, because 1/32 is
 the smallest loop Mixxx has.
 
+The sampler pads address one global bank rather than a private eighth of the
+rack per deck. The manual says the sampler "has four banks and each bank has
+sixteen slots", which is exactly Mixxx's sixty-four samplers, so the pads are
+bank × 16 + page × 8 + pad and every slot is reachable from every deck
+section. The cost is that all four sections now show the same sixteen slots,
+where before deck 2 had its own eight. See
+[docs/pad-pages-and-page-buttons.md](docs/pad-pages-and-page-buttons.md).
+
+Beat jump pads carry a multiplier rather than a fixed number of beats, so the
+PAGE pair can scale all eight at once the way the manual describes. A range of
+1 leaves them on the manual's printed 1/2/4/8; the range is clamped to 1/8 …
+64, which keeps the largest pad inside Mixxx's own 512-beat ceiling.
+
 SHIFT+SYNC is the key-match rather than the manual's sync-master, which lives
 on a long press of SYNC instead. The tempo-range function of SHIFT+MASTER TEMPO
 is not reproduced at all — the range lives in the unit's own settings.
@@ -121,7 +145,21 @@ on decks 3 and 4, and the inference that rekordbox blinks the pad for the
 current key is only that — an inference. Wiring KEY SHIFT mode will settle it.
 
 **Whether the pad-mode and PAGE buttons light themselves** without a host, or
-need driving. The documents do not say; the bench will.
+need driving. The documents do not say; the bench will. What the PAGE buttons
+*do* is no longer open: footnote \*1 of the MIDI list says the unit switches
+the notes its pads send, with a diagram of deck 1's hot cues moving from
+`97 00`-`97 07` to `97 08`-`97 0F`, and it does not ask the host first.
+
+**Whether rekordbox's page-change permission flags matter.** Its CSV carries
+eight host→unit indicators named "Permission flag of PAGE change" — `0x21`,
+`0x63`, `0x6A`, `0x6C`, `0x6E`, `0x74`, `0x75`, `0x76` — that the official
+MIDI list does not list at all. Nothing here sends them deliberately, on the
+reading that the footnote means what it says and the paging is the unit's own.
+If a PAGE button turns out to do nothing on the bench, they are the first
+thing to try — and note that one of them is already going out by accident:
+`sendOpeningState` writes `0x20` to note `0x21` on every deck to ask for the
+panel's knob positions, and `0x21` is rekordbox's hot cue permission flag. If
+hot cue is the one mode that pages, that is why.
 
 ## How to settle a question here
 

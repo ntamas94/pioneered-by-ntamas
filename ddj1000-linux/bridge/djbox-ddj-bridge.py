@@ -1924,6 +1924,12 @@ class Bridge:
                               "already unlocked earlier this session")
                 self.hid_ready_at = 0.0
                 self.authenticated = True
+                # Anything drawn while the gate was shut went nowhere: the
+                # daemon builds a deck's picture as soon as the mapping
+                # announces it, which is seconds before this point, and every
+                # one of those reports was dropped on the way out. Forget what
+                # was drawn so the next announcement draws it again.
+                self.drawn.clear()
             chunk = self.read_ddj()
             if chunk:
                 if DEBUG:
