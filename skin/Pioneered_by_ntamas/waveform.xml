@@ -172,26 +172,30 @@
         <BeatColor>#40ffffff</BeatColor>
         <PlayPosColor>#fff</PlayPosColor>
         <SignalColor>#1d6fe0</SignalColor>
-        <!-- rekordbox's three bands. The filtered renderer draws one bar
-             per band from the centre out, low then mid then high with no
-             blending, so the last one drawn owns the core and the triple is
-             ordered by draw order rather than by frequency: blue is the
-             body, the burnt orange the ring where the mids reach past it,
-             and the cream the rim and the transient tips. The RGB triple
-             below is ordered by frequency instead, because that renderer
-             adds the three colours instead of layering them. Only one of
-             the two is read, and WaveformType in mixxx.cfg says which. -->
-        <SignalLowColor>#f2e8d5</SignalLowColor>
-        <SignalMidColor>#c8741c</SignalMidColor>
-        <SignalHighColor>#1d6fe0</SignalHighColor>
-        <SignalRGBLowColor>#1d6fe0</SignalRGBLowColor>
-        <SignalRGBMidColor>#c8741c</SignalRGBMidColor>
-        <SignalRGBHighColor>#f2e8d5</SignalRGBHighColor>
-        <!-- Inert on the stock renderers and on the build installed today.
-             The pioneered4 build moves the mix into the skin, and there the
-             difference that matters is this one: Mixxx divides the mixed
-             colour by its own largest component, which throws the level away
-             and means nothing is ever white, while rekordbox simply adds. -->
+        <!-- rekordbox's own 3Band colours, read out of rekordbox.exe rather than off
+             a screenshot: #0055E1 low, #FFA600 mid, #FFFFFF high, and one hand-
+             written colour for each region where two or three of the bars overlap.
+             rekordbox draws a bar per band about the centre line and paints them
+             largest first; Mixxx's filtered renderer paints low, mid, high in that
+             fixed order, and since the high band is the tallest in under 3% of
+             columns the two put the same rings in the same places. So the plain
+             triple takes the region colours, not the band colours: the rim where
+             only the bass reaches, the ring where bass and mid overlap, the core
+             where all three do. Pixel-exact on 78.8% of columns, measured.
+             The RGB triple is the same three, for the stacked renderer that reads
+             it. Signal3Band* below is the band-per-band set, for the mixer the
+             pioneered4 build moves into the skin: that one adds without dividing by
+             the largest component, which is what keeps rekordbox's quiet passages
+             dark and lets its loud ones reach white. Todays build ignores it. -->
+        <SignalLowColor>#0055e1</SignalLowColor>
+        <SignalMidColor>#b4690a</SignalMidColor>
+        <SignalHighColor>#f5ebd7</SignalHighColor>
+        <SignalRGBLowColor>#0055e1</SignalRGBLowColor>
+        <SignalRGBMidColor>#b4690a</SignalRGBMidColor>
+        <SignalRGBHighColor>#f5ebd7</SignalRGBHighColor>
+        <Signal3BandLowColor>#0055e1</Signal3BandLowColor>
+        <Signal3BandMidColor>#ffa600</Signal3BandMidColor>
+        <Signal3BandHighColor>#ffffff</Signal3BandHighColor>
         <Signal3BandMix>additive</Signal3BandMix>
         <Mark>
           <Control>cue_point</Control>

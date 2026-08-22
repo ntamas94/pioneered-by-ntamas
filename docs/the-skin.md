@@ -203,70 +203,87 @@ so a column ten decibels down is drawn as bright as the loudest one, and no
 column is ever white, because white needs all three components at full and only
 the largest survives the division.
 
-rekordbox's 3Band mode is structurally the RGB one — three band levels per
-column, one colour computed from them — so `WaveformType 17` with rekordbox's
-hues is the obvious thing to try, and it was tried here across six palettes:
-blue with white highs, blue with a dimmed cream, a dimmed blue with a saturated
-orange, and three balances in between. Every one of them washed out on dense
-material, and the reason is arithmetic rather than taste. A blue low and a warm
-mid are near-complementary; their sum is neutral, so any column containing both
-bass and mids — which in dance music is nearly every column — normalises to
-something pale, and whatever the high band adds on top only desaturates it
-further. Screenshots of all six are in the working notes; the effect is
-identical in the lane and in the card overview.
+rekordbox's 3Band mode looks like the RGB one — three band levels per column,
+one colour on screen — so `WaveformType 17` with rekordbox's hues is the
+obvious thing to try, and it was tried here across six palettes: blue with
+white highs, blue with a dimmed cream, a dimmed blue with a saturated orange,
+and three balances in between. Every one washed out on dense material, for a
+reason that is arithmetic rather than taste. A blue low and a warm mid are
+near-complementary, so their sum is neutral; any column carrying both bass and
+mids — which in dance music is nearly every column — normalises to something
+pale, and whatever the high band adds only desaturates it further.
 
-So the palette that is actually shipped is on the **filtered** renderer, with
-the three colours ordered by draw order rather than by frequency:
+rekordbox does not mix at all. Static analysis of rekordbox 6.8.7, written up
+in the DDJ-1000 repository as `docs/rekordbox-recon/waveform-3band-colour.md`,
+found seven hand-written colours in the instruction stream and no arithmetic:
+it draws one bar per band about the centre line, sorts the three by height and
+paints them largest first, so the outer ring is the loudest band's own colour,
+the middle ring belongs to whichever pair reaches it, and the core where all
+three overlap is always the same pale cream. `#0055E1` low, `#FFA600` mid,
+`#FFFFFF` high, `#B4690A` low and mid, `#D2DCFA` low and high, `#FFF0D7` mid
+and high, `#F5EBD7` all three.
+
+That is the filtered renderer's geometry, which is why the palette that ships
+is on the filtered renderer and why its three slots hold *region* colours
+rather than band colours. Mixxx paints low, mid, high in a fixed order and has
+only one middle colour, so the rim gets the low-only blue, the ring gets the
+low-and-mid `#B4690A`, and the core gets the all-three cream:
 
 ```xml
-<SignalLowColor>#f2e8d5</SignalLowColor>   <!-- cream: the rim and the tips -->
-<SignalMidColor>#c8741c</SignalMidColor>   <!-- burnt orange: the ring       -->
-<SignalHighColor>#1d6fe0</SignalHighColor> <!-- blue: the body               -->
-<SignalRGBLowColor>#1d6fe0</SignalRGBLowColor>
-<SignalRGBMidColor>#c8741c</SignalRGBMidColor>
-<SignalRGBHighColor>#f2e8d5</SignalRGBHighColor>
+<SignalLowColor>#0055e1</SignalLowColor>    <!-- rim: bass alone      -->
+<SignalMidColor>#b4690a</SignalMidColor>    <!-- ring: bass and mid   -->
+<SignalHighColor>#f5ebd7</SignalHighColor>  <!-- core: all three      -->
+<SignalRGBLowColor>#0055e1</SignalRGBLowColor>
+<SignalRGBMidColor>#b4690a</SignalRGBMidColor>
+<SignalRGBHighColor>#f5ebd7</SignalRGBHighColor>
+<Signal3BandLowColor>#0055e1</Signal3BandLowColor>
+<Signal3BandMidColor>#ffa600</Signal3BandMidColor>
+<Signal3BandHighColor>#ffffff</Signal3BandHighColor>
+<Signal3BandMix>additive</Signal3BandMix>
 ```
 
-The two triples look contradictory and are not. Each carries the assignment
-that produces a blue body with orange accents and cream tips *in the renderer
-that reads it*: the filtered triple ordered by who paints over whom, the RGB
-triple ordered by frequency. Both blocks appear twice, once in `waveform.xml`
-for the lanes and once in `deck.xml` for the card overviews, and they are not
-interchangeable between the two files by accident — they happen to be the same
-now, but the tags mean the same thing in both, so keep them in step by hand.
+The three sets are not three opinions. The plain triple is regions, for the
+filtered renderer that is live. The RGB triple is the same three, because the
+stacked all-shaders renderer reads those tags and lays its bars out the same
+way. The `Signal3Band*` set is per band rather than per region, because it
+feeds a mixer that adds; those are rekordbox's own three band colours, and
+`additive` asks for the sum without the divide. Nothing on the box reads that
+last set today. All of it appears twice, in `waveform.xml` for the lanes and
+`deck.xml` for the card overviews, and the two have to be kept in step by hand.
 
-Which colour is visible where is not settled by the colours alone. In the
-filtered renderer a band is only seen where its bar reaches past the bands
-drawn after it, so the mid band is invisible unless it out-reaches the high
-band, and the per-band gains in `mixxx.cfg` are what decide that. Measured on
-the box with a dense drum-and-bass track: at `VisualGain_2 0.9` the orange was
-absent, at `1.3` it appeared as flecks along the top of the blue, and at `1.6`
-it reads as a proper band of transients. The values now on the box are
+Colours alone do not decide which ring is visible. A band is only seen where
+its bar reaches past the bands painted after it, and Mixxx's own high band is
+far larger relative to low and mid than rekordbox's is — the recon note counts
+rekordbox's high band as the tallest of the three in under 3 % of columns,
+where on this box, at equal gains, the high band covers the lane. So the gains
+are what restore rekordbox's ordering, and they were set by looking: at
+`1 / 1 / 0.7` the cream swallowed everything, at `1.15 / 1 / 0.3` the cream was
+still the body with blue on top, and at `1.15 / 1.5 / 0.2` the picture is
+rekordbox's — a thin cream core, a burnt amber body, blue at the tips where the
+bass is loudest. Lowering the high gain below the mid gain is also the nearest
+a linear multiplier gets to the raised cosine rekordbox applies to that band
+and to no other.
 
 | Key | Value |
 |---|---|
-| `WaveformType` | `19` |
-| `WaveformOverviewType` | `0` |
-| `OverviewNormalized` | `1` |
+| `WaveformType` | `19`, `AllShaderFilteredWaveform` |
+| `WaveformOverviewType` | `0`, filtered, reading the `<Overview>` block in `deck.xml` |
+| `OverviewNormalized` | `1`, so the card overview crops to the track's own peak instead of fighting the master gain |
 | `VisualGain_0` | `1` |
-| `VisualGain_1` (low, the cream tips) | `1` |
-| `VisualGain_2` (mid, the orange) | `1.6` |
-| `VisualGain_3` (high, the blue body) | `1.1` |
+| `VisualGain_1` (low, the blue rim) | `1.15` |
+| `VisualGain_2` (mid, the amber body) | `1.5` |
+| `VisualGain_3` (high, the cream core) | `0.2` |
 
-and `mixxx.cfg` is rewritten by Mixxx when it exits, so it can only be edited
-while Mixxx is not running.
+`mixxx.cfg` is rewritten by Mixxx when it exits, so it can only be edited while
+Mixxx is not running: kill it, wait for the process to go, edit in the gap, and
+let the autologin chain bring it back.
 
-There is a way out of the normalisation, and it is already written: the
-`pi-setup/build-mixxx-3band.sh` build moves the mix out of the binary and into
-the skin, where `Signal3BandMix` may be set to `additive` — adding without the
-divide, which is what rekordbox does and what makes its quiet passages stay
-dark and its dense ones go white. That build is `2.5.6-0pioneered4`; the box is
-running `2.5.6-0pioneered3`, so nothing of it is live here. Both waveform
-blocks in the skin already carry `<Signal3BandMix>additive</Signal3BandMix>`,
-which the current binary ignores. When the patched build is installed, moving
-`WaveformType` to `17` and `WaveformOverviewType` to `2` should be all that is
-needed, and the RGB triple above is the palette it will use.
-
+There is a way out of the normalisation the RGB renderer imposes, and it is
+already written. The `pi-setup/build-mixxx-3band.sh` build moves the mix out of
+the binary and into the skin, where `Signal3BandMix` may be `additive` — adding
+without the divide, which is what keeps rekordbox's quiet passages dark and
+lets its loud ones reach white. That build is `2.5.6-0pioneered4`; the box runs
+`2.5.6-0pioneered3`, so none of it is live here.
 None of this touches the jog-wheel screens. Those are drawn by the bridge from
 its own theme file and share nothing with the skin.
 
