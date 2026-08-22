@@ -1449,11 +1449,18 @@ WLabel {
 #TopStatusAudioBtn { margin-left: 6px; padding: 0 2px; min-width: 40px; }
 
 /* ---- the three stems, one stack per waveform lane ---- */
+/* rekordbox's own words and its own colours, read out of rekordbox.exe rather
+   than matched by eye. The four juce::Colour values its STEMS strip is built
+   from are one array at 0x145D3B950, filled by the static initialiser at file
+   offset 0x0056CA00, and the sibling name array at 0x145D3B8D0 names them
+   INST, VOCAL, DRUMS, BASS in that order. BASS is the fourth and has no cell
+   here; the three that do are DRUMS #4655ff, VOCAL #02da0c and INST #da1b02.
 
-/* rekordbox's own words and colours. Centred, which is also the only
-   alignment worth having here: WPushButton paints its own text into its own
-   rect, so a stylesheet text-align never reaches it and the XML's left
-   alignment loses the vertical centring with it. */
+   Centred, which is also the only alignment worth having here: WPushButton
+   paints its own text into its own rect, so a stylesheet text-align never
+   reaches it and the XML's left alignment took the vertical centring with it.
+   `color` does reach it -- that one comes off the palette -- and black is what
+   a fill this saturated wants. */
 #StemStack {
   margin: 1px 4px 1px 0;
 }
@@ -1461,18 +1468,20 @@ WLabel {
 #StemDrums, #StemVocal, #StemInst {
   border: 1px solid #0a0f18;
   border-radius: 2px;
-  color: #ffffff;
+  color: #000000;
   font-size: 12px;
   font-weight: bold;
   margin: 1px 0;
 }
 
-#StemDrums { background-color: #2e5be8; }
-#StemVocal { background-color: #1fbf4f; }
-#StemInst { background-color: #e8332e; }
+#StemDrums { background-color: #4655ff; }
+#StemVocal { background-color: #02da0c; }
+#StemInst { background-color: #da1b02; }
 
-/* Engaged: the same colour lifted, with a white edge, so the state carries
-   from as far away as the waveform does. */
-#StemDrums[value="1"] { background-color: #6b8dff; border-color: #ffffff; }
-#StemVocal[value="1"] { background-color: #57e884; border-color: #ffffff; }
-#StemInst[value="1"] { background-color: #ff6f6a; border-color: #ffffff; }
+/* Engaged: each colour taken two fifths of the way to white, with a white edge,
+   so the state carries from as far away as the waveform does and the black
+   lettering only gains contrast by it. */
+#StemDrums[value="1"] { background-color: #9099ff; border-color: #ffffff; }
+#StemVocal[value="1"] { background-color: #67e96d; border-color: #ffffff; }
+#StemInst[value="1"] { background-color: #e97667; border-color: #ffffff; }
+

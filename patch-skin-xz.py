@@ -2914,6 +2914,133 @@ def step_no_sampler_tab() -> int:
     return 0 if check_xml("topbar.xml") else 1
 
 
+# ---------------------------------------------------------------- step 36
+
+# The XZ's STEMS strip: DRUMS / VOCAL / INST beside every waveform lane. The
+# strip was hand-added to waveform.xml long after this script last saw the
+# file, so a rebuild from the base used to drop it; it lives here now so it
+# comes back with everything else.
+STEMS = """      <!-- The deck's three stems, between its info block and its number, so
+           the lane a button belongs to is never in doubt. The words and the
+           colours are rekordbox's own row, which is also the honest naming:
+           its INST is the residual, mix minus drums minus vocals, rather than
+           a fourth thing the separation predicts. This template runs once per
+           channel, so the keys come out as [Pioneered],stem1_drums through
+           stem4_inst. Naming a control here is what creates it; nothing reads
+           them yet. -->
+      <WidgetGroup>
+        <ObjectName>StemStack</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>76f,0me</Size>
+        <Children>
+          <PushButton>
+            <ObjectName>StemDrums</ObjectName>
+            <Size>0me,0me</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>DRUMS</Text></State>
+            <State><Number>1</Number><Text>DRUMS</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],stem<Variable name="channel"/>_drums</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>StemVocal</ObjectName>
+            <Size>0me,0me</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>VOCAL</Text></State>
+            <State><Number>1</Number><Text>VOCAL</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],stem<Variable name="channel"/>_vocal</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>StemInst</ObjectName>
+            <Size>0me,0me</Size>
+            <NumberStates>2</NumberStates>
+            <State><Number>0</Number><Text>INST</Text></State>
+            <State><Number>1</Number><Text>INST</Text></State>
+            <Connection>
+              <ConfigKey>[Pioneered],stem<Variable name="channel"/>_inst</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+"""
+
+# Anchor on the ON AIR column's ObjectName rather than on the indentation of
+# the tag above it. Step 23 splices that column in with a fixed run of spaces
+# that does not match its surroundings, so the only stable landmark is the
+# name itself; walking back to the start of its line puts the strip between
+# the info block and the column without disturbing either one's indentation.
+STEMS_ANCHOR = '<ObjectName>WaveformOnAirColumn<Variable name="channel"/></ObjectName>'
+
+# The fills are rekordbox's own, read out of rekordbox.exe rather than matched
+# by eye; the comment in the block records where they were found so the next
+# reader does not have to go back into the binary for them.
+QSS_36 = """
+
+/* rekordbox's own words and its own colours, read out of rekordbox.exe rather
+   than matched by eye. The four juce::Colour values its STEMS strip is built
+   from are one array at 0x145D3B950, filled by the static initialiser at file
+   offset 0x0056CA00, and the sibling name array at 0x145D3B8D0 names them
+   INST, VOCAL, DRUMS, BASS in that order. BASS is the fourth and has no cell
+   here; the three that do are DRUMS #4655ff, VOCAL #02da0c and INST #da1b02.
+
+   Centred, which is also the only alignment worth having here: WPushButton
+   paints its own text into its own rect, so a stylesheet text-align never
+   reaches it and the XML's left alignment took the vertical centring with it.
+   `color` does reach it -- that one comes off the palette. Black there is the
+   reference picture's choice and not the binary's: rekordbox puts the stem
+   colour into the text and outline slots over a background it resolves at
+   runtime, so the fills above are the only part of this taken from it. */
+#StemStack {
+  margin: 1px 4px 1px 0;
+}
+
+#StemDrums, #StemVocal, #StemInst {
+  border: 1px solid #0a0f18;
+  border-radius: 2px;
+  color: #000000;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 1px 0;
+}
+
+#StemDrums { background-color: #4655ff; }
+#StemVocal { background-color: #02da0c; }
+#StemInst { background-color: #da1b02; }
+
+/* Engaged: each colour taken two fifths of the way to white, with a white edge,
+   so the state carries from as far away as the waveform does and the black
+   lettering only gains contrast by it. */
+#StemDrums[value="1"] { background-color: #9099ff; border-color: #ffffff; }
+#StemVocal[value="1"] { background-color: #67e96d; border-color: #ffffff; }
+#StemInst[value="1"] { background-color: #e97667; border-color: #ffffff; }
+"""
+
+
+def step_stems() -> int:
+    path = SKIN / "waveform.xml"
+    text = path.read_text(encoding="utf-8")
+
+    # Guard on the strip itself rather than replacing a previous injection:
+    # the block carries no wrapper of its own to cut back out, so a second run
+    # has to leave the first one alone or the lane grows a second strip.
+    if "StemStack" in text:
+        print("  waveform.xml: stem strip already present")
+    elif STEMS_ANCHOR in text:
+        open_at = text.rindex("<WidgetGroup>", 0, text.index(STEMS_ANCHOR))
+        line_at = text.rindex(NL, 0, open_at) + 1
+        text = text[:line_at] + STEMS + text[line_at:]
+        path.write_text(text, encoding="utf-8")
+        print("  waveform.xml: DRUMS / VOCAL / INST beside each lane")
+    else:
+        print("  ! ON AIR column anchor missing")
+
+    swap_qss("the three stems, one stack per waveform lane", QSS_36)
+    return 0 if check_xml("waveform.xml") else 1
+
+
 # ---------------------------------------------------------------- main
 
 
@@ -2922,7 +3049,10 @@ def main() -> int:
         print(f"error: {SKIN} not found", file=sys.stderr)
         return 1
     print(f"patching {SKIN.name}")
-    for step in (step12, step34, step5, step6, step7, step8, step9, step10, step11, step_time_left):
+    for step in (
+        step12, step34, step5, step6, step7, step8, step9, step10, step11,
+        step_time_left, step_stems,
+    ):
         rc = step()
         if rc != 0:
             return rc
