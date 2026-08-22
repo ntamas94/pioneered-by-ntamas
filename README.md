@@ -183,4 +183,24 @@ package, so `apt upgrade` will not replace it.
 - Qt applies `min-width` to the content box, padding/border comes on top —
   the column sizes the boxes instead of fixed widths.
 
-GPL-3.0, inherited from the base skin.
+## Licensing
+
+Three separately licensed works live here, each under the licence its origin
+imposes. That is aggregation, not one combined work — nothing here links the
+kernel module to the skin.
+
+| Part | Derived from | Licence |
+|---|---|---|
+| `skin/`, `patch-skin-xz.py`, `controllers/`, `pi-setup/` | [Pioneered](https://github.com/timewasternl/Pioneered) / [Pioneered-Plus](https://github.com/bencejuhaasz/Pioneered-Plus) | **GPL-3.0** ([LICENSE](LICENSE)) |
+| `ddj1000-linux/audio/`, `ddj1000-audio/` | the kernel's `snd-usb-audio` | **GPL-2.0-only** ([LICENSE](ddj1000-linux/audio/LICENSE)) |
+| `pi-setup/pioneered-mixxx.patch` | [Mixxx](https://github.com/mixxxdj/mixxx) | **GPL-2.0-or-later** |
+
+The audio trees cannot be relicensed to GPL-3.0: 24 of their files carry
+`SPDX-License-Identifier: GPL-2.0`, which is GPL-2.0-*only*. The skin cannot be
+relicensed to GPL-2.0 either, since Pioneered is GPL-3.0. Keep them apart.
+
+Shipping a built kernel module — a `.deb`, a `.ko`, an SD-card image — means
+offering the matching source to whoever receives it.
+
+The DDJ-1000 Linux work continues in its own repository; the copy under
+`ddj1000-linux/` here is a snapshot and does not track it.
