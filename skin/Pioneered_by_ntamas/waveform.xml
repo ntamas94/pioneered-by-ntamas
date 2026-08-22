@@ -176,6 +176,15 @@
         <BgColor>#000</BgColor>
         <BeatColor>#40ffffff</BeatColor>
         <PlayPosColor>#fff</PlayPosColor>
+        <!-- rekordbox draws no centre line. Mixxx's filtered renderer paints one
+             last, over the bands, and with AxesColor unset it defaults to
+             #f5f5f5: invisible inside a cream core, a white seam across every
+             quiet passage. Alpha zero removes it. Measured, the centre row goes
+             from #f5f5f5 to the band colour underneath at both a sparse and a
+             dense position. That works because blending is enabled by the time
+             this renderer draws, which WaveformRendererFiltered does not set
+             itself, so check it again after a Mixxx upgrade. -->
+        <AxesColor>#00000000</AxesColor>
         <SignalColor>#1d6fe0</SignalColor>
         <!-- rekordbox's own 3Band colours, read out of rekordbox.exe rather than off
              a screenshot: #0055E1 low, #FFA600 mid, #FFFFFF high, and one hand-

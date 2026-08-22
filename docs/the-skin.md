@@ -253,16 +253,41 @@ last set today. All of it appears twice, in `waveform.xml` for the lanes and
 
 Colours alone do not decide which ring is visible. A band is only seen where
 its bar reaches past the bands painted after it, and Mixxx's own high band is
-far larger relative to low and mid than rekordbox's is — the recon note counts
-rekordbox's high band as the tallest of the three in under 3 % of columns,
-where on this box, at equal gains, the high band covers the lane. So the gains
-are what restore rekordbox's ordering, and they were set by looking: at
-`1 / 1 / 0.7` the cream swallowed everything, at `1.15 / 1 / 0.3` the cream was
-still the body with blue on top, and at `1.15 / 1.5 / 0.2` the picture is
-rekordbox's — a thin cream core, a burnt amber body, blue at the tips where the
-bass is loudest. Lowering the high gain below the mid gain is also the nearest
-a linear multiplier gets to the raised cosine rekordbox applies to that band
-and to no other.
+far larger relative to low and mid than rekordbox's is. That was first set by
+eye at `1.15 / 1.5 / 0.2`; it has since been measured, and the measurement
+moved it.
+
+Both programs' stored band levels can be read: rekordbox's out of the `PWV7`
+tag of its 399 analysis files, Mixxx's out of the zlib'd protobuf under
+`~/.mixxx/analysis`. Decoding rekordbox's reproduces the recon document's
+ordering table exactly — 78.8 / 13.9 / 4.1 / 0.9 / 0.7 / 1.7 over 15 423 044
+non-silent columns — which is a check on the decoder and on the recon at once.
+Painting those columns the way each renderer paints them and counting what
+colour each pixel of the lane ends up, rekordbox's lane is **47.8 % blue,
+41.7 % amber and 10.5 % pale**. Mixxx's, over 32 tracks of the box's own
+library, is 24.6 / 56.6 / 18.8 at `1.15 / 1.5 / 0.2`, and at equal gains the
+cream covers **70 %** of the lane.
+
+Searching the two free ratios for the closest match gives `1.15 / 0.69 / 0.06`,
+which lands on 47.3 / 42.0 / 10.7 — within about a point of rekordbox on all
+three. On the box, on one track, that reads 67.1 / 24.8 / 8.1; single tracks
+vary widely and the library figure is the one to trust. Those are the gains
+that ship.
+
+Twelve tracks turn out to be in both libraries, confirmed by correlating the
+low-band envelopes (r = 0.81 to 0.89), so the two analysers can be compared on
+identical audio. Doing that, **Mixxx draws its high band ten times hotter,
+relative to its own low band, than rekordbox draws its own**. Two causes
+compound. The bands differ by 2.2× in energy. The rest is the curve, and the
+curve is the part a gain cannot follow: Mixxx's analyser stores the high band
+as `x^0.632`, which lifts quiet detail, where rekordbox draws
+`0.5 - 0.5·cos(πx)`, which crushes it. The correction those two demand of each
+other is 24× at a tenth of full scale, 2.8× at a quarter, and 1.0× at the top.
+A single multiplier can sit at one point on that curve and nowhere else, which
+is why the fitted `0.06` matches rekordbox's *average* cream and not its
+behaviour: at the fitted gain Mixxx's core is 4.6 % of the lane in the median
+column against rekordbox's 1.4 %, and 18 % at the 90th percentile against
+rekordbox's 33 %. rekordbox keeps its cream for transients. Mixxx spreads it.
 
 | Key | Value |
 |---|---|
@@ -271,12 +296,36 @@ and to no other.
 | `OverviewNormalized` | `1`, so the card overview crops to the track's own peak instead of fighting the master gain |
 | `VisualGain_0` | `1` |
 | `VisualGain_1` (low, the blue rim) | `1.15` |
-| `VisualGain_2` (mid, the amber body) | `1.5` |
-| `VisualGain_3` (high, the cream core) | `0.2` |
+| `VisualGain_2` (mid, the amber body) | `0.69` |
+| `VisualGain_3` (high, the cream core) | `0.06` |
+| `AxesColor` | `#00000000`, in both `waveform.xml` and `deck.xml` |
 
 `mixxx.cfg` is rewritten by Mixxx when it exits, so it can only be edited while
 Mixxx is not running: kill it, wait for the process to go, edit in the gap, and
-let the autologin chain bring it back.
+let the autologin chain bring it back. The gap is short, because killing Mixxx
+ends the X session and the autologin chain starts it again within a second, so
+the edit has to be driven by polling for the process to disappear rather than
+by sleeping.
+
+Two things the gains do not reach.
+
+**The card overview is not affected by them at all.** `WOverview` reads only
+`getVisualGain(All)`; `drawNextPixmapPartLMH` takes the three stored bytes and
+draws three lines with no per-band gain anywhere. So the card overviews are
+drawn at the equal gains that put cream over 70 % of the lane, and measuring
+the pixels of a card confirms it: **89 % to 99.8 % of the coloured pixels in a
+deck card's overview are the cream**, before and after the lane gains changed.
+That is a solid pale block where rekordbox shows a blue-rimmed waveform, and no
+setting in `mixxx.cfg` or the skin can move it. It needs code.
+
+**The centre line is Mixxx's, not rekordbox's.** The filtered renderer paints
+an axis over the bands after all three, and with `AxesColor` unset it defaults
+to `#f5f5f5` — hidden inside a cream core, a white seam across every quiet
+passage. Setting it to `#00000000` removes it: measured, the centre row goes
+from `#f5f5f5` to the band colour underneath at both a sparse and a dense
+position. That works because GL blending happens to be enabled by the time this
+renderer draws, which `WaveformRendererFiltered` does not set itself, so it is
+worth rechecking after an upgrade.
 
 There is a way out of the normalisation the RGB renderer imposes, and it is
 already written. The `pi-setup/build-mixxx-3band.sh` build moves the mix out of

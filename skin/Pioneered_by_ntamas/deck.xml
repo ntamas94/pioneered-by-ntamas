@@ -179,6 +179,7 @@
                 <Size>0me,<Variable name="ovwf"/>f</Size>
                 <Channel><Variable name="channel"/></Channel>
                 <BgColor>#000</BgColor>
+                <AxesColor>#00000000</AxesColor>
                 <SignalColor>#1d6fe0</SignalColor>
                 <!-- rekordbox's own 3Band colours, read out of rekordbox.exe rather than off
                      a screenshot: #0055E1 low, #FFA600 mid, #FFFFFF high, and one hand-

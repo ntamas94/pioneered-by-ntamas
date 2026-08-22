@@ -44,31 +44,59 @@
 #   <SignalMidColor>#b4690a</SignalMidColor>    middle ring, low and mid
 #   <SignalHighColor>#f5ebd7</SignalHighColor>  core, all three
 #
-# Pixel-exact in 78.8 per cent of columns. It reverses the skin's white-rim,
-# blue-core assignment, which was arrived at by eye and is a defensible look in
-# its own right, so it is a decision and not an obvious edit. Try that, look at
-# it beside the reference, and only then decide whether anything below is worth
-# an hour of Pi.
+# Pixel-exact in 78.8 per cent of columns. That route was taken: the colours
+# went in, and then the band gains were measured rather than judged. Both
+# programs' stored levels can be read -- rekordbox's PWV7 out of its 399
+# analysis files, Mixxx's out of the zlib'd protobuf under ~/.mixxx/analysis --
+# and painting each renderer's own columns its own way says rekordbox's lane is
+# 47.8 per cent blue, 41.7 amber, 10.5 pale. Mixxx reaches 47.3 / 42.0 / 10.7
+# at VisualGain_1/2/3 = 1.15 / 0.69 / 0.06, which is within about a point on
+# all three. The lane is close enough that the difference is not what anyone
+# would pick out of a line-up. docs/the-skin.md carries the numbers.
 #
-# WHAT THE CHEAP ROUTE LEAVES, AND WHICH OF IT THIS SCRIPT ACTUALLY FIXES
+# WHAT THE CHEAP ROUTE LEFT
 #
-# Three differences survive it. Only one of them is close to what is written
-# here, and none of them is in the renderer this script patches -- so if the
-# rebuild is judged worth it, the target moves from waveformrendererrgb.cpp to
-# waveformrendererfiltered.cpp and part of this has to be written, not just run.
+# Four things, and the biggest of them was not on the list of three.
+#
+#   The card overview is untouched by any of it. WOverview reads only
+#   getVisualGain(All); drawNextPixmapPartLMH takes the three stored bytes and
+#   draws three lines with no per-band gain anywhere. So the deck cards are
+#   still drawn at equal gains, where the high band covers about 70 per cent of
+#   the lane, and measuring the pixels of a card gives 89 to 99.8 per cent of
+#   them cream, before and after the lane gains moved. A solid pale block where
+#   rekordbox shows a blue-rimmed waveform. No setting reaches it. Of
+#   everything below, this is the one worth a rebuild, and it is the cheapest:
+#   give drawNextPixmapPartLMH the same per-band table the mixer below already
+#   builds. That is a new anchor in woverview.cpp, next to the one this script
+#   already cuts for the RGB overview path the box does not use.
+#
+# Then the three that were on the list. None of them is in the renderer this
+# script patches -- if they are judged worth it the target moves from
+# waveformrendererrgb.cpp to waveformrendererfiltered.cpp, and part of it has
+# to be written rather than just run.
 #
 #   The pair colours. rekordbox has three and Mixxx's middle ring has one slot,
 #   so the pale blue #D2DCFA never appears. About 5 per cent of columns. Fixing
 #   it means giving WaveformRendererFiltered a seven-entry region table and
 #   sorting the three bars by height before painting -- new code, not a knob.
 #
-#   The high-band curve. rekordbox pushes the high band through
-#   0.5 - 0.5*cos(pi*level/128) and leaves low and mid linear, which keeps the
-#   cream core thin on quiet hi-hats and opens it abruptly on transients. This
-#   is the one the mixer below nearly covers: it already gives every band its
-#   own 256-entry table, and a raised cosine is one more table shape beside the
-#   gamma. It would still have to be wired into the Filtered renderer, which
-#   today does not go through the mixer at all.
+#   The high-band curve, which is now measured and is larger than it looked.
+#   On twelve tracks that turn out to be in both libraries -- confirmed by
+#   correlating the low-band envelopes, r = 0.81 to 0.89 -- Mixxx draws its
+#   high band ten times hotter relative to its own low band than rekordbox
+#   draws its own. Only 2.2 of that ten is the bands differing in energy. The
+#   rest is that Mixxx's analyser stores high as x^0.632, which lifts quiet
+#   detail, where rekordbox draws 0.5 - 0.5*cos(pi*x), which crushes it. The
+#   two disagree by 24x at a tenth of full scale, 2.8x at a quarter and 1.0x at
+#   the top, so a single multiplier can sit at one point on that curve and
+#   nowhere else: at the fitted 0.06 Mixxx's core is 4.6 per cent of the lane
+#   in the median column against rekordbox's 1.4, and 18 per cent at the 90th
+#   percentile against rekordbox's 33. rekordbox saves its cream for
+#   transients; a linear gain spreads it. This is the one the mixer below
+#   nearly covers -- it already gives every band a 256-entry table, and a
+#   raised cosine is one more table shape beside the gamma -- but it would have
+#   to be wired into the Filtered renderer, which does not go through the mixer
+#   at all today.
 #
 #   Normalisation. rekordbox scales every waveform by the loudest column of that
 #   track. Mixxx's Filtered renderer scales by a fixed 255 through VisualGain_0,
@@ -192,6 +220,24 @@
 # new filters. That only moves two corners; making the bands overlap the way
 # rekordbox's do would mean replacing the low-pass, band-pass and high-pass
 # triple itself, which is a different patch against createFilters.
+#
+# THE VERDICT, for whoever reads this next
+#
+# The lane does not need this build. With the region colours and the measured
+# gains it matches rekordbox on all three colour proportions to about a point,
+# and put side by side with rekordbox's own render of the same track the only
+# things left are the white transient spikes rekordbox draws and the smoothness
+# its envelope gives the lobes. Nobody picks that out of a line-up without the
+# reference next to it.
+#
+# The card overview does need it, and that is what this build is now for. It
+# reads no per-band gain at all, so it stays at the equal gains where the high
+# band covers about 70 per cent of the lane: 89 to 99.8 per cent of a deck
+# card's coloured pixels are the cream, a solid pale block where rekordbox
+# shows a blue-rimmed waveform. Rendering the same summary data with the gains
+# it cannot read turns it back into something close to rekordbox. That is the
+# one change here worth an hour of Pi, it needs no analyzer work, no
+# re-analysis, and nothing that is blocked on the sweep.
 #
 # This stacks on the tree in ~/build/mixxx-2.5.6, which already carries the
 # minute ruler, the drop hover, the marquee, the staggered GL resize, the
@@ -642,6 +688,83 @@ write(rel, text)
 rel = "src/widget/woverview.cpp"
 text = read(rel)
 assert "getBand3" not in text, "already patched: " + rel
+
+# The card overview draws three nested lines per column, low then mid then
+# high, in the same fixed order as the scrolling lane -- and reads no per-band
+# gain at all, so it is stuck at the equal gains where Mixxx's high band covers
+# the lane. Give it the mixer's per-band tables. The colours stay the LMH pens,
+# which the skin already sets to the region colours; only the levels change.
+text = replace_once(text,
+        """    int currentCompletion = 0;
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        unsigned char lowNeg = pWaveform->getLow(currentCompletion);
+        unsigned char lowPos = pWaveform->getLow(currentCompletion + 1);
+        if (lowPos || lowNeg) {
+            pPainter->setPen(lowColorPen);
+            pPainter->drawLine(QPoint(currentCompletion / 2, -lowNeg),
+                    QPoint(currentCompletion / 2, lowPos));
+        }
+    }
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        pPainter->setPen(midColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -pWaveform->getMid(currentCompletion)),
+                QPoint(currentCompletion / 2,
+                        pWaveform->getMid(currentCompletion + 1)));
+    }
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        pPainter->setPen(highColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -pWaveform->getHigh(currentCompletion)),
+                QPoint(currentCompletion / 2,
+                        pWaveform->getHigh(currentCompletion + 1)));
+    }""",
+        """    const WaveformBand3& band3 = m_signalColors.getBand3();
+    const auto extent = [](float level) {
+        return static_cast<int>(math_clamp(level, 0.0f, 1.0f) * 255.0f + 0.5f);
+    };
+
+    int currentCompletion = 0;
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        const int lowNeg = extent(band3.low(pWaveform->getLow(currentCompletion)));
+        const int lowPos = extent(band3.low(pWaveform->getLow(currentCompletion + 1)));
+        if (lowPos || lowNeg) {
+            pPainter->setPen(lowColorPen);
+            pPainter->drawLine(QPoint(currentCompletion / 2, -lowNeg),
+                    QPoint(currentCompletion / 2, lowPos));
+        }
+    }
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        pPainter->setPen(midColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -extent(band3.mid(pWaveform->getMid(currentCompletion)))),
+                QPoint(currentCompletion / 2,
+                        extent(band3.mid(pWaveform->getMid(currentCompletion + 1)))));
+    }
+
+    for (currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion;
+            currentCompletion += 2) {
+        pPainter->setPen(highColorPen);
+        pPainter->drawLine(QPoint(currentCompletion / 2,
+                                   -extent(band3.high(pWaveform->getHigh(currentCompletion)))),
+                QPoint(currentCompletion / 2,
+                        extent(band3.high(pWaveform->getHigh(currentCompletion + 1)))));
+    }""",
+        "overview LMH band levels")
 
 text = replace_once(text,
         """    QColor color;
