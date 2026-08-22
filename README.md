@@ -144,15 +144,17 @@ sudo install -m755 pi-setup/djbox-cpu-midi.sh /usr/local/bin/
 # mixxx.cfg: [Controller] VirMIDI_5-0 1, [ControllerPreset] VirMIDI_5-0 Time-Clamp.midi.xml
 ```
 
-Recommended `mixxx.cfg` values: `WaveformType 19` (all-shader Filtered, uses
-the skin colours), `WaveformOverviewType 0`, `TimeFormat 1`,
+Recommended `mixxx.cfg` values: `WaveformType 17` (all-shader RGB, which is
+the one that mixes the three band colours), `WaveformOverviewType 2` (RGB
+again, so the card overview and the big waveform agree), `TimeFormat 1`,
 `PositionDisplay 1`.
 
 ## Patched Mixxx
 
 The `.deb` packages attached to the Release (arm64, Debian Trixie /
-Raspberry Pi OS) add these on top of stock 2.5.0
-(`pi-setup/pioneered-mixxx.patch` is the full diff):
+Raspberry Pi OS) add these on top of upstream 2.5.6, packaged with Debian's
+own `debian/` directory (`pi-setup/pioneered-mixxx.patch` is the diff for
+the first six):
 
 - minute ruler under the card overview waveform (`-4:00 -3:00 …`)
 - `dropHover` property on `TrackWidgetGroup` — the skin highlights the card
@@ -167,10 +169,42 @@ Raspberry Pi OS) add these on top of stock 2.5.0
   each deck card its own two-state REMAIN/TIME toggle
 - search box focus drives `[Pioneered],osk_req` — the on-screen keyboard
   appears while the search box has focus
+- the three-band waveform mix moved out of the binary and into the skin
+  (`pi-setup/build-mixxx-3band.sh`)
 
-Install: `sudo dpkg -i mixxx-data_*.deb mixxx_*.deb`. Rebuild from source:
-`pi-setup/build-mixxx-ruler.sh`. The version string sorts above the distro
-package, so `apt upgrade` will not replace it.
+Mixxx and rekordbox draw a three-band waveform the same way in outline: split
+the track at two crossovers, keep one level per band per column, mix three
+colours by those levels. Picking the three colours in the skin therefore gets
+the hues right and the character wrong, because the character is not in the
+colours. Mixxx splits at 600 Hz and 4 kHz with fourth-order Bessel filters,
+and then, in `WaveformRendererRGB` and in `WOverview::drawNextPixmapPartRGB`,
+divides the mixed colour by its own largest component. That throws the level
+away and keeps only the ratio: a column ten decibels down is drawn as bright
+as the loudest one in the track, and nothing is ever white, because white
+needs all three components at once and only the largest survives. rekordbox
+adds without that step, which is why its quiet passages stay dark and its
+dense ones go white.
+
+The patch does not swap one hard-coded rule for another. It gives both
+renderers one shared mixer whose numbers — the three base colours, a gain and
+a curve per band, the choice between `normalized`, `additive` and `preserve`,
+and where the column height comes from — are read out of the skin's
+signal-colour block, with defaults that reproduce today's Mixxx exactly. The
+band levels arrive as the bytes the analyzer stored, so gain and curve are
+256-entry tables built at skin load rather than `pow()` in the per-pixel loop.
+The crossovers are left where they are until rekordbox's own are measured;
+moving them means re-analysing every track, so the script does that only when
+asked and bumps the stored-waveform version string when it does.
+
+Install: `sudo dpkg -i mixxx-data_*.deb mixxx_*.deb`. A clean build on a Pi 4
+is hours, so the later scripts stack on the tree the earlier ones left behind
+instead of each starting from scratch: `build-mixxx-ruler.sh` is the one that
+fetches source and builds from nothing, against Debian's 2.5.0; the 2.5.6
+tree the shipped packages come from was made by copying that `debian/`
+directory onto the upstream 2.5.6 tarball, turning `BUILD_BENCH` and
+`ENGINEPRIME` off in `debian/rules` and applying `pioneered-mixxx.patch`, and
+`build-mixxx-3band.sh` patches that tree in place. The version string sorts
+above the distro package, so `apt upgrade` will not replace it.
 
 ## Why it is built this way
 
