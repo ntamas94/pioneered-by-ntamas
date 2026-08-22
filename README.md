@@ -206,9 +206,17 @@ the cheap route — rekordbox's three pair colours collapsing into Mixxx's one
 middle-ring slot, the raised cosine it applies to the high band alone, and its
 per-track normalisation — and the script's per-band table is where that curve
 would go. Its header says what each of them would cost. The band edges are the
-one thing colour cannot reach: rekordbox's bands overlap where Mixxx's 600 Hz
-and 4 kHz Bessel split does not, and only the stepped-sine experiment named in
-the recon document settles it.
+one thing colour cannot reach, and that is now a proof rather than a suspicion:
+rekordbox passes a 435 Hz tone at full gain in both its low and its mid band,
+while Mixxx's low and mid share one corner and can at best meet at -3 dB there,
+so no value of `BAND3_LOW_HZ` reaches it. Decoupling the two corners would --
+a lowpass near 800 Hz with the mid bandpass starting near 250 Hz puts both
+within a decibel of unity. Two further differences are measured in the same
+place: rekordbox's stored level is an envelope with a slow per-band release
+where Mixxx keeps a plain per-column maximum, and rekordbox's skirts look far
+shallower than a fourth-order Bessel's. The rest of the curve waits on one
+manual import; the instrument is `tools/3band-sweep.py` in the recon
+repository.
 
 Install: `sudo dpkg -i mixxx-data_*.deb mixxx_*.deb`. A clean build on a Pi 4
 is hours, so the later scripts stack on the tree the earlier ones left behind

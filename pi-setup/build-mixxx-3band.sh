@@ -78,17 +78,49 @@
 # THE ONE THAT COLOUR CANNOT FIX
 #
 # The band edges. rekordbox's three bands overlap and are not a complementary
-# crossover: a 435 Hz sine reads 42 in both low and mid, both at essentially
-# unity, where a complementary pair would give each of them half. Mixxx splits
-# at 600 Hz and 4000 Hz with fourth-order Bessel filters, which is much closer
-# to complementary. Where the two disagree the colours will be right and the
-# shapes will not, and no amount of colour tuning reaches it. The BAND3_LOW_HZ
-# and BAND3_HIGH_HZ hooks at the bottom of this script move the two corners but
-# cannot make the bands overlap, so they are only half of what matching would
-# need. What settles the question is local and needs no capture: build a WAV of
-# stepped sine tones at one fixed amplitude, three per octave from 20 Hz to
-# 16 kHz, let rekordbox analyse it, and read the PWV7 back -- that gives both
-# magnitude responses directly. Until someone runs it, 600 and 4000 stay.
+# crossover. Fitting the whole of rekordbox's own SINEWAVE.wav preset -- 859
+# columns of a 435 Hz tone stepping down through a 16:1 amplitude range -- with
+# one gain per band gives low 99.25 and mid 96.75 counts per unit amplitude at
+# an RMS error of 1.2 counts. Both bands pass the same tone at full gain, to
+# within 2.5 %. A complementary pair crosses at -3 dB in power or -6 dB in
+# amplitude and can never be equal AND at full gain.
+#
+# Mixxx cannot be tuned into that shape, and this is now a proof rather than a
+# suspicion. Its low band and mid band SHARE the corner kLowMidFreqHz: the
+# lowpass falls through it as the bandpass rises through it, so at any one
+# frequency the best the pair can do is meet at -3 dB each, exactly at the
+# corner. Evaluating the stock filters at 435 Hz:
+#
+#     Mixxx      low -1.5 dB   mid -7.3 dB   high -64 dB
+#     rekordbox  low  0.0 dB   mid -0.2 dB   high silent
+#
+# and sweeping the corner only trades one band against the other -- 300 Hz
+# gives -6.9 / -1.1, 435 Hz gives -3.0 / -3.0, 800 Hz gives -0.8 / -15.3. So
+# BAND3_LOW_HZ and BAND3_HIGH_HZ below cannot reach it however they are set.
+# What would reach it is DECOUPLING the two corners: a lowpass at ~800 Hz for
+# the low band and a bandpass starting at ~250 Hz for the mid band puts both
+# within 1 dB of unity at 435 Hz. That is one extra constant in
+# analyzerwaveform.cpp, not a new architecture.
+#
+# Two more differences that colour cannot reach, both measured over all 399
+# analysed tracks. First, rekordbox's stored level is an ENVELOPE, not a
+# per-column peak: instantaneous attack (up to 6x in one column) and a slow
+# per-band release, whose column-to-column floor is 0.86 for low, 0.83 for mid
+# and 0.62 for high -- about 90 ms to halve in the low band and 20 ms in the
+# high. Mixxx's analyzer stores the plain per-column maximum with no release at
+# all, so rekordbox smears every decay and Mixxx does not. Second, the skirts
+# look shallow: an estimate off 7147 near-tonal columns puts rekordbox's low
+# band near 6-7 dB per octave where a fourth-order Bessel is 24.
+#
+# What is still open is the rest of the curve, and one file answers it. The
+# instrument is built and committed in the recon repository as
+# tools/3band-sweep.py: 59 tones at 1/6 octave from 20 Hz to 16.25 kHz, one
+# second each at a constant 0.85 peak amplitude, separated by 250 ms of digital
+# silence -- the tones give the magnitude responses, the silences give the
+# release. Ordinary music cannot substitute: a settled-tone estimator found
+# ZERO usable runs in 201 tracks. The one step that cannot be automated is the
+# import, because rekordbox has no command line and no watch folder. Until
+# someone does File > Import > Import File... on that wav, 600 and 4000 stay.
 #
 # WHAT MIXXX 2.5.6 DOES, read out of the source:
 #
