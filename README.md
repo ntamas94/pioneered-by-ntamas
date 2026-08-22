@@ -30,7 +30,7 @@ images ship stock clocks; with active cooling `arm_freq=2000` /
 `over_voltage=6` in `config.txt` is a free ~10% (the reference box runs 2 GHz
 at ~35 °C under load with a fan).
 
-## The DDJ-1000 on Linux
+## The DDJ-1000 on a Raspberry Pi 4
 
 <p align="center"><img src="docs/ddj1000-jog.jpg" alt="A DDJ-1000 jog wheel display driven from Mixxx on a Raspberry Pi" width="560"></p>
 
