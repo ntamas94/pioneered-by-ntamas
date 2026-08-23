@@ -65,14 +65,10 @@
                     <TrackTableBackgroundColorOpacity>0.4</TrackTableBackgroundColorOpacity>
                   </Library>
                 </Children>
-                <Connection>
-                  <ConfigKey>[Sidebar],sidebar_visible</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                  <Transform><Not/></Transform>
-                </Connection>
               </WidgetGroup>
               <WidgetGroup>
                 <ObjectName>SidebarWrapper</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <LibrarySidebar>

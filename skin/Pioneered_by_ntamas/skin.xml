@@ -60,7 +60,13 @@
 			<attribute config_key="[Pioneered],onair2">0</attribute>
 			<attribute config_key="[Pioneered],onair3">0</attribute>
 			<attribute config_key="[Pioneered],onair4">0</attribute>
-			<attribute config_key="[Master],num_samplers">16</attribute>
+			<!-- Sixty-four, because the DDJ pads address four banks of sixteen
+			     and every slot above the sixteenth would be a group that does
+			     not exist. The mapping raises this too if it finds it low, but
+			     a controller script setting it runs PlayerManager in the wrong
+			     thread: Qt refuses to parent the forty eight new samplers and
+			     says so forty eight times. So the skin is where it belongs. -->
+			<attribute config_key="[Master],num_samplers">64</attribute>
 			<attribute persist="true" config_key="[Master],maximize_library">0</attribute>
 			<attribute persist="true" config_key="[Master],skin_settings">0</attribute>
 			<attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
