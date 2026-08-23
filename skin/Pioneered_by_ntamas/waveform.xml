@@ -97,8 +97,13 @@
            its INST is the residual, mix minus drums minus vocals, rather than
            a fourth thing the separation predicts. This template runs once per
            channel, so the keys come out as [Pioneered],stem1_drums through
-           stem4_inst. Naming a control here is what creates it; nothing reads
-           them yet. -->
+           stem4_inst. Naming a control here is what creates it, and the
+           mapping's watchStemButtons connects to each one and turns a press
+           into the 0x71 SysEx that asks the bridge to find that stem's render
+           and load it on that deck. That is the whole stem answer on 2.5.6,
+           which has no stem engine of its own, and it keeps working on 2.6:
+           these three buttons load a file, the strip beside them mixes one
+           that is already loaded. -->
       <WidgetGroup>
         <ObjectName>StemStack</ObjectName>
         <Layout>vertical</Layout>
@@ -136,6 +141,12 @@
           </PushButton>
         </Children>
       </WidgetGroup>
+      <!-- And beside them the real thing, for the Mixxx that has one. The four
+           rows of [ChannelN_StemM] controls are built here on every version and
+           shown on none but a 2.6 with a stem track loaded; stems.xml explains
+           the one connection that decides it. The template inherits `channel`
+           from this one, the way the stock 2.6 skins inherit theirs. -->
+      <Template src="skin:stems.xml"/>
             <WidgetGroup>
         <ObjectName>WaveformOnAirColumn<Variable name="channel"/></ObjectName>
         <Layout>vertical</Layout>

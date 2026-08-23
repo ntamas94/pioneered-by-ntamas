@@ -1,0 +1,109 @@
+<Template>
+  <!-- One stem of one deck. `channel` comes from waveform.xml, `stem` from
+       stems.xml, and the two group names built here are Mixxx 2.6's own:
+
+           [ChannelN_StemM]                    volume, mute, color
+           [QuickEffectRack1_[ChannelN_StemM]] the stem's own QuickEffect
+
+       which is the shape the stock 2.6 skins build in their stem_channel.xml.
+       Three of those are what the DDJ-1000 has a hand on, the channel fader,
+       the CUE button and the COLOR knob, so those are the three this row
+       draws, in that order after the name. The chain *preset* is deliberately
+       not here: a combo box on a row this tall cannot be hit with a finger, and
+       the unit has no per-stem control that would select one either. Choosing
+       which effect the COLOR knob runs on a stem is not reachable from this
+       skin yet, and that is a gap rather than an oversight.
+
+       The name is the file's, not ours. WStemLabel reads the manifest of
+       whatever is loaded and writes that stem's own label into the text; all
+       the skin picks is StemNum. It writes the manifest's colour into the
+       palette as well, and that part does not survive this skin's stylesheet;
+       style.qss says what was measured and why it is not worth chasing.
+       That element exists only in a 2.6 with __STEM__, so on 2.5.6 the parser
+       does not know it, logs one "Invalid node name in skin" and builds the row
+       without it. That line in the log is the only trace this file leaves on
+       the running box, and it is a truthful one: the skin is carrying a widget
+       the running Mixxx has never heard of.
+
+       No TooltipId on any of these. The ids the stock skins use for stem
+       widgets do not exist in 2.5.6 either, and an unknown one is a second
+       warning for no gain. -->
+  <SetVariable name="stemgroup">[Channel<Variable name="channel"/>_Stem<Variable name="stem"/>]</SetVariable>
+  <SetVariable name="stemfx">[QuickEffectRack1_<Variable name="stemgroup"/>]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>StemRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>0me,0me</Size>
+    <Children>
+      <StemLabel>
+        <ObjectName>StemName</ObjectName>
+        <Group>[Channel<Variable name="channel"/>]</Group>
+        <StemNum><Variable name="stem"/></StemNum>
+        <Alignment>left</Alignment>
+        <Elide>right</Elide>
+        <Size>66f,18f</Size>
+        <Text></Text>
+      </StemLabel>
+      <PushButton>
+        <ObjectName>StemMute</ObjectName>
+        <Size>44f,22f</Size>
+        <NumberStates>2</NumberStates>
+        <State><Number>0</Number><Text>MUTE</Text></State>
+        <State><Number>1</Number><Text>MUTE</Text></State>
+        <!-- Lit means muted, which is what the word on it says. The stock
+             skins invert theirs and light the button while the stem plays,
+             but theirs carries no text to contradict. The control is a
+             PowerWindow push button in the engine, so a tap latches and a
+             held press is momentary; the widget only has to send the press
+             and the release. -->
+        <Connection>
+          <ConfigKey><Variable name="stemgroup"/>,mute</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <!-- Both sliders are drawn from colours rather than from pixmaps:
+           BarColor with BarWidth is a complete slider on its own, which is
+           how a skin with one image file in it gets a fader. The handle is
+           the one exception, a hairline the aspect ratio keeps thin, and it
+           is here because a slider with no handle pixmap logs a line per
+           instance, thirty-two of them across four decks. -->
+      <SliderComposed>
+        <ObjectName>StemVolume</ObjectName>
+        <Size>0me,14f</Size>
+        <Handle scalemode="STRETCH_ASPECT">images/stem_handle.svg</Handle>
+        <Horizontal>true</Horizontal>
+        <BarColor>#e5e6ea</BarColor>
+        <BarWidth>6</BarWidth>
+        <BarBgColor>#32323c</BarBgColor>
+        <BarBgWidth>6</BarBgWidth>
+        <BarMargins>3,3</BarMargins>
+        <BarAxisPos>7</BarAxisPos>
+        <BarRoundCaps>true</BarRoundCaps>
+        <Connection>
+          <ConfigKey><Variable name="stemgroup"/>,volume</ConfigKey>
+        </Connection>
+      </SliderComposed>
+      <!-- The COLOR knob's stem: the super knob of the stem's own QuickEffect
+           chain. Bipolar, because that knob rests in the middle and works
+           both ways from there, so the bar is drawn from the centre out. -->
+      <SliderComposed>
+        <ObjectName>StemColor</ObjectName>
+        <Size>0me,14f</Size>
+        <Handle scalemode="STRETCH_ASPECT">images/stem_handle.svg</Handle>
+        <Horizontal>true</Horizontal>
+        <BarColor>#2d85cd</BarColor>
+        <BarWidth>6</BarWidth>
+        <BarBgColor>#32323c</BarBgColor>
+        <BarBgWidth>6</BarBgWidth>
+        <BarMargins>3,3</BarMargins>
+        <BarAxisPos>7</BarAxisPos>
+        <BarUnipolar>false</BarUnipolar>
+        <BarRoundCaps>true</BarRoundCaps>
+        <Connection>
+          <ConfigKey><Variable name="stemfx"/>,super1</ConfigKey>
+        </Connection>
+      </SliderComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

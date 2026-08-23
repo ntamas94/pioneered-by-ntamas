@@ -39,9 +39,15 @@ which is why switching modes costs nothing but a visibility change.
 
 `waveform.xml` is one lane, instantiated four times with `channel` set. Left to
 right it is the 132-pixel information column (USB1 and eject, KEY, BEAT JUMP),
-then the deck's three stem buttons, then a narrow column carrying the ON AIR
+then the deck's three stem buttons, then the four-row stem strip that only a
+Mixxx with a stem engine ever shows, then a narrow column carrying the ON AIR
 badge above the large deck number, then the scrolling `<Visual>` waveform with
 its cue, hot cue and loop marks.
+
+`stems.xml` and `stem_channel.xml` are that strip: the first is one deck's worth
+and carries the single connection that decides whether any of it is visible, the
+second is one stem's row, instantiated four times. Both are described at length
+below, because on the version the box runs they are built and never seen.
 
 `deck.xml` is one deck card, instantiated with a channel and two heights so the
 same file serves the small and the big rows. It holds the DECK badge in the
@@ -106,7 +112,7 @@ reads them.
 | `prefs_btn` | the version badge in the top bar | the mapping, which turns it into the `0x7x` SysEx that asks the daemon to open Preferences |
 | `cpu`, `temp` | the mapping, from MIDI the bridge sends it | the top bar's status box |
 | `load` | the mapping, from Mixxx's own `[App],audio_latency_usage` | the top bar's status box |
-| `stem1_drums` … `stem4_inst`, twelve in all | the twelve stem buttons in the lanes | nothing yet; see below |
+| `stem1_drums` … `stem4_inst`, twelve in all | the twelve stem buttons in the lanes | the mapping's `watchStemButtons`, which turns a press into the `0x71` SysEx that asks the bridge to load that stem's render on that deck |
 | `profile2` | the 2/4 DECK and 4 DECK buttons | nothing. Measured: no other file in the skin names it and the mapping does not either |
 | `osk` | the KBD button in `library.xml` | nothing. **Dead** |
 | `osk_req` | the patched Mixxx build, when the search box takes focus | nothing. **Dead** |
@@ -396,7 +402,7 @@ Each deck's lane carries three buttons between the information column and the
 deck number: **DRUMS**, **VOCAL**, **INST**, top to bottom, in rekordbox's own
 colours — a royal blue, a bright green and a red. Twelve in all. They are
 two-state toggles, so a press latches and the stylesheet lights the button from
-its value; nothing else in the skin reads them.
+its value.
 
 The keys are
 
@@ -411,10 +417,173 @@ built in `waveform.xml` from the template's `channel` variable, and declared in
 `skin.xml` so the set is visible in one place and reads zero before anything is
 pressed.
 
-Nothing is behind them yet. The names are rekordbox's three stems and mean what
-rekordbox means by them, including that INST is the residual — the mix with
-drums and vocals taken out — rather than something a separation network
-predicts. The path from one of these presses to a file on a deck is being built
-in the bridge and is written up in the DDJ-1000 repository, in
-`docs/stem-buttons.md`; what the three stems are, read out of rekordbox's own
-binaries, is in `docs/three-stem-mode.md` beside it.
+What is behind them is the bridge, not Mixxx. The mapping's `watchStemButtons`
+connects to all twelve and turns a press into `F0 7D 71 <deck> <stem> F7`; the
+daemon finds the matching render on disk and puts it on that deck through
+Mixxx's File menu. That path exists because 2.5.6 has no stem engine at all:
+there is nothing per-deck to switch on, only a separately rendered file to load,
+and loading a named file is not reachable from a controller script. The names
+are rekordbox's three and mean what rekordbox means by them, including that INST
+is the residual, the mix with drums and vocals taken out. `docs/stem-buttons.md`
+in the DDJ-1000 repository is the bridge end of it, and `docs/three-stem-mode.md`
+beside it is where the three came from.
+
+## The stem strip, and how it stays invisible on 2.5.6
+
+Mixxx 2.6 has stems for real. Loading a file with a manifest gives every deck
+
+```
+[ChannelN_Stem1..4]                   volume, mute, color
+[QuickEffectRack1_[ChannelN_StemM]]   one QuickEffect chain per stem
+[ChannelN],stem_count                 read-only, 0 unless a stem track is up
+```
+
+and the stock 2.6 skins build a row per stem out of exactly those. This skin now
+does too, in `stems.xml` and `stem_channel.xml`, four rows per deck, in the lane
+immediately right of the three buttons above.
+
+**The three buttons were not re-pointed at it, and that is the whole design
+decision.** Aiming them at `[ChannelN_StemM],mute` would trade working behaviour
+on the version the box runs for behaviour it cannot use, and it would do it
+silently: the parser invents any key a `<Connection>` names, so on 2.5.6
+`[Channel1_Stem1],mute` would come into being as a control nobody writes, the
+button would look normal and do nothing, and no log line would say so. That is
+the failure written up as four dead buttons in `docs/system-integration.md` in
+the DDJ-1000 repository. So the two live side by side and mean different things:
+the three buttons **load** a stem render, the strip **mixes** the stems of a file
+already loaded.
+
+It is one skin and not two, and what keeps it honest on both versions is a
+single connection in `stems.xml`:
+
+```xml
+<Connection>
+  <ConfigKey>[Channel<Variable name="channel"/>],stem_count</ConfigKey>
+  <BindProperty>visible</BindProperty>
+</Connection>
+```
+
+On 2.6 that is the engine's own read-only count, so the strip appears for a stem
+track and for nothing else, which is what the stock skins do with it. On 2.5.6
+there is no such control, the parser invents it at zero, and nothing ever writes
+it. `ControlWidgetPropertyConnection`'s constructor reads the control once, so
+the group is hidden from the moment it is built rather than appearing and then
+settling: it is never shown at all. The mechanism that makes a dead button is the
+mechanism that makes a container which stays shut, and pointed this way round it
+costs nothing.
+
+A separate skin for 2.6 was the alternative and was rejected for the reason the
+version badge below has to be argued about: a second copy of a hundred kilobytes
+of XML, kept in step by hand, is a larger version of the problem, not a solution
+to it.
+
+That was tested rather than reasoned about. The same files were run under the
+box's own `/usr/bin/mixxx` 2.5.6 and under `~/build/mixxx-2.6/build26/mixxx`,
+each headless on an Xvfb of its own with a settings path of its own, neither
+touching the running Mixxx. On 2.6, with `sin_AAC_256kbps_VBR.stem.mp4` on deck
+1, the strip appeared on that deck and on no other, the names came out of the
+manifest, MUTE lit its row red and a dragged fader moved. On 2.5.6 the window was
+the skin as it was, the strip nowhere, and the log carried sixteen new lines and
+nothing else:
+
+```
+Skin parsing failed at skin:stem_channel.xml:39 <StemLabel>: Invalid node name in skin
+```
+
+one per row, because `StemLabel` is a 2.6 element and 2.5.6's parser skips what
+it does not know. Those sixteen lines are the price of the manifest's names and
+they are worth paying: a warning that names the file and the line is the opposite
+of the silent kind of wrong. Nothing else moved — the `track_number` tooltip
+warnings in the same log predate this and come from `deck.xml`.
+
+A row holds the name, MUTE, a volume fader and a colour fader, which is the
+DDJ-1000's own hand on a stem: the channel fader, the CUE button and the COLOR
+knob. The two faders are `SliderComposed` drawn entirely from `BarColor` and
+`BarWidth`, with no images — a skin with one PNG in it can still have a fader —
+and the colour one has `BarUnipolar` false so it fills from the centre out, the
+way the knob it stands for works from its detent. The only pixmap is a hairline
+handle, `images/stem_handle.svg`, added because a slider with no handle logs a
+line per instance and thirty-two of those is worse than one small file.
+
+Three things are deliberately absent.
+
+**The chain preset.** Which effect a stem's COLOR knob runs is not selectable
+from this skin. A combo box on a row this tall cannot be hit with a finger, and
+the unit has no per-stem control that would pick one either. It is a gap, and it
+is recorded here so the next reader does not think it was forgotten.
+
+**The stem's colour.** `WStemLabel` writes the manifest's colour into the
+widget's palette, and this skin's `WLabel { color: #e5e6ea; }` overrides it,
+because a Qt type selector matches subclasses and a stylesheet colour beats a
+palette. `color: palette(window-text)` looks like the escape and is not: the
+stylesheet resolves that once, while the label still wears the default palette,
+and reapplies what it resolved on every repolish. Measured on 2.6 with the test
+file, whose manifest asks for `#fd4a4a`, `#ffff00`, `#00e8e8` and `#ad65ff`, all
+four names rendered `#010203`. The only fix is narrowing the global rule to
+`.WLabel`, which would take the colour off every Number, Key, Time and title in
+the skin, so the names are grey and the words carry the meaning.
+
+**`[Skin],show_stem_controls`.** The stock skins hang their strip off that
+persisted key as well, and declare it in their own manifests. Binding it here
+without declaring it would leave the strip hidden on 2.6 for ever, which is the
+dead-button trap with the sign flipped, so it is not bound.
+
+`<RequiresStem>true</RequiresStem>` on the group is 2.6's own gate and covers the
+third case: a 2.6 built without `__STEM__` skips the group at parse time, so not
+even the invented controls appear. 2.5.6 ignores the element, which is exactly
+why it cannot be the version test on its own.
+
+The four rows are in slot order, and that order is not this skin's to choose. The
+renderer in the DDJ-1000 repository writes rekordbox's own four-stem
+`PartLayout`, confirmed by ear on a rendered proof file:
+
+| Slot | Name | Colour | Button beside it |
+|---|---|---|---|
+| `[ChannelN_Stem1]` | DRUMS | `#4655FF` | DRUMS |
+| `[ChannelN_Stem2]` | VOCAL | `#02DA0C` | VOCAL |
+| `[ChannelN_Stem3]` | INST | `#DA1B02` | INST |
+| `[ChannelN_Stem4]` | BASS | `#D60094` | none |
+
+Slots 1 to 3 line up with the unit's three ACTIVE PART buttons and with the three
+load buttons to the left of the strip; BASS is the slot with no button and sits
+at the bottom. The words on screen still come out of the file, so a stem file
+from somewhere else shows its own names in its own order.
+
+## The version number in the top bar
+
+The badge in the top left says `Mixxx` over a number, and the number used to be
+`2.5.6` typed into `topbar.xml`. That is a claim nobody checks, and it was going
+to be wrong the first time this skin ran on 2.6.
+
+A skin cannot ask. Nothing in `legacyskinparser.cpp` hands a skin the running
+Mixxx's version; the `<version>` in `skin.xml` is this skin's own, and none of
+the stock 2.6 skins display the application's at all. The one question a skin can
+ask about the Mixxx running it is whether a control exists, because a
+`<Connection>` to a control that does not exist creates it at zero. So the badge
+holds two labels now, one reading `2.5.6` and one reading `2.6`, each with its
+`visible` bound to
+
+```
+[QuickEffectRack1_[Channel1_Stem1]],num_effectslots
+```
+
+and a `<Not/>` on the first. 2.6 creates that control when it builds the
+QuickEffect chain of deck 1's first stem, at startup rather than at track load,
+and `EffectChain` marks it read-only, so nothing on the box can move it. 2.5.6
+has no stem chains and the invented key stays zero. Measured: the badge reads
+`2.6` under `build26/mixxx` and `2.5.6` under `/usr/bin/mixxx`, from the same
+files.
+
+Two limits belong next to the number rather than in somebody's memory. **The
+strings are still hand-written and they live in `topbar.xml`, nowhere else.** And
+the test has two answers, so a Mixxx newer than 2.6 that still has stem chains
+will read `2.6` until somebody adds a third label. That is a badge one version
+behind rather than a badge that never moves, and it is the reason the number was
+not simply dropped in favour of the word `Mixxx` alone: the number is wanted, and
+this is the only way a skin can make it true of both builds that exist here.
+
+One more copy of the version is out of the skin's reach entirely.
+`images/pioneered_logo.png`, the launch image, has `Mixxx 2.5.6` drawn into its
+pixels, which is what the screen shows for the second or two before the skin
+appears. Nothing conditional reaches an image, so that one stays wrong on 2.6
+until somebody redraws it or takes the number out of the artwork.

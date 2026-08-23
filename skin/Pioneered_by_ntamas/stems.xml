@@ -1,0 +1,57 @@
+<Template>
+  <!-- One deck's stem strip: four rows of Mixxx 2.6's real per-stem controls,
+       instantiated from waveform.xml, which has already set `channel`.
+
+       The whole group hangs off [ChannelN],stem_count, and that one connection
+       is what makes this file safe to ship to a box running 2.5.6. On 2.6
+       stem_count is a read-only control the engine writes when a track with a
+       manifest is loaded, so the strip appears for stem tracks and for nothing
+       else. On 2.5.6 there is no stem engine and no such control, so the skin
+       parser conjures it at zero, nothing ever writes it, and the strip is
+       hidden from the moment it is built and stays hidden for ever. The
+       property connection reads the control once in its constructor, so this
+       is not a flicker that settles: the group is never shown at all.
+
+       That is the same mechanism that cost this project four dead buttons,
+       the parser inventing a control nobody writes, turned round to point the
+       other way. A control that reads zero for ever makes a button that lies;
+       it also makes a container that stays shut.
+
+       RequiresStem is 2.6's own gate, and it is here for the third case: a 2.6
+       built without __STEM__ skips this group at parse time, so not even the
+       phantom controls are created. 2.5.6 does not know the element and ignores
+       it, which is why it cannot serve as the version test on its own.
+
+       Four rows, in slot order, top to bottom. That order is not this skin's
+       to choose and it is not alphabetical: the renderer in the DDJ-1000
+       repository writes rekordbox's own four-stem PartLayout, DRUMS, VOCAL,
+       INST, BASS, so that slots 1 to 3 sit under the three ACTIVE PART buttons
+       the unit has. Keeping the rows in the same order means the three buttons
+       to the left of this strip, DRUMS VOCAL INST, stand beside the three rows
+       they name, and BASS, the slot with no button, is the one left over at the
+       bottom. The words themselves still come out of the file. -->
+  <WidgetGroup>
+    <ObjectName>StemStrip</ObjectName>
+    <RequiresStem>true</RequiresStem>
+    <Layout>vertical</Layout>
+    <Size>244f,0me</Size>
+    <Children>
+      <Template src="skin:stem_channel.xml">
+        <SetVariable name="stem">1</SetVariable>
+      </Template>
+      <Template src="skin:stem_channel.xml">
+        <SetVariable name="stem">2</SetVariable>
+      </Template>
+      <Template src="skin:stem_channel.xml">
+        <SetVariable name="stem">3</SetVariable>
+      </Template>
+      <Template src="skin:stem_channel.xml">
+        <SetVariable name="stem">4</SetVariable>
+      </Template>
+    </Children>
+    <Connection>
+      <ConfigKey>[Channel<Variable name="channel"/>],stem_count</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

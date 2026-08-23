@@ -108,7 +108,14 @@ All four decks loaded and on air:
 - ZOOM IN / ZOOM OUT step all four decks together along a fixed ladder,
   and GRID puts all four back to the default zoom
 - Three stem buttons in every waveform lane, DRUMS / VOCAL / INST in
-  rekordbox's own colours, wired to `[Pioneered],stem<N>_*`
+  rekordbox's own colours, wired to `[Pioneered],stem<N>_*`, which the
+  DDJ-1000 mapping turns into a request to the bridge to load that stem's
+  render on that deck
+- Beside them, a four-row stem strip on Mixxx 2.6's real per-stem controls
+  (name from the file's manifest, MUTE, volume, COLOR), which appears only
+  when a stem track is loaded and is invisible on 2.5.6, where the controls
+  it names do not exist. `docs/the-skin.md` explains how one skin serves
+  both without leaving a button that does nothing
 - Top status box: LOAD (audio engine %), CPU %, SoC °C, clock, and an
   `OUT` button that flips the master output between HDMI and the 3.5 mm
   jack (`pi-setup/djbox-audio.sh hdmi|jack|usb`). HDMI on the Pi only takes

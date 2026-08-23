@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The handle of the two stem sliders in stem_channel.xml. Drawn 6 by 24 and
+     stretched to the slider's height with the aspect kept, so on a 14 pixel
+     slider it comes out three and a half pixels wide: a marker, not a knob.
+     The bar behind it carries the value; this only says where the finger is. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="6" height="24" viewBox="0 0 6 24">
+  <rect x="0" y="0" width="6" height="24" rx="3" ry="3" fill="#e5e6ea"/>
+</svg>

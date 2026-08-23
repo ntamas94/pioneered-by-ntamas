@@ -1488,3 +1488,61 @@ WLabel {
 #StemVocal[value="1"] { background-color: #67e96d; border-color: #ffffff; }
 #StemInst[value="1"] { background-color: #e97667; border-color: #ffffff; }
 
+
+/* ---- the four stems Mixxx 2.6 gives us, one strip per waveform lane ---- */
+
+/* This block styles widgets that only ever appear on 2.6 with a stem track
+   loaded. On the box as it stands the strip is built and never shown, so
+   nothing here reaches the screen; it is written now so that the day the box
+   moves to 2.6 the strip is not unstyled.
+
+   The stem's own colour is not on screen, and it took a measurement to be
+   sure it could not be. WStemLabel writes the manifest's colour into the
+   widget's palette, but a stylesheet `color` beats a palette, and the
+   `WLabel { color: #e5e6ea; }` rule far above reaches WStemLabel because a Qt
+   type selector matches subclasses too. `color: palette(window-text)` looks
+   like the way out and is not: the stylesheet resolves that once, while the
+   label is still wearing the default palette, and re-applies the black it
+   resolved every time the label is repolished. Measured on 2.6 with the
+   4-stem test file, whose manifest asks for #fd4a4a, #ffff00, #00e8e8 and
+   #ad65ff, all four names came out #010203. The only fix is to narrow the
+   global rule to `.WLabel`, which would take the colour off every Number,
+   Key, Time and track title in the skin as well, so the names are grey and
+   the words carry the meaning. */
+#StemStrip {
+  margin: 1px 4px 1px 0;
+}
+
+#StemRow {
+  border-bottom: 1px solid #1a1a22;
+  qproperty-layoutAlignment: 'AlignVCenter';
+}
+
+#StemName {
+  color: #e5e6ea;
+  font-size: 11px;
+  font-weight: bold;
+  padding-left: 4px;
+}
+
+#StemMute {
+  border: 1px solid #32323c;
+  border-radius: 2px;
+  color: #6f7079;
+  font-size: 9px;
+  font-weight: bold;
+  margin: 0 4px;
+}
+
+/* Muted is the lit state, because the word on the button is MUTE. Pioneer's
+   own red for a cut channel, and the lettering goes to white with it. */
+#StemMute[value="1"] {
+  background-color: #d73535;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+#StemVolume, #StemColor {
+  background-color: transparent;
+  margin-right: 4px;
+}

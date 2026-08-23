@@ -33,9 +33,48 @@
                     <ObjectName>MixxxVersionName</ObjectName>
                     <Text>Mixxx</Text>
                   </Label>
+                  <!-- The number under the name is written by hand, twice, and
+                       one of the two is chosen at load time. Nothing in the
+                       skin parser hands a skin the running Mixxx's version.
+                       The <version> in skin.xml is this skin's own, and no
+                       stock skin displays the application's. So a single
+                       hardcoded number is a claim nobody checks, and it was
+                       already going to be wrong the first time this skin ran
+                       on 2.6.
+
+                       The only question a skin can ask about the Mixxx running
+                       it is whether some control exists, so that is the
+                       question asked here.
+                       [QuickEffectRack1_[Channel1_Stem1]],num_effectslots is
+                       created when 2.6 builds the QuickEffect chain of deck
+                       1's first stem, at startup and not at track load, and it
+                       is read-only, so nothing on the box can move it. 2.5.6
+                       has no stem chains, the parser invents the key at zero,
+                       and the zero is what selects 2.5.6 below.
+
+                       Two limits, both worth knowing before trusting it. The
+                       strings are still hand-maintained and they live here,
+                       nowhere else; and the test has two answers, so a Mixxx
+                       newer than 2.6 that still has stem chains will read 2.6
+                       until somebody adds a third label. That is a badge one
+                       version behind rather than a badge that never moves.
+                       docs/the-skin.md says the same at more length. -->
                   <Label>
                     <ObjectName>MixxxVersionNum</ObjectName>
                     <Text>2.5.6</Text>
+                    <Connection>
+                      <ConfigKey>[QuickEffectRack1_[Channel1_Stem1]],num_effectslots</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                  <Label>
+                    <ObjectName>MixxxVersionNum</ObjectName>
+                    <Text>2.6</Text>
+                    <Connection>
+                      <ConfigKey>[QuickEffectRack1_[Channel1_Stem1]],num_effectslots</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </Label>
                 </Children>
               </WidgetGroup>
