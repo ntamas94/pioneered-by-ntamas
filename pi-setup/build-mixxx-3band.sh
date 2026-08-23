@@ -904,15 +904,23 @@ dch --local "" --distribution unstable "Skin-driven three-band waveform mix" || 
 sed -i "1s/^mixxx (.*)/mixxx ($VERSION)/" debian/changelog
 
 # -nc keeps the object files, which is the whole point on a Pi where a clean
-# build is hours -- but it also keeps debian/*.debhelper.log, and dh reads that
-# log to decide which steps of the sequence it has already run. Left in place it
-# makes dh skip dh_auto_build outright: the tree gets patched, a package gets
-# built, the version gets bumped, and the binary inside it is the one from the
+# build is hours -- but it also makes dpkg-buildpackage skip "debian/rules
+# build" and go straight to "debian/rules binary", and dh then decides for
+# itself whether the build sequence still needs running. Left to decide, it
+# skips dh_auto_build outright: the tree gets patched, a package gets built,
+# the version gets bumped, and the binary inside it is the one from the
 # previous run. Nothing warns you, and the version number says otherwise. This
 # is how 2.5.6-0pioneered4 was first built, and it took a strings(1) check on
-# the installed binary to notice. Deleting the log makes dh walk the sequence
-# again; cmake still builds incrementally, because -nc left obj-*/ alone.
-rm -f debian/*.debhelper.log
+# the installed binary to notice.
+#
+# It decides from two files and both have to go. Deleting only the logs, as
+# this did, is not enough: debhelper-build-stamp says the whole build sequence
+# is done, the glob does not match it, and with it in place dh binary starts
+# at dh_prep and compiles nothing at all. That cost an afternoon again in
+# build-mixxx-scratchdt.sh, which packaged a .o two days older than its own
+# source. Deleting both makes dh walk the sequence again; cmake still builds
+# incrementally, because -nc left obj-*/ alone.
+rm -f debian/debhelper-build-stamp debian/*.debhelper.log
 
 dpkg-buildpackage -us -uc -b -nc -j4
 
